@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "just-helper",
+	"version": "${version}",
+	"name": "Just Helper",
+	"description": " ",
+	"authors": [
+		"2M3V"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/just-helper/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.prikolz.justhelper.JustHelper"
+		],
+		"client": [
+			"com.prikolz.justhelper.JustHelperClient"
+		]
+	},
+	"mixins": [
+		"just-helper.mixins.json",
+		{
+			"config": "just-helper.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.17.2",
+		"minecraft": "~1.21.8",
+		"java": ">=21"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
