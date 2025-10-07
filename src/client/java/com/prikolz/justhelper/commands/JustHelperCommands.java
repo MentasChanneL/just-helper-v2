@@ -18,7 +18,7 @@ public class JustHelperCommands {
     public static void register(CommandDispatcher<ClientSuggestionProvider> dispatcher) {
         commands.clear();
 
-        register( dispatcher, new TestCommand() );
+        register( dispatcher, new FindCommand() );
 
         JustHelperClient.LOGGER.info("Registered {} commands", commands.size());
     }

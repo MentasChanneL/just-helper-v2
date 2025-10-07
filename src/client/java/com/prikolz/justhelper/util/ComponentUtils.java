@@ -21,12 +21,10 @@ public class ComponentUtils {
     public static final Grammar<Tag> TAG_PARSER = SnbtGrammar.createParser(OPS);
     public static final CommandArgumentParser<Component> PARSER = TAG_PARSER.withCodec(OPS, TAG_PARSER, ComponentSerialization.CODEC, ERROR_INVALID_COMPONENT);
 
-    public static Gson gson = new Gson();
-
     public static Component minimessage(String minimessage) {
         var json = GsonComponentSerializer.gson().serialize( MiniMessage.miniMessage().deserialize(minimessage) );
         try {
-            return PARSER.parseForCommands( new StringReader( gson.toJson(json) ) );
+            return PARSER.parseForCommands( new StringReader( json) );
         } catch (Throwable t) {
             JustHelperClient.LOGGER.error("Send minimessage error: {}", t.getMessage());
         }

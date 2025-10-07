@@ -1,8 +1,12 @@
 package com.prikolz.justhelper;
 
+import com.prikolz.justhelper.dev.SignInfo;
 import com.prikolz.justhelper.dev.VariableType;
 import com.prikolz.justhelper.dev.VariablesHistory;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
 
 import java.util.HashMap;
 
@@ -12,6 +16,7 @@ public abstract class DevelopmentWorld {
     private static final String DEV_PREFIX = "world_";
 
     public static final HashMap<VariableType, VariablesHistory> history = new HashMap<>();
+    public static final HashMap<BlockPos, SignInfo> signs = new HashMap<>();
 
     private static String worldUUID;
 
@@ -31,6 +36,7 @@ public abstract class DevelopmentWorld {
         if (!isActive()) {
             worldUUID = null;
             history.forEach((k, v) -> v.save());
+            signs.clear();
             history.clear();
             return;
         }
@@ -40,6 +46,7 @@ public abstract class DevelopmentWorld {
         JustHelperClient.LOGGER.info("Joined to develop world {}", worldUUID);
         history.forEach((k, v) -> v.save());
         history.clear();
+        signs.clear();
         history.put( VariableType.LOCAL, new VariablesHistory(worldUUID, VariableType.LOCAL) );
         history.put( VariableType.GAME, new VariablesHistory(worldUUID, VariableType.GAME) );
         history.put( VariableType.SAVE, new VariablesHistory(worldUUID, VariableType.SAVE) );
@@ -49,5 +56,12 @@ public abstract class DevelopmentWorld {
     public static void addToHistory(VariableType type, String name) {
         if (history.isEmpty()) return;
         history.get(type).history.add(name);
+    }
+
+    public static void addSign(BlockEntity blockEntity) {
+        if (!isActive()) return;
+        JustHelperClient.LOGGER.info("{}", blockEntity);
+        if (!(blockEntity instanceof SignBlockEntity sign)) return;
+        signs.put(sign.getBlockPos(), new SignInfo(sign));
     }
 }
