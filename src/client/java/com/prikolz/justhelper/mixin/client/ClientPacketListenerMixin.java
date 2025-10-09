@@ -2,7 +2,6 @@ package com.prikolz.justhelper.mixin.client;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.prikolz.justhelper.DevelopmentWorld;
-import com.prikolz.justhelper.commands.JustHelperCommand;
 import com.prikolz.justhelper.commands.JustHelperCommands;
 import com.prikolz.justhelper.dev.VariablesHistory;
 import net.minecraft.client.gui.screens.Screen;

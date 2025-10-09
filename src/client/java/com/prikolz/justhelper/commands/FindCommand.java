@@ -86,13 +86,13 @@ public class FindCommand extends JustHelperCommand {
         } else {
             controllerBuilder.append("<click:run_command:'/foundlist ").append(page - 1).append("'><hover:show_text:←><yellow>←");
         }
-        controllerBuilder.append(" <white>").append(page + 1).append("<gold>/<white>").append(unpack.size() / PAGE_SIZE + 1);
+        controllerBuilder.append("<reset> <white>").append(page + 1).append("<gold>/<white>").append(unpack.size() / PAGE_SIZE + 1);
         if (hasNextPage) {
             controllerBuilder.append(" <click:run_command:'/foundlist ").append(page + 1).append("'><hover:show_text:→><yellow>→");
         } else {
-            controllerBuilder.append("<dark_gray>>");
+            controllerBuilder.append("<dark_gray>→");
         }
-        controllerBuilder.append(" <gray><strikethrough:true>    <strikethrough:false>");
+        controllerBuilder.append("<reset> <gray><strikethrough:true>    <strikethrough:false>");
         JustHelperCommand.feedback(Component.empty());
         JustHelperCommand.feedback(controllerBuilder.toString());
     }
