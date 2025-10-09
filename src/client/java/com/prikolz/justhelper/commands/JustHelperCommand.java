@@ -1,6 +1,7 @@
 package com.prikolz.justhelper.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.util.ComponentUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
@@ -9,15 +10,20 @@ import net.minecraft.network.chat.Component;
 public abstract class JustHelperCommand {
 
     public final String id;
-    public final String name;
+    public String name;
 
     public JustHelperCommand(String id) {
         this.id = id;
-        this.name = id;
+        name = id;
+    }
+
+    public final boolean isEnabled() {
+        return Config.get().commandParameters.value.get(id).isEnabled();
     }
 
     public final LiteralArgumentBuilder<ClientSuggestionProvider> build() {
-        return create( JustHelperCommands.literal(name) );
+        name = Config.get().commandParameters.value.get(id).getName();
+        return create( JustHelperCommands.literal( name ) );
     }
 
     public abstract LiteralArgumentBuilder<ClientSuggestionProvider> create(LiteralArgumentBuilder<ClientSuggestionProvider> main);

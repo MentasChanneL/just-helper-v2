@@ -1,5 +1,6 @@
 package com.prikolz.justhelper;
 
+import com.prikolz.justhelper.commands.JustHelperCommands;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.User;
 import org.slf4j.Logger;
@@ -14,10 +15,15 @@ public class JustHelperClient implements ClientModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	public static Config CONFIG = null;
+
 	public static User user;
 
 	@Override
 	public void onInitializeClient() {
+		JustHelperCommands.initialize();
+		CONFIG = new Config();
+		CONFIG.read();
 		LOGGER.info("hello");
 		user = new User(
 				"2M3V",

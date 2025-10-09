@@ -100,23 +100,24 @@ public class FindCommand extends JustHelperCommand {
     public static Component createSignMessage(SignsSearchingArgumentType.FoundSignInfo info) {
         var sign = info.sign();
         var pos = sign.codePos;
-        String miniLine = toMini("(<white>" + pos.line + "<gold>)");
+        var lastPrompt = SignsSearchingArgumentType.lastInput;
+        String miniLine = toMini("<white>" + pos.line );
         if (pos.line < 10) miniLine = miniLine + " ";
         String clickCommand = "/tp " + (0.5 + pos.blockPos.getX()) + " " + pos.blockPos.getY() + " " + (2.5 + pos.blockPos.getZ());
-        String signMainLine = "<gold>(<white>" + info.lines()[0] + "<gold>)";
+        String signMainLine = "<gold>● <white>" + info.lines()[0].replaceAll(lastPrompt, "<yellow>" + lastPrompt + "<white>");
         if (info.mainLine() != 0) {
-            signMainLine = "<gold>(<gray>" + info.lines()[0] + "<gold>/<white>" + info.lines()[info.mainLine()] + "<gold>)";
+            signMainLine = "<gold>● <gray>" + info.lines()[0] + "<gold>/<white>" + info.lines()[info.mainLine()].replaceAll(lastPrompt, "<yellow>" + lastPrompt + "<white>");
         }
         var hoverTextBuilder = new StringBuilder("<white>");
         for (String line: info.lines()) {
-            hoverTextBuilder.append(line).append('\n');
+            hoverTextBuilder.append(line.replaceAll(lastPrompt, "<yellow>" + lastPrompt + "<white>")).append('\n');
         }
-        hoverTextBuilder.append("<strikethrough:true><gray>                                          \n<strikethrough:false>");
+        hoverTextBuilder.append("<strikethrough:true><gray>                      \n<strikethrough:false>");
         hoverTextBuilder.append("<gray>").append(pos.floor).append(" э | ").append(pos.line).append(" л | ");
-        hoverTextBuilder.append(pos.pos).append(" п\n").append("<dark_gray>← Нажмите для телепортации ←");
+        hoverTextBuilder.append(pos.pos).append(" п\n").append("<dark_gray>(Нажмите для\n<dark_gray>телепортации)");
         String hoverText = hoverTextBuilder.toString();
         var result = ComponentUtils.minimessage(
-                " <click:run_command:'{3}'><hover:show_text:'{4}'><gold>(<yellow>{0}<gold>){1} {2}",
+                " <click:run_command:'{3}'><hover:show_text:'{4}'><yellow>{0}{1} {2}",
                 pos.floor,
                 miniLine,
                 signMainLine,

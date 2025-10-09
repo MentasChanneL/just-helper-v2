@@ -15,22 +15,21 @@ public class JustHelperCommands {
 
     public static HashMap<String, JustHelperCommand> commands = new HashMap<>();
 
-    public static void register(CommandDispatcher<ClientSuggestionProvider> dispatcher) {
-        commands.clear();
+    public static void initialize() {
+        register( new FindCommand() );
+        register( new FoundListCommand() );
+    }
 
-        register( dispatcher, new FindCommand() );
-        register( dispatcher, new FoundListCommand() );
+    public static void registerDispatcher(CommandDispatcher<ClientSuggestionProvider> dispatcher) {
+
+        commands.values().forEach((v) -> {
+            if (v.isEnabled()) dispatcher.register( v.build() );
+        });
 
         JustHelperClient.LOGGER.info("Registered {} commands", commands.size());
     }
 
-    private static void register(
-            CommandDispatcher<ClientSuggestionProvider> dispatcher,
-            JustHelperCommand command
-    ) {
-        dispatcher.register( command.build() );
-        commands.put(command.id, command);
-    }
+    private static void register(JustHelperCommand command) { commands.put(command.id, command); }
 
     public static LiteralArgumentBuilder<ClientSuggestionProvider> literal(String string) {
         return LiteralArgumentBuilder.literal(string);
@@ -52,7 +51,7 @@ public class JustHelperCommands {
                     dispatcher.execute(parse);
                 } catch (Throwable t) {
                     JustHelperCommand.feedback(
-                       ComponentUtils.minimessage("<red><tr:command.exception:'" + t.getMessage() + "'>")
+                       ComponentUtils.minimessage("<red>[Just Helper] <tr:command.exception:'" + t.getMessage() + "'>")
                     );
                 }
                 return true;

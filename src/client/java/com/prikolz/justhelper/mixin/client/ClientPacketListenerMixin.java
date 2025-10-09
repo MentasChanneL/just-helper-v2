@@ -39,7 +39,7 @@ public class ClientPacketListenerMixin {
 
     @Inject(method = "handleCommands", at = @At("TAIL"))
     public void onHandleCommands(ClientboundCommandsPacket clientboundCommandsPacket, CallbackInfo ci) {
-        JustHelperCommands.register(commands);
+        JustHelperCommands.registerDispatcher(commands);
     }
 
     @Inject(method = "handleContainerContent", at = @At("TAIL"))

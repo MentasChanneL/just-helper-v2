@@ -1,5 +1,6 @@
 package com.prikolz.justhelper.component;
 
+import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.mixin.client.SpriteContentsMixin;
 import net.minecraft.client.Minecraft;
@@ -25,7 +26,7 @@ public abstract class BlockStateComponent {
         var result = (MutableComponent) processed.get( bl );
         if (result != null) return result;
         result = Component.empty().setStyle(
-                Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(bl.getName()))
+                Style.EMPTY.withHoverEvent(new HoverEvent.ShowText( Config.get().codeBlockNames.value.getName(bl) ))
         );
         var render = Minecraft.getInstance().getBlockRenderer();
         try {
