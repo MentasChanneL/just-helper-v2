@@ -14,11 +14,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.prikolz.justhelper.JustHelperClient.GSON;
+
 public class Config {
 
     public static Config get() { return JustHelperClient.CONFIG; }
 
-    public final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     public final List<Parameter<?, ?>> parameters = new ArrayList<>();
 
     public Parameter<CodeBlockNames, JsonObject> codeBlockNames = new Parameter<>(
@@ -61,7 +62,7 @@ public class Config {
                 FileUtil.createDirectoriesSafe( FileUtils.getConfigFolder().toPath() );
                 JsonObject json = new JsonObject();
                 for (var parameter : parameters) parameter.write(json, logger);
-                Files.writeString(configFile.toPath(), gson.toJson(json));
+                Files.writeString(configFile.toPath(), GSON.toJson(json));
                 logger.log("[I] Created new config file");
             } catch (Throwable t) {
                 logger.log("[E] Failed to create config file: " + t.getMessage());
@@ -70,9 +71,9 @@ public class Config {
             return logger.logs;
         }
         try {
-            JsonObject json = gson.fromJson(gson.newJsonReader(new FileReader(configFile)), JsonObject.class);
+            JsonObject json = GSON.fromJson(GSON.newJsonReader(new FileReader(configFile)), JsonObject.class);
             for (var parameter : parameters) parameter.read(json, logger);
-            if (logger.configWasUpdated) Files.writeString(configFile.toPath(), gson.toJson(json));
+            if (logger.configWasUpdated) Files.writeString(configFile.toPath(), GSON.toJson(json));
         } catch (Throwable t) {
             logger.log("[E] Fail to read config file: " + t.getMessage());
         }

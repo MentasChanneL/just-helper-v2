@@ -90,7 +90,7 @@ public class FindCommand extends JustHelperCommand {
         if (hasNextPage) {
             controllerBuilder.append(" <click:run_command:'/foundlist ").append(page + 1).append("'><hover:show_text:→><yellow>→");
         } else {
-            controllerBuilder.append("<dark_gray>→");
+            controllerBuilder.append(" <dark_gray>→");
         }
         controllerBuilder.append("<reset> <gray><strikethrough:true>    <strikethrough:false>");
         JustHelperCommand.feedback(Component.empty());

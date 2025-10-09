@@ -1,5 +1,6 @@
 package com.prikolz.justhelper;
 
+import com.prikolz.justhelper.dev.FloorDescribes;
 import com.prikolz.justhelper.dev.SignInfo;
 import com.prikolz.justhelper.dev.VariableType;
 import com.prikolz.justhelper.dev.VariablesHistory;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public abstract class DevelopmentWorld {
 
@@ -17,6 +19,7 @@ public abstract class DevelopmentWorld {
 
     public static final HashMap<VariableType, VariablesHistory> history = new HashMap<>();
     public static final HashMap<BlockPos, SignInfo> signs = new HashMap<>();
+    public static FloorDescribes describes = null;
 
     private static String worldUUID;
 
@@ -33,11 +36,12 @@ public abstract class DevelopmentWorld {
     }
 
     public static void initialize() {
+        CommandBuffer.clear();
         if (!isActive()) {
             worldUUID = null;
             history.forEach((k, v) -> v.save());
-            signs.clear();
             history.clear();
+            signs.clear();
             return;
         }
         var worldName = getWorldName();
@@ -50,12 +54,18 @@ public abstract class DevelopmentWorld {
         history.put( VariableType.LOCAL, new VariablesHistory(worldUUID, VariableType.LOCAL) );
         history.put( VariableType.GAME, new VariablesHistory(worldUUID, VariableType.GAME) );
         history.put( VariableType.SAVE, new VariablesHistory(worldUUID, VariableType.SAVE) );
-
+        describes = new FloorDescribes(worldUUID);
+        describes.spawn();
     }
 
     public static void addToHistory(VariableType type, String name) {
-        if (history.isEmpty()) return;
+        if (history.isEmpty() || name == null) return;
         history.get(type).history.add(name);
+    }
+
+    public static Set<String> getVariablesHistory(VariableType type) {
+        if (!history.containsKey(type)) return Set.of();
+        return history.get(type).history;
     }
 
     public static void addSign(BlockEntity blockEntity) {

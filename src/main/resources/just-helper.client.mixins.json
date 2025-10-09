@@ -6,7 +6,8 @@
 		"MinecraftMixin",
 		"ClientPacketListenerMixin",
 		"ClientLevelMixin",
-		"SpriteContentsMixin"
+		"SpriteContentsMixin",
+		"TextDisplayMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

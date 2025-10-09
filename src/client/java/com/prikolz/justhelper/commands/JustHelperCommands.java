@@ -18,6 +18,8 @@ public class JustHelperCommands {
     public static void initialize() {
         register( new FindCommand() );
         register( new FoundListCommand() );
+        register( new DescribeCommand() );
+        register( new VarLocalCommand() );
     }
 
     public static void registerDispatcher(CommandDispatcher<ClientSuggestionProvider> dispatcher) {

@@ -1,5 +1,6 @@
 package com.prikolz.justhelper.commands;
 
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.util.ComponentUtils;
@@ -11,6 +12,7 @@ public abstract class JustHelperCommand {
 
     public final String id;
     public String name;
+    public JsonObject settings = new JsonObject();
 
     public JustHelperCommand(String id) {
         this.id = id;

@@ -18,6 +18,7 @@ public class VariablesHistory {
     public final VariableType type;
     public final String worldUUID;
     public final File file;
+    public boolean isValid = true;
 
     public VariablesHistory(String worldUUID, VariableType type) {
         this.type = type;
@@ -28,7 +29,7 @@ public class VariablesHistory {
     }
 
     private File getFile(String world, String name) {
-        return new File(FileUtils.getConfigFolder().getPath() + "/worlds/" + world + "/" + name);
+        return new File(FileUtils.getWorldFolder(world).getPath() + "/" + name);
     }
 
     private Set<String> readFile(File file) {
@@ -36,7 +37,11 @@ public class VariablesHistory {
         var result = new HashSet<String>();
         if (!file.isFile()) return result;
         try (var reader = new BufferedReader(new FileReader(file))) {
-            result.add(reader.readLine());
+            while (true) {
+                var line = reader.readLine();
+                if (line == null) break;
+                if (!line.isEmpty()) result.add(line);
+            }
         } catch (Throwable t) {
             JustHelperClient.LOGGER.warn("File '{}' read error: {}", file.getPath(), t.getMessage());
         }

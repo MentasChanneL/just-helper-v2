@@ -32,12 +32,14 @@ public class CommandParameters {
                         var result = new JsonObject();
                         value.name.write(result, logger);
                         value.enabled.write(result, logger);
+                        value.settings.write(result, logger);
                         return result;
                     },
                     (obj, logger) -> {
                         var result = new Parameter(command.id);
                         result.name.read(obj, logger);
                         result.enabled.read(obj, logger);
+                        result.settings.read(obj, logger);
                         return result;
                     }
             );
@@ -54,6 +56,7 @@ public class CommandParameters {
     public static class Parameter {
         public final Config.Parameter<String, JsonPrimitive> name;
         public final Config.Parameter<Boolean, JsonPrimitive> enabled;
+        public final Config.Parameter<JsonObject, JsonObject> settings;
 
         public Parameter(String id) {
             this.name = new Config.Parameter<>(
@@ -69,6 +72,13 @@ public class CommandParameters {
                     null,
                     (value, logger) -> new JsonPrimitive(value),
                     (obj, logger) -> obj.getAsBoolean()
+            );
+            this.settings = new Config.Parameter<>(
+                    new JsonObject(),
+                    "settings",
+                    null,
+                    (value, logger) -> value,
+                    (obj, logger) -> obj
             );
         }
 

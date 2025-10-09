@@ -1,5 +1,7 @@
 package com.prikolz.justhelper;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.prikolz.justhelper.commands.JustHelperCommands;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.User;
@@ -15,6 +17,7 @@ public class JustHelperClient implements ClientModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	public static Config CONFIG = null;
 
 	public static User user;
