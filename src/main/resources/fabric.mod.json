@@ -13,11 +13,8 @@
 	},
 	"license": "MIT",
 	"icon": "assets/just-helper/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
-		"main": [
-			"com.prikolz.justhelper.JustHelper"
-		],
 		"client": [
 			"com.prikolz.justhelper.JustHelperClient"
 		]
@@ -30,11 +27,9 @@
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.17.2",
-		"minecraft": "~1.21.8",
+		"fabricloader": ">=0.15.0",
+		"minecraft": ">=1.21.8",
 		"java": ">=21"
 	},
-	"suggests": {
-		"another-mod": "*"
-	}
+	"suggests": {}
 }

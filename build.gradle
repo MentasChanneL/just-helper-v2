@@ -26,6 +26,12 @@ loom {
 
 }
 
+fabricApi {
+	configureDataGeneration {
+		client = true
+	}
+}
+
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -41,7 +47,9 @@ dependencies {
 	includeInternal ("net.kyori:adventure-text-serializer-gson:4.17.0")
 	includeInternal ("net.kyori:adventure-text-serializer-legacy:4.17.0")
 	includeInternal ("net.kyori:adventure-api:4.24.0")
-	
+
+	//modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation 'net.fabricmc.fabric-api:fabric-resource-loader-v0:3.1.10+fa6cb72b9c'
 }
 
 processResources {

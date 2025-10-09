@@ -19,6 +19,7 @@ public class JustHelperCommands {
         commands.clear();
 
         register( dispatcher, new FindCommand() );
+        register( dispatcher, new FoundListCommand() );
 
         JustHelperClient.LOGGER.info("Registered {} commands", commands.size());
     }

@@ -1,5 +1,6 @@
 package com.prikolz.justhelper.dev;
 
+import com.prikolz.justhelper.component.BlockStateComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -8,6 +9,7 @@ import net.minecraft.world.level.block.entity.SignBlockEntity;
 public class SignInfo {
     public final BlockPos pos;
     public final BlockCodePos codePos;
+
 
     public SignInfo(SignBlockEntity sign) {
         pos = sign.getBlockPos();

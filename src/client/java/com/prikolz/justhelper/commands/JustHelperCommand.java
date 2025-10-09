@@ -1,6 +1,7 @@
 package com.prikolz.justhelper.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.prikolz.justhelper.util.ComponentUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.network.chat.Component;
@@ -21,8 +22,8 @@ public abstract class JustHelperCommand {
 
     public abstract LiteralArgumentBuilder<ClientSuggestionProvider> create(LiteralArgumentBuilder<ClientSuggestionProvider> main);
 
-    public static int feedback(String message) {
-        return feedback(Component.literal(message));
+    public static int feedback(String m, Object ... placeholders) {
+        return feedback(ComponentUtils.minimessage(m, placeholders));
     }
 
     public static int feedback(Component message) {

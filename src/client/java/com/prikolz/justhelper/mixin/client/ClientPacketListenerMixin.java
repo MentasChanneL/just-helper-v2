@@ -2,14 +2,17 @@ package com.prikolz.justhelper.mixin.client;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.prikolz.justhelper.DevelopmentWorld;
+import com.prikolz.justhelper.commands.JustHelperCommand;
 import com.prikolz.justhelper.commands.JustHelperCommands;
 import com.prikolz.justhelper.dev.VariablesHistory;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,6 +31,11 @@ public class ClientPacketListenerMixin {
     @Inject(method = "sendCommand", at = @At("HEAD"), cancellable = true)
     private void onSendCommand(String command, CallbackInfo ci) {
         if (JustHelperCommands.handleCommand(command, suggestionsProvider, commands)) ci.cancel();
+    }
+
+    @Inject(method = "sendUnattendedCommand", at = @At("HEAD"), cancellable = true)
+    private void sendUnattendedCommand(String string, @Nullable Screen screen, CallbackInfo ci) {
+        if (JustHelperCommands.handleCommand(string, suggestionsProvider, commands)) ci.cancel();
     }
 
     @Inject(method = "handleCommands", at = @At("TAIL"))

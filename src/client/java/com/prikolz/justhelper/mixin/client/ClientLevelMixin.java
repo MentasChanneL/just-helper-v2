@@ -1,7 +1,6 @@
 package com.prikolz.justhelper.mixin.client;
 
 import com.prikolz.justhelper.DevelopmentWorld;
-import com.prikolz.justhelper.JustHelperClient;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;

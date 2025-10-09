@@ -21,7 +21,12 @@ public class ComponentUtils {
     public static final Grammar<Tag> TAG_PARSER = SnbtGrammar.createParser(OPS);
     public static final CommandArgumentParser<Component> PARSER = TAG_PARSER.withCodec(OPS, TAG_PARSER, ComponentSerialization.CODEC, ERROR_INVALID_COMPONENT);
 
-    public static Component minimessage(String minimessage) {
+    public static Component minimessage(String minimessage, Object ... placeholders) {
+        var i = 0;
+        for (Object placeholder : placeholders) {
+            minimessage = minimessage.replaceAll("\\{" + i + "}", placeholder.toString());
+            i++;
+        }
         var json = GsonComponentSerializer.gson().serialize( MiniMessage.miniMessage().deserialize(minimessage) );
         try {
             return PARSER.parseForCommands( new StringReader( json) );

@@ -1,0 +1,22 @@
+{
+    "providers": [
+        {
+            "type": "bitmap",
+            "file": "just-helper:font/pixels.png",
+            "ascent": 7,
+            "chars": [
+                "abcd",
+                "efgh",
+                "ijkl",
+                "mnop"
+            ]
+        },
+        {
+            "type": "space",
+            "advances": {
+                ".": -7,
+                "+": -8
+            }
+        }
+    ]
+}

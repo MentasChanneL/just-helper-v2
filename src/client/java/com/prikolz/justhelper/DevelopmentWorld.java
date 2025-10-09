@@ -60,7 +60,6 @@ public abstract class DevelopmentWorld {
 
     public static void addSign(BlockEntity blockEntity) {
         if (!isActive()) return;
-        JustHelperClient.LOGGER.info("{}", blockEntity);
         if (!(blockEntity instanceof SignBlockEntity sign)) return;
         signs.put(sign.getBlockPos(), new SignInfo(sign));
     }
