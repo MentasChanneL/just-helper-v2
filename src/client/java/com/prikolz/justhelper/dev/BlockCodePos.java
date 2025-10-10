@@ -20,6 +20,10 @@ public class BlockCodePos {
         blockPos = new BlockPos(x, y, z);
     }
 
+    public BlockPos toPos() {
+        return new BlockPos(2 * pos + 2, 7 * floor - 2, line * 4);
+    }
+
     public Component getBlockComponent() {
         var level = Minecraft.getInstance().level;
         if (level == null) return Component.empty();

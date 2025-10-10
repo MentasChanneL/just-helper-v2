@@ -15,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.io.File;
@@ -84,7 +83,7 @@ public class FloorDescribes {
         if(!DevelopmentWorld.isActive()) return;
         var level = Minecraft.getInstance().level;
         if (level == null) return;
-        describes.put(floor, floor + ". " + text);
+        describes.put(floor, floor + " " + text);
         File configFile = getConfigFile(world);
         var json = new JsonObject();
         describes.forEach((k, v) -> {

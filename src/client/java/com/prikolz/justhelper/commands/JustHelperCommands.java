@@ -23,6 +23,8 @@ public class JustHelperCommands {
         register( new VarCommand(VariableType.LOCAL) );
         register( new VarCommand(VariableType.GAME) );
         register( new VarCommand(VariableType.SAVE) );
+        register( new GetDataTypeCommand("n", " ") );
+        register( new GetDataTypeCommand("t", null) );
     }
 
     public static void registerDispatcher(CommandDispatcher<ClientSuggestionProvider> dispatcher) {

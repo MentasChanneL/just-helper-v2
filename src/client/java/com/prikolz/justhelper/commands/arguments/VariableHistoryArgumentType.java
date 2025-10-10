@@ -31,7 +31,7 @@ public class VariableHistoryArgumentType implements ArgumentType<String> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         var history = DevelopmentWorld.getVariablesHistory(type);
-        if (lastInput.isEmpty()) {
+        if (lastInput.length() < 2) {
             for (String key : history) builder.suggest(key);
             return builder.buildFuture();
         }
