@@ -18,12 +18,18 @@ public abstract class CommandBuffer {
 
     public static void runTimer() {
         if (timer != null) timer.cancel();
+        cd = Config.get().commandBufferCD.value;
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 if (Minecraft.getInstance().level == null) {
                     buffer.clear();
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     return;
                 }
                 if (buffer.isEmpty()) return;
@@ -34,7 +40,12 @@ public abstract class CommandBuffer {
                     return;
                 }
                 connection.sendCommand(command);
+                try {
+                    Thread.sleep(cd);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }, cd, cd);
+        }, 5, 5);
     }
 }

@@ -4,15 +4,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.JustHelperClient;
+import com.prikolz.justhelper.mixin.client.DisplayMixin;
 import com.prikolz.justhelper.mixin.client.TextDisplayMixin;
 import com.prikolz.justhelper.util.ComponentUtils;
 import com.prikolz.justhelper.util.FileUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import org.joml.Vector3f;
 
 import java.io.File;
 import java.io.FileReader;
@@ -27,6 +31,7 @@ public class FloorDescribes {
     public final String world;
     public final Map<Integer, String> describes = new HashMap<>();
     public final Map<Integer, Entity> entities = new HashMap<>();
+    public final Map<Integer, Component> render = new HashMap<>();
 
     private static File getConfigFile(String worldUUID) {
         return new File(FileUtils.getWorldFolder(worldUUID).getPath() + "/describes.json");
@@ -54,18 +59,25 @@ public class FloorDescribes {
         for (int floor : describes.keySet()) spawnDescribe(floor, level);
     }
 
-    public void spawnDescribe(int floor, Level level) {
+    public void spawnDescribe(int floor, ClientLevel level) {
         if (level == null) return;
         var text = ComponentUtils.minimessage(describes.get(floor));
-        if (text == null) return;
         var ent = entities.get(floor);
         if (ent != null) ent.remove(Entity.RemovalReason.KILLED);
+
         var textDisplay = new Display.TextDisplay(EntityType.TEXT_DISPLAY, level);
+
         textDisplay.getEntityData().set(TextDisplayMixin.getDataTextID(), text, true);
+        textDisplay.getEntityData().set(TextDisplayMixin.getDataBGColorID(), 0xFF5B5959, true);
+        textDisplay.getEntityData().set(DisplayMixin.getDataScaleID(), new Vector3f(10), true);
         BlockPos pos = new BlockPos(-1, 4 + (7 * (floor - 1)), 47);
-        textDisplay.setPos(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-        level.addFreshEntity(textDisplay);
+        textDisplay.setPos(pos.getX() + 0.5, pos.getY() - 1, pos.getZ() + 0.5);
+        textDisplay.setYRot(90);
+
+        level.addEntity(textDisplay);
+
         entities.put(floor, textDisplay);
+        render.put(floor, text);
     }
 
     public void describe(int floor, String text) {

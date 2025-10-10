@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.prikolz.justhelper.JustHelperClient;
+import com.prikolz.justhelper.dev.VariableType;
 import com.prikolz.justhelper.util.ComponentUtils;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
@@ -19,7 +20,9 @@ public class JustHelperCommands {
         register( new FindCommand() );
         register( new FoundListCommand() );
         register( new DescribeCommand() );
-        register( new VarLocalCommand() );
+        register( new VarCommand(VariableType.LOCAL) );
+        register( new VarCommand(VariableType.GAME) );
+        register( new VarCommand(VariableType.SAVE) );
     }
 
     public static void registerDispatcher(CommandDispatcher<ClientSuggestionProvider> dispatcher) {

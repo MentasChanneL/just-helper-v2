@@ -51,6 +51,20 @@ public class Config {
                 return result;
             }
     );
+    public Parameter<Boolean, JsonPrimitive> showPositionInCode = new Parameter<>(
+            true,
+            "show_position_in_code",
+            parameters,
+            (value, logger) -> new JsonPrimitive(value),
+            (json, logger) -> json.getAsBoolean()
+    );
+    public Parameter<Long, JsonPrimitive> commandBufferCD = new Parameter<>(
+            700L,
+            "command_sending_cooldown",
+            parameters,
+            (value, logger) -> new JsonPrimitive(value),
+            (json, logger) -> json.getAsLong()
+    );
 
     public List<String> read() {
         JustHelperClient.LOGGER.info("Reading config...");

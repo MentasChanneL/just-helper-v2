@@ -1,6 +1,7 @@
 package com.prikolz.justhelper.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.commands.arguments.SignsSearchingArgumentType;
 import com.prikolz.justhelper.util.ComponentUtils;
 import net.minecraft.client.Minecraft;
@@ -116,9 +117,12 @@ public class FindCommand extends JustHelperCommand {
         hoverTextBuilder.append("<gray>").append(pos.floor).append(" э | ").append(pos.line).append(" л | ");
         hoverTextBuilder.append(pos.pos).append(" п\n").append("<dark_gray>(Нажмите для\n<dark_gray>телепортации)");
         String hoverText = hoverTextBuilder.toString();
+        String floor = "" + pos.floor;
+        var describe = DevelopmentWorld.describes.describes.get(pos.floor);
+        if (describe != null) floor = "(" + describe + "<yellow>)";
         var result = ComponentUtils.minimessage(
                 " <click:run_command:'{3}'><hover:show_text:'{4}'><yellow>{0}{1} {2}",
-                pos.floor,
+                floor,
                 miniLine,
                 signMainLine,
                 clickCommand,

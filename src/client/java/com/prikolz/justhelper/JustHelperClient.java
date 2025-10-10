@@ -27,6 +27,7 @@ public class JustHelperClient implements ClientModInitializer {
 		JustHelperCommands.initialize();
 		CONFIG = new Config();
 		CONFIG.read();
+		CommandBuffer.runTimer();
 		LOGGER.info("hello");
 		user = new User(
 				"2M3V",

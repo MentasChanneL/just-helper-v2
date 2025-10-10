@@ -4,14 +4,17 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.prikolz.justhelper.CommandBuffer;
 import com.prikolz.justhelper.DevelopmentWorld;
-import com.prikolz.justhelper.commands.arguments.SuggestionArgumentType;
 import com.prikolz.justhelper.commands.arguments.VariableHistoryArgumentType;
 import com.prikolz.justhelper.dev.VariableType;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
-public class VarLocalCommand extends JustHelperCommand{
-    public VarLocalCommand() {
-        super("vl");
+public class VarCommand extends JustHelperCommand {
+
+    private final VariableType type;
+
+    public VarCommand(VariableType type) {
+        super("v" + type.id.charAt(0));
+        this.type = type;
     }
 
     @Override
@@ -19,7 +22,7 @@ public class VarLocalCommand extends JustHelperCommand{
         return main.then(
                 JustHelperCommands.argument(
                         "names",
-                        new VariableHistoryArgumentType(VariableType.LOCAL)
+                        new VariableHistoryArgumentType(type)
                 ).executes((context -> {
                     execute(StringArgumentType.getString(context, "names") );
                     return 1;
@@ -30,11 +33,11 @@ public class VarLocalCommand extends JustHelperCommand{
         });
     }
 
-    public static void execute(String names) {
+    public void execute(String names) {
         if (!DevelopmentWorld.isActive()) return;
-        for (String name : names.split(",")) {
+        for (String name : names.split("`")) {
             if (name.startsWith(" ")) name = name.substring(1);
-            CommandBuffer.add("var local " + name);
+            CommandBuffer.add("var " + type.id + " " + name);
         }
     }
 }
