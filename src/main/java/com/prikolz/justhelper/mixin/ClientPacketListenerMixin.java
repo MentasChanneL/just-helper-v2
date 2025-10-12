@@ -12,6 +12,7 @@ import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,6 +25,7 @@ public class ClientPacketListenerMixin {
     @Shadow
     private CommandDispatcher<ClientSuggestionProvider> commands;
 
+    @Final
     @Shadow
     private ClientSuggestionProvider suggestionsProvider;
 

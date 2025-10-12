@@ -11,16 +11,25 @@ base {
 }
 
 repositories {
-
+    mavenCentral()
+    maven {
+        name = "Fabric"
+        url = "https://maven.fabricmc.net/"
+    }
+    maven {
+        name = "Mojang"
+        url = "https://libraries.minecraft.net/"
+    }
+    mavenLocal()
 }
 
 loom {
-	splitEnvironmentSourceSets()
+	//splitEnvironmentSourceSets()
 
 	mods {
 		"just-helper" {
 			sourceSet sourceSets.main
-			sourceSet sourceSets.client
+			//sourceSet sourceSets.client
 		}
 	}
 
