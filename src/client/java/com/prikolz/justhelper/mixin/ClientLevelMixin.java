@@ -1,4 +1,4 @@
-package com.prikolz.justhelper.mixin.client;
+package com.prikolz.justhelper.mixin;
 
 import com.prikolz.justhelper.DevelopmentWorld;
 import net.minecraft.client.multiplayer.ClientLevel;

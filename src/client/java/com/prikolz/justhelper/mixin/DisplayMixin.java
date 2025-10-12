@@ -1,4 +1,4 @@
-package com.prikolz.justhelper.mixin.client;
+package com.prikolz.justhelper.mixin;
 
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.world.entity.Display;
@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Display.class)
 public interface DisplayMixin {
-    @Accessor("DATA_SCALE_ID")
-    static EntityDataAccessor<Vector3f> getDataScaleID() { throw new AssertionError(); }
+    @Accessor
+    static EntityDataAccessor<Vector3f> getDATA_SCALE_ID() { throw new AssertionError(); }
 }

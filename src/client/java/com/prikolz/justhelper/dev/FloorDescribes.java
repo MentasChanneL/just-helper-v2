@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.JustHelperClient;
-import com.prikolz.justhelper.mixin.client.DisplayMixin;
-import com.prikolz.justhelper.mixin.client.TextDisplayMixin;
+import com.prikolz.justhelper.mixin.DisplayMixin;
+import com.prikolz.justhelper.mixin.TextDisplayMixin;
 import com.prikolz.justhelper.util.ComponentUtils;
 import com.prikolz.justhelper.util.FileUtils;
 import net.minecraft.client.Minecraft;
@@ -68,7 +68,7 @@ public class FloorDescribes {
 
         textDisplay.getEntityData().set(TextDisplayMixin.getDataTextID(), text, true);
         textDisplay.getEntityData().set(TextDisplayMixin.getDataBGColorID(), 0xFF5B5959, true);
-        textDisplay.getEntityData().set(DisplayMixin.getDataScaleID(), new Vector3f(10), true);
+        textDisplay.getEntityData().set(DisplayMixin.getDATA_SCALE_ID(), new Vector3f(10), true);
         BlockPos pos = new BlockPos(-1, 4 + (7 * (floor - 1)), 47);
         textDisplay.setPos(pos.getX() + 0.5, pos.getY() - 1, pos.getZ() + 0.5);
         textDisplay.setYRot(90);

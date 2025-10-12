@@ -1,4 +1,4 @@
-package com.prikolz.justhelper.mixin.client;
+package com.prikolz.justhelper.mixin;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;

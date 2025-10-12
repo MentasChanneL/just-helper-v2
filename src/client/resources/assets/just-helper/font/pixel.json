@@ -3,19 +3,20 @@
         {
             "type": "bitmap",
             "file": "just-helper:font/pixels.png",
-            "ascent": 7,
+            "ascent": 8,
+            "height": 8,
             "chars": [
-                "abcd",
-                "efgh",
-                "ijkl",
-                "mnop"
+                "?01",
+                "234",
+                "567"
             ]
         },
         {
             "type": "space",
             "advances": {
-                ".": -7,
-                "+": -8
+                ".": -1,
+                "+": -8,
+		"-": 9
             }
         }
     ]

@@ -20,11 +20,7 @@
 		]
 	},
 	"mixins": [
-		"just-helper.mixins.json",
-		{
-			"config": "just-helper.client.mixins.json",
-			"environment": "client"
-		}
+      "just-helper.client.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.15.0",

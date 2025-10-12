@@ -2,7 +2,7 @@ package com.prikolz.justhelper.component;
 
 import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.JustHelperClient;
-import com.prikolz.justhelper.mixin.client.SpriteContentsMixin;
+import com.prikolz.justhelper.mixin.SpriteContentsMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;

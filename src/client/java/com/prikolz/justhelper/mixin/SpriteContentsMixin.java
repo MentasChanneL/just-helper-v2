@@ -1,4 +1,4 @@
-package com.prikolz.justhelper.mixin.client;
+package com.prikolz.justhelper.mixin;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.renderer.texture.SpriteContents;

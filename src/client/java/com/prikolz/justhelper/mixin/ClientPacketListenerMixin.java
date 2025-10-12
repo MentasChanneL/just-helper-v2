@@ -1,4 +1,4 @@
-package com.prikolz.justhelper.mixin.client;
+package com.prikolz.justhelper.mixin;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.prikolz.justhelper.DevelopmentWorld;
