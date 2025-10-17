@@ -29,6 +29,7 @@ public class FindCommand extends JustHelperCommand {
 
     public FindCommand() {
         super("find");
+        this.description = "[Параметры поиска] <gray>- Поиск блоков кода по содержанию табличек. Отображает все совпадения в чате. Пример использования: /find событие. Используйте в начале параметров '!', чтобы включить расширенный поиск.";
     }
 
     @Override

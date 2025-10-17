@@ -4,12 +4,12 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.prikolz.justhelper.DevelopmentWorld;
-import com.prikolz.justhelper.util.ComponentUtils;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
 public class DescribeCommand extends JustHelperCommand {
     public DescribeCommand() {
         super("describe");
+        this.description = "[Этаж] [Текст] <gray>- Добавляет подпись(название) этажу. Название будет отображается в мире через визуализатор текста, а так-же в командах /find и /floor.";
     }
 
     @Override
@@ -31,7 +31,14 @@ public class DescribeCommand extends JustHelperCommand {
         if (!DevelopmentWorld.isActive()) return JustHelperCommand.feedback("<yellow>Доступно только в мире кода!");
         String text = DevelopmentWorld.describes.describes.get(floor);
         if (text == null) return JustHelperCommand.feedback("<dark_gray>Описание этажа {0} не найдено", floor);
-        JustHelperCommand.feedback("<yellow>{0}{2}<dark_gray> |> <white>{1}", floor, text, floor < 10 ? " " : "");
+        JustHelperCommand.feedback(
+                "<yellow>{0}{2}<dark_gray> |> <click:suggest_command:'{3}'><hover:show_text:'{4}'><white>{1}",
+                floor,
+                text,
+                floor < 10 ? " " : "",
+                "/describe " + floor + " " + text,
+                text.replaceAll("<", "\\\\<")
+        );
         return 1;
     }
 

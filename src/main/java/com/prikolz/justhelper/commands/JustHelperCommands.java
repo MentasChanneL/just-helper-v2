@@ -10,21 +10,26 @@ import com.prikolz.justhelper.dev.VariableType;
 import com.prikolz.justhelper.util.ComponentUtils;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class JustHelperCommands {
 
-    public static HashMap<String, JustHelperCommand> commands = new HashMap<>();
+    public static final HashMap<String, JustHelperCommand> commands = new HashMap<>();
+    public static final List<JustHelperCommand> registerOrder = new ArrayList<>();
 
     public static void initialize() {
+        register( new MainModCommand() );
         register( new FindCommand() );
         register( new FoundListCommand() );
+        register( new FloorCommand() );
         register( new DescribeCommand() );
         register( new VarCommand(VariableType.LOCAL) );
         register( new VarCommand(VariableType.GAME) );
         register( new VarCommand(VariableType.SAVE) );
-        register( new GetDataTypeCommand("n", " ") );
-        register( new GetDataTypeCommand("t", null) );
+        register( new GetDataTypeCommand("n", " ", "num") );
+        register( new GetDataTypeCommand("t", null, "txt") );
     }
 
     public static void registerDispatcher(CommandDispatcher<ClientSuggestionProvider> dispatcher) {
@@ -36,7 +41,10 @@ public class JustHelperCommands {
         JustHelperClient.LOGGER.info("Registered {} commands", commands.size());
     }
 
-    private static void register(JustHelperCommand command) { commands.put(command.id, command); }
+    private static void register(JustHelperCommand command) {
+        registerOrder.add(command);
+        commands.put(command.id, command);
+    }
 
     public static LiteralArgumentBuilder<ClientSuggestionProvider> literal(String string) {
         return LiteralArgumentBuilder.literal(string);
@@ -52,7 +60,7 @@ public class JustHelperCommands {
             CommandDispatcher<ClientSuggestionProvider> dispatcher
     ) {
         for (JustHelperCommand helperCommand : commands.values()) {
-            if (command.startsWith(helperCommand.name)) {
+            if (command.startsWith(helperCommand.name + " ") || command.equals(helperCommand.name)) {
                 try {
                     ParseResults<ClientSuggestionProvider> parse = dispatcher.parse(command, provider);
                     dispatcher.execute(parse);

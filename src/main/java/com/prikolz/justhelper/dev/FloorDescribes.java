@@ -31,6 +31,7 @@ public class FloorDescribes {
     public final Map<Integer, String> describes = new HashMap<>();
     public final Map<Integer, Entity> entities = new HashMap<>();
     public final Map<Integer, Component> render = new HashMap<>();
+    public final Map<Integer, String> plainDescribes = new HashMap<>();
 
     private static File getConfigFile(String worldUUID) {
         return new File(FileUtils.getWorldFolder(worldUUID).getPath() + "/describes.json");
@@ -46,6 +47,7 @@ public class FloorDescribes {
                 var floor = Integer.parseInt(key);
                 var value = json.get(key);
                 describes.put(floor, value.getAsString());
+                plainDescribes.put(floor, ComponentUtils.minimessage(value.getAsString()).getString());
             }
             JustHelperClient.LOGGER.info("{} floor describes", describes.size());
         } catch (Throwable t) {
@@ -84,6 +86,7 @@ public class FloorDescribes {
         var level = Minecraft.getInstance().level;
         if (level == null) return;
         describes.put(floor, floor + " " + text);
+        plainDescribes.put(floor, ComponentUtils.minimessage(floor + " " + text).getString());
         File configFile = getConfigFile(world);
         var json = new JsonObject();
         describes.forEach((k, v) -> {

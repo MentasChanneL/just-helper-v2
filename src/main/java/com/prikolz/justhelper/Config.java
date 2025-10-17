@@ -9,7 +9,10 @@ import net.minecraft.world.level.block.Blocks;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,22 +75,14 @@ public class Config {
         File configFile = new File(FileUtils.getConfigFolder().getPath() + "/config.json");
         if (!configFile.exists()) {
             logger.log("[W] Config file not found");
-            try {
-                FileUtil.createDirectoriesSafe( FileUtils.getConfigFolder().toPath() );
-                JsonObject json = new JsonObject();
-                for (var parameter : parameters) parameter.write(json, logger);
-                Files.writeString(configFile.toPath(), GSON.toJson(json));
-                logger.log("[I] Created new config file");
-            } catch (Throwable t) {
-                logger.log("[E] Failed to create config file: " + t.getMessage());
-            }
+            printLogs(reset());
             printLogs(logger);
             return logger.logs;
         }
         try {
             JsonObject json = GSON.fromJson(GSON.newJsonReader(new FileReader(configFile)), JsonObject.class);
             for (var parameter : parameters) parameter.read(json, logger);
-            if (logger.configWasUpdated) Files.writeString(configFile.toPath(), GSON.toJson(json));
+            if (logger.configWasUpdated) Files.writeString(configFile.toPath(), GSON.toJson(json), StandardCharsets.UTF_8);
         } catch (Throwable t) {
             logger.log("[E] Fail to read config file: " + t.getMessage());
         }
@@ -95,13 +90,59 @@ public class Config {
         return logger.logs;
     }
 
-    private static void printLogs(ConfigLogger logger) {
+    public static void printLogs(ConfigLogger logger) {
         for (String line : logger.logs) {
             if (line.startsWith("[W]")) {
                 JustHelperClient.LOGGER.warn(line);
             } else if (line.startsWith("[E]")) {
                 JustHelperClient.LOGGER.error(line);
             } else JustHelperClient.LOGGER.info(line);
+        }
+    }
+
+    public static String getJSON() {
+        try {
+            return Files.readString( new File(FileUtils.getConfigFolder().getPath() + "/config.json").toPath() );
+        } catch (Throwable t) {
+            return "Error: " + t.getMessage();
+        }
+    }
+
+    public ConfigLogger reset() {
+        var result = new ConfigLogger();
+        try {
+            File configFile = new File(FileUtils.getConfigFolder().getPath() + "/config.json");
+            FileUtil.createDirectoriesSafe(FileUtils.getConfigFolder().toPath());
+            JsonObject json = new JsonObject();
+            for (var parameter : parameters) parameter.writeDefault(json, result);
+            Files.writeString(configFile.toPath(), GSON.toJson(json));
+            result.log("[I] Created new config file");
+        } catch (Throwable t) {
+            result.log("[E] Config reset error: " + t.getMessage());
+        }
+        return result;
+    }
+
+    public static void saveConfig(String json) {
+        try {
+            File configFile = new File(FileUtils.getConfigFolder().getPath() + "/config.json");
+            FileUtil.createDirectoriesSafe(FileUtils.getConfigFolder().toPath());
+            Files.writeString(configFile.toPath(), json);
+            JustHelperClient.LOGGER.info("Config saved");
+        } catch (Throwable t) {
+            JustHelperClient.LOGGER.error("Write config file error: {}", t.getMessage());
+        }
+    }
+
+    public static void openConfigFolder() {
+        try {
+            var way = FileUtils.getConfigFolder().getPath();
+            ProcessBuilder processBuilder = new ProcessBuilder("explorer.exe", way);
+            processBuilder.redirectErrorStream(true);
+            Process process = processBuilder.start();
+            process.waitFor();
+        } catch (Throwable t) {
+            JustHelperClient.LOGGER.error("Fail to open justhelper folder: " + t.getMessage());
         }
     }
 
@@ -169,10 +210,17 @@ public class Config {
                 value = defaultValue;
                 logger.log("[W] Failed to read parameter '" + jsonKey + "'");
             }
-            return;
         }
 
         public void write(JsonObject json, ConfigLogger logger) {
+            write(json, logger, this.value);
+        }
+
+        public void writeDefault(JsonObject json, ConfigLogger logger) {
+            write(json, logger, this.defaultValue);
+        }
+
+        private void write(JsonObject json, ConfigLogger logger, T value) {
             try {
                 A el = jsonResolver.resolve(value, logger);
                 json.add(jsonKey, el);

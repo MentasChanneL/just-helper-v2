@@ -11,10 +11,12 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 public class VarCommand extends JustHelperCommand {
 
     private final VariableType type;
+    private final String split = ";";
 
     public VarCommand(VariableType type) {
         super("v" + type.id.charAt(0));
         this.type = type;
+        this.description = "[Названия] <gray>- Получение переменных типа " + type.id + ". Названия разделяются через '" + split + "'";
     }
 
     @Override
@@ -35,7 +37,7 @@ public class VarCommand extends JustHelperCommand {
 
     public void execute(String names) {
         if (!DevelopmentWorld.isActive()) return;
-        for (String name : names.split("`")) {
+        for (String name : names.split(split)) {
             if (name.startsWith(" ")) name = name.substring(1);
             CommandBuffer.add("var " + type.id + " " + name);
         }

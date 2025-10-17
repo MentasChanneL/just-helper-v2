@@ -24,10 +24,8 @@ public abstract class BlockStateComponent {
     public static Component create(BlockState block) {
         var bl = block.getBlock();
         var result = (MutableComponent) processed.get( bl );
-        if (result != null) return result;
-        result = Component.empty().setStyle(
-                Style.EMPTY.withHoverEvent(new HoverEvent.ShowText( Config.get().codeBlockNames.value.getName(bl) ))
-        );
+        if (result != null) return addStyle(result, bl);
+        result = Component.empty();
         var render = Minecraft.getInstance().getBlockRenderer();
         try {
             var sprite = (SpriteContentsMixin) render.getBlockModel(block).particleIcon().contents();
@@ -74,7 +72,13 @@ public abstract class BlockStateComponent {
             JustHelperClient.LOGGER.warn("Impossible create block component for {}", block);
         }
         result.append(Component.literal("-").setStyle(Style.EMPTY.withFont(FONT)));
-        return result;
+        return addStyle(result, bl);
+    }
+
+    private static Component addStyle(Component blockComponent, Block bl) {
+        return Component.empty().setStyle(
+                Style.EMPTY.withHoverEvent(new HoverEvent.ShowText( Config.get().codeBlockNames.value.getName(bl) ))
+        ).append(blockComponent);
     }
 
     private static Component entry(int line, int color) {
@@ -136,7 +140,6 @@ public abstract class BlockStateComponent {
         int r2 = (color2 >> 16) & 0xFF;
         int g2 = (color2 >> 8) & 0xFF;
         int b2 = color2 & 0xFF;
-
 
         int a = (int) (a1 + (a2 - a1) * fraction);
         int r = (int) (r1 + (r2 - r1) * fraction);

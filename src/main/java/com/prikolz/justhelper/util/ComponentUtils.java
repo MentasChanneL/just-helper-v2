@@ -1,6 +1,5 @@
 package com.prikolz.justhelper.util;
 
-import com.google.gson.Gson;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.prikolz.justhelper.JustHelperClient;
@@ -34,5 +33,21 @@ public class ComponentUtils {
             JustHelperClient.LOGGER.error("Send minimessage error: {}", t.getMessage());
         }
         return Component.literal("[ERROR | CHECK LOGS]");
+    }
+
+    public static String splitByWord(String string, int charCount) {
+        if (string == null) return null;
+        var builder = new StringBuilder();
+        var i = 0;
+        for (char c : string.toCharArray()) {
+            if (i >= charCount && (c == ' ' || c == '\n')) {
+                builder.append('\n');
+                i = 0;
+                continue;
+            }
+            builder.append(c);
+            i++;
+        }
+        return builder.toString();
     }
 }

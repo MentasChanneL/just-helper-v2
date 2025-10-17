@@ -1,17 +1,19 @@
 {
-	"required": true,
-	"package": "com.prikolz.justhelper.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"client": [
-		"MinecraftMixin",
-		"ClientPacketListenerMixin",
-		"ClientLevelMixin",
-		"SpriteContentsMixin",
-		"TextDisplayMixin",
-		"DisplayMixin",
-		"GUIMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
+  "required": true,
+  "package": "com.prikolz.justhelper.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ClientLevelMixin",
+    "ClientPacketListenerMixin",
+    "DisplayMixin",
+    "GUIMixin",
+    "MinecraftMixin",
+    "MultiLineEditBoxMixin",
+    "MultilineEditBoxMixin",
+    "SpriteContentsMixin",
+    "TextDisplayMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
 	}
 }

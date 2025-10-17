@@ -20,8 +20,12 @@ public class BlockCodePos {
         blockPos = new BlockPos(x, y, z);
     }
 
+    public static int getX(int pos) { return 2 * pos + 2; }
+    public static int getY(int floor) { return 7 * floor - 2; }
+    public static int getZ(int line) { return line * 4; }
+
     public BlockPos toPos() {
-        return new BlockPos(2 * pos + 2, 7 * floor - 2, line * 4);
+        return new BlockPos(getX(pos), getY(floor) , getZ(line));
     }
 
     public Component getBlockComponent() {
