@@ -6,7 +6,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.prikolz.justhelper.JustHelperClient;
-import com.prikolz.justhelper.dev.VariableType;
+import com.prikolz.justhelper.dev.values.Variable;
 import com.prikolz.justhelper.util.ComponentUtils;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
@@ -25,11 +25,14 @@ public class JustHelperCommands {
         register( new FoundListCommand() );
         register( new FloorCommand() );
         register( new DescribeCommand() );
-        register( new VarCommand(VariableType.LOCAL) );
-        register( new VarCommand(VariableType.GAME) );
-        register( new VarCommand(VariableType.SAVE) );
+        register( new ItemEditorCommand() );
+        register( new VarCommand(Variable.Scope.LOCAL) );
+        register( new VarCommand(Variable.Scope.GAME) );
+        register( new VarCommand(Variable.Scope.SAVE) );
         register( new GetDataTypeCommand("n", " ", "num") );
         register( new GetDataTypeCommand("t", null, "txt") );
+        register( new ZeroCommand() );
+        register( new StupidCommand() );
     }
 
     public static void registerDispatcher(CommandDispatcher<ClientSuggestionProvider> dispatcher) {
@@ -68,9 +71,19 @@ public class JustHelperCommands {
                     JustHelperCommand.feedback(
                        ComponentUtils.minimessage("<red>[Just Helper] <tr:command.exception:'" + t.getMessage() + "'>")
                     );
+                    JustHelperClient.LOGGER.printStackTrace(t);
                 }
                 return true;
             }
+        }
+        return false;
+    }
+
+    public static boolean isJustHelperCommand(String string) {
+        if (!string.startsWith("/")) return false;
+        string = string.substring(1);
+        for (JustHelperCommand helperCommand : commands.values()) {
+            if (string.startsWith(helperCommand.name + " ") || string.equals(helperCommand.name)) return true;
         }
         return false;
     }

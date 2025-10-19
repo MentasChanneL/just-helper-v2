@@ -5,15 +5,15 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.prikolz.justhelper.CommandBuffer;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.commands.arguments.VariableHistoryArgumentType;
-import com.prikolz.justhelper.dev.VariableType;
+import com.prikolz.justhelper.dev.values.Variable;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
 public class VarCommand extends JustHelperCommand {
 
-    private final VariableType type;
+    private final Variable.Scope type;
     private final String split = ";";
 
-    public VarCommand(VariableType type) {
+    public VarCommand(Variable.Scope type) {
         super("v" + type.id.charAt(0));
         this.type = type;
         this.description = "[Названия] <gray>- Получение переменных типа " + type.id + ". Названия разделяются через '" + split + "'";

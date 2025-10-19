@@ -2,6 +2,7 @@ package com.prikolz.justhelper.dev;
 
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.JustHelperClient;
+import com.prikolz.justhelper.dev.values.Variable;
 import com.prikolz.justhelper.util.FileUtils;
 import com.prikolz.justhelper.util.NBTUtils;
 import net.minecraft.core.component.DataComponents;
@@ -15,12 +16,12 @@ import java.util.Set;
 public class VariablesHistory {
 
     public Set<String> history;
-    public final VariableType type;
+    public final Variable.Scope type;
     public final String worldUUID;
     public final File file;
     public boolean isValid = true;
 
-    public VariablesHistory(String worldUUID, VariableType type) {
+    public VariablesHistory(String worldUUID, Variable.Scope type) {
         this.type = type;
         this.worldUUID = worldUUID;
         this.file = getFile(worldUUID, type.id + "_history.txt");
@@ -66,18 +67,5 @@ public class VariablesHistory {
         } catch (Throwable t) {
             JustHelperClient.LOGGER.error("File '{}' saving error: {}", file.getPath(), t.getMessage());
         }
-    }
-
-    public static void handleItemStack(ItemStack item) {
-        if (!DevelopmentWorld.isActive()) return;
-        var customData = item.get(DataComponents.CUSTOM_DATA);
-        if (customData == null) return;
-        var valueTag = NBTUtils.get(customData.copyTag(), "creative_plus.value");
-        if (!(valueTag instanceof CompoundTag value)) return;
-        var type = value.getString("type").orElse(null);
-        var scope = VariableType.getByID( value.getString("scope").orElse(null) );
-        var name = value.getString("variable").orElse(null);
-        if (scope == null || name == null || type == null || !type.equals("variable")) return;
-        DevelopmentWorld.addToHistory(scope, name);
     }
 }

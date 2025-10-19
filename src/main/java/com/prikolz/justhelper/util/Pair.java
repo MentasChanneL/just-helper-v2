@@ -1,14 +1,16 @@
 package com.prikolz.justhelper.util;
 
-public class Triple<A, B, C> {
+public class Pair<A, B> {
 
     public final A first;
     public final B second;
-    public final C third;
 
-    public Triple(A first, B second, C third) {
+    public Pair(A first, B second) {
         this.first = first;
         this.second = second;
-        this.third = third;
+    }
+
+    public static <A, B> Pair<A, B> of(A a, B b) {
+        return new Pair<>(a, b);
     }
 }

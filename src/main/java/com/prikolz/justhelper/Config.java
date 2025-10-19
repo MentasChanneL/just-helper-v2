@@ -1,18 +1,19 @@
 package com.prikolz.justhelper;
 
 import com.google.gson.*;
+import com.prikolz.justhelper.config.ChatParameters;
 import com.prikolz.justhelper.config.CodeBlockNames;
 import com.prikolz.justhelper.config.CommandParameters;
+import com.prikolz.justhelper.config.ValueFormats;
+import com.prikolz.justhelper.dev.values.DevValueRegistry;
 import com.prikolz.justhelper.util.FileUtils;
 import net.minecraft.FileUtil;
 import net.minecraft.world.level.block.Blocks;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,14 +44,20 @@ public class Config {
                 return result;
             }
     );
-    public Parameter<CommandParameters, JsonObject> commandParameters = new Parameter<>(
-            new CommandParameters(),
-            "commands",
+    public Parameter<ChatParameters, JsonObject> chatParameters = new Parameter<>(
+            new ChatParameters(),
+            "chat_parameters",
             parameters,
-            CommandParameters::write,
+            (value, logger) -> {
+                var result = new JsonObject();
+                value.showLineLimit.write(result, logger);
+                value.enableMarkers.write(result, logger);
+                return result;
+            },
             (json, logger) -> {
-                var result = new CommandParameters();
-                result.read(json, logger);
+                var result = new ChatParameters();
+                result.showLineLimit.read(json, logger);
+                result.enableMarkers.read(json, logger);
                 return result;
             }
     );
@@ -67,6 +74,39 @@ public class Config {
             parameters,
             (value, logger) -> new JsonPrimitive(value),
             (json, logger) -> json.getAsLong()
+    );
+    public Parameter<Boolean, JsonPrimitive> teleportAnchor = new Parameter<>(
+            true,
+            "enable_teleport_anchor",
+            parameters,
+            (value, logger) -> new JsonPrimitive(value),
+            (json, logger) -> json.getAsBoolean()
+    );
+    public Parameter<ValueFormats, JsonObject> valueFormats = new Parameter<>(
+            defaultValueFormats(),
+            "value_string_formats",
+            parameters,
+            (value, logger) -> {
+                var result = new JsonObject();
+                value.formats().forEach((k, v) -> result.add(k, new JsonPrimitive(v)));
+                return result;
+            },
+            (json, logger) -> {
+                var map = new HashMap<String, String>();
+                for (String key : json.keySet()) map.put(key, json.getAsJsonPrimitive(key).getAsString());
+                return new ValueFormats(map);
+            }
+    );
+    public Parameter<CommandParameters, JsonObject> commandParameters = new Parameter<>(
+            new CommandParameters(),
+            "commands",
+            parameters,
+            CommandParameters::write,
+            (json, logger) -> {
+                var result = new CommandParameters();
+                result.read(json, logger);
+                return result;
+            }
     );
 
     public List<String> read() {
@@ -171,6 +211,12 @@ public class Config {
         result.add(Blocks.DARK_PRISMARINE, "<dark_purple>Контроллер");
 
         return result;
+    }
+
+    private static ValueFormats defaultValueFormats() {
+        var map = new HashMap<String, String>();
+
+        return new ValueFormats(map);
     }
 
     public static class Parameter<T, A extends JsonElement> {

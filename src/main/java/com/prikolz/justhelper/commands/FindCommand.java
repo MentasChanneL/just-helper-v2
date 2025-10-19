@@ -110,14 +110,7 @@ public class FindCommand extends JustHelperCommand {
         if (info.mainLine() != 0) {
             signMainLine = "<gold>● <gray>" + info.lines()[0] + "<gold>/<white>" + info.lines()[info.mainLine()].replaceAll(lastPrompt, "<yellow>" + lastPrompt + "<white>");
         }
-        var hoverTextBuilder = new StringBuilder("<white>");
-        for (String line: info.lines()) {
-            hoverTextBuilder.append(line.replaceAll(lastPrompt, "<yellow>" + lastPrompt + "<white>")).append('\n');
-        }
-        hoverTextBuilder.append("<strikethrough:true><gray>                      \n<strikethrough:false>");
-        hoverTextBuilder.append("<gray>").append(pos.floor).append(" э | ").append(pos.line).append(" л | ");
-        hoverTextBuilder.append(pos.pos).append(" п\n").append("<dark_gray>(Нажмите для\n<dark_gray>телепортации)");
-        String hoverText = hoverTextBuilder.toString();
+        String hoverText = info.createHoverInfo(lastPrompt);
         String floor = "" + pos.floor;
         var describe = DevelopmentWorld.describes.describes.get(pos.floor);
         if (describe != null) floor = "(" + describe + "<yellow>)";

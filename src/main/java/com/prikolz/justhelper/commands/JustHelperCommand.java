@@ -33,6 +33,11 @@ public abstract class JustHelperCommand {
         return feedback(ComponentUtils.minimessage(m, placeholders));
     }
 
+    public static int feedback(int value, String m, Object ... placeholders) {
+        feedback(ComponentUtils.minimessage(m, placeholders));
+        return value;
+    }
+
     public static int feedback(Component message) {
         Minecraft.getInstance().player.displayClientMessage(message, false);
         return 0;

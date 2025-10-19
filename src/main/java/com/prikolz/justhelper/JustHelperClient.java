@@ -7,6 +7,9 @@ import net.fabricmc.api.ClientModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.text.SimpleDateFormat;
@@ -30,11 +33,12 @@ public class JustHelperClient implements ClientModInitializer {
 		LOGGER.info("hello");
 	}
 
-    public static class JustHelperLogger {
+    public static class JustHelperLogger extends OutputStream {
 
         public static final int CACHE_LIMIT = 50;
 
         public Logger logger;
+        public StringBuilder outputBuffer = new StringBuilder();
         public List<String> cache = new ArrayList<>();
 
         public JustHelperLogger(Logger logger) {
@@ -51,6 +55,16 @@ public class JustHelperClient implements ClientModInitializer {
 
         public void error(String msg, Object ... placeholders) {
             log(LogType.ERROR, msg, placeholders);
+        }
+
+        public void printStackTrace(Throwable throwable) { this.printStackTrace(throwable, LogType.ERROR); }
+
+        public void printStackTrace(Throwable throwable, LogType type) {
+            outputBuffer = new StringBuilder();
+            var printStream = new PrintStream(this);
+            throwable.printStackTrace(printStream);
+            printStream.close();
+            log(type, outputBuffer.toString());
         }
 
         public String unionCache() {
@@ -73,7 +87,12 @@ public class JustHelperClient implements ClientModInitializer {
             }
         }
 
-        enum LogType {
+        @Override
+        public void write(int b) throws IOException {
+            outputBuffer.append((char) b);
+        }
+
+        public enum LogType {
             INFO("[INFO]"), WARN("§e[WARN]§r"), ERROR("§c[ERROR]§r");
 
             public final String prefix;
