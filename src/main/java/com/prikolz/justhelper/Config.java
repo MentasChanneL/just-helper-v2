@@ -5,7 +5,6 @@ import com.prikolz.justhelper.config.ChatParameters;
 import com.prikolz.justhelper.config.CodeBlockNames;
 import com.prikolz.justhelper.config.CommandParameters;
 import com.prikolz.justhelper.config.ValueFormats;
-import com.prikolz.justhelper.dev.values.DevValueRegistry;
 import com.prikolz.justhelper.util.FileUtils;
 import net.minecraft.FileUtil;
 import net.minecraft.world.level.block.Blocks;
@@ -241,6 +240,7 @@ public class Config {
             if (parameters != null) parameters.add(this);
         }
 
+        @SuppressWarnings("unchecked")
         public void read(JsonObject json, ConfigLogger logger) {
             if (!json.has(jsonKey)) {
                 logger.log("[W] Parameter '" + jsonKey + "' not found. Config was updated.");

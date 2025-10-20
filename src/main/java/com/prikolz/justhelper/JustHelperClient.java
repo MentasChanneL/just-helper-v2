@@ -3,6 +3,7 @@ package com.prikolz.justhelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.prikolz.justhelper.commands.JustHelperCommands;
+import com.prikolz.justhelper.dev.values.DevValueRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class JustHelperClient implements ClientModInitializer {
 		CONFIG = new Config();
 		CONFIG.read();
 		CommandBuffer.runTimer();
+        DevValueRegistry.registerAll();
 		LOGGER.info("hello");
 	}
 

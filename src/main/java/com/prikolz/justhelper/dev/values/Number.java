@@ -2,7 +2,6 @@ package com.prikolz.justhelper.dev.values;
 
 import com.prikolz.justhelper.util.Pair;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.List;
 public class Number extends DevValue {
 
     public static final String type = "number";
-    public static final DevValueRegistry<Number> registry = DevValueRegistry.register(
+    public static final DevValueRegistry<Number> registry = DevValueRegistry.create(
             Number.type,
             nbt -> {
                 var valueTag = nbt.get("number");

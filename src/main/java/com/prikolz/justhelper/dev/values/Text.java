@@ -9,7 +9,7 @@ import java.util.List;
 public class Text extends DevValue {
 
     public static final String type = "text";
-    public static DevValueRegistry<Text> registry = DevValueRegistry.register(
+    public static DevValueRegistry<Text> registry = DevValueRegistry.create(
             Text.type,
             nbt -> {
                 var parsing = ParsingType.getByID(nbt.getString("parsing").orElse(null));

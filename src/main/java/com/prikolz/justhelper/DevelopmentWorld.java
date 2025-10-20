@@ -1,10 +1,10 @@
 package com.prikolz.justhelper;
 
+import com.prikolz.justhelper.commands.FindCommand;
 import com.prikolz.justhelper.commands.JustHelperCommand;
 import com.prikolz.justhelper.commands.arguments.SignsSearchingArgumentType;
 import com.prikolz.justhelper.dev.*;
 import com.prikolz.justhelper.dev.values.DevValueRegistry;
-import com.prikolz.justhelper.dev.values.Dictionary;
 import com.prikolz.justhelper.dev.values.Variable;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -75,8 +75,7 @@ public abstract class DevelopmentWorld {
         if (!isActive()) return;
         var value = DevValueRegistry.fromItem(item);
         if (value == null) return;
-        if (value instanceof Variable variable) addToHistory(variable.scope, variable.variable);
-        if (value instanceof Dictionary dictionary) dictionary.addLore(item);
+        value.handleItemStack(item);
     }
 
     public static void addToHistory(Variable.Scope type, String name) {
@@ -101,6 +100,8 @@ public abstract class DevelopmentWorld {
         var level = Minecraft.getInstance().level;
         if (player == null || level == null) return;
         var pos = new BlockCodePos(player.getBlockX(), player.getBlockY(), player.getBlockY());
+        Minecraft.getInstance().schedule(() -> FindCommand.findEach(pos));
+        if (!Config.get().teleportAnchor.value) return;
         var signInfo = SignInfo.getSign(pos);
         String hover;
         String display;
@@ -112,7 +113,9 @@ public abstract class DevelopmentWorld {
             display = line;
         } else {
             hover = "<gray>Нажмите для телепортации";
-            display = "<yellow>" + pos.floor + " э<white>/<yellow>" + pos.line + " л<white>/<yellow>" + pos.pos + " п";
+            var floor = describes.describes.get(pos.floor);
+            if (floor == null) floor = pos.floor + " э";
+            display = "<yellow>" + floor + "<white>/<yellow>" + pos.line + " л<white>/<yellow>" + pos.pos + " п";
         }
         JustHelperCommand.feedback(
                 "<click:run_command:'/tp {1} {2} {3}'><hover:show_text:'{0}'><aqua>⚓ <white>Вернутся на <aqua>>> {4} <aqua><<",

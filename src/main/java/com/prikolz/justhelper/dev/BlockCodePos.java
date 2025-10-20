@@ -35,4 +35,10 @@ public class BlockCodePos {
         return BlockStateComponent.create(state);
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof BlockCodePos codeBlockPos)) return false;
+        return codeBlockPos.floor == this.floor && codeBlockPos.line == this.line && codeBlockPos.pos == this.pos;
+    }
+
 }

@@ -9,7 +9,7 @@ import java.util.List;
 public class Location extends DevValue {
 
     public static final String type = "location";
-    public static final DevValueRegistry<Location> registry = DevValueRegistry.register(
+    public static final DevValueRegistry<Location> registry = DevValueRegistry.create(
             Location.type,
             nbt -> {
                 var x = nbt.getDouble("x").orElse(0.0);

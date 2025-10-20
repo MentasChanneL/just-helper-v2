@@ -18,7 +18,7 @@ import java.util.List;
 public class Dictionary extends DevValue {
 
     public static final String type = "map";
-    public static final DevValueRegistry<Dictionary> registry = DevValueRegistry.register(
+    public static final DevValueRegistry<Dictionary> registry = DevValueRegistry.create(
             Dictionary.type,
             nbt -> {
                 var values = nbt.getCompound("values").orElse(null);
@@ -46,13 +46,13 @@ public class Dictionary extends DevValue {
                 return new Dictionary(listValues);
             },
             (value, nbt) -> {
-                CompoundTag values = new CompoundTag();
-                int i = 0;
-                for (var entry : value.values) {
-                    var tag = new CompoundTag();
-                    tag.put("type", StringTag.valueOf(entry.first.type));
-
-                }
+                throw new RuntimeException("FIX IT");
+                //CompoundTag values = new CompoundTag();
+                //int i = 0;
+                //for (var entry : value.values) {
+                //    var tag = new CompoundTag();
+                //    tag.put("type", StringTag.valueOf(entry.first.type));
+                //}
             }
     );
 
@@ -63,7 +63,8 @@ public class Dictionary extends DevValue {
         this.values = values;
     }
 
-    public void addLore(ItemStack item) {
+    @Override
+    public void handleItemStack(ItemStack item) {
         var lines = new ArrayList<Component>();
         ItemLore lore = item.get(DataComponents.LORE);
         if (lore != null) lines.addAll(lore.lines());
@@ -72,9 +73,9 @@ public class Dictionary extends DevValue {
         for (var entry : values) {
             var key = entry.first.getStringFormat();
             var value = entry.second.getStringFormat();
-            if (key.length() > 15) key = key.substring(0, 15) + "...";
-            if (value.length() > 15) value = value.substring(0, 15) + "...";
-            lines.add( ComponentUtils.minimessage("<yellow>{0} <gray>= <aqua>{1}", key, value) );
+            if (key.length() > 30) key = key.substring(0, 30) + "...";
+            if (value.length() > 30) value = value.substring(0, 30) + "...";
+            lines.add( ComponentUtils.minimessage("<yellow><italic:false>{0} <gray>= <aqua>{1}", key, value) );
             line++;
             if (line > 21) {
                 lines.add( ComponentUtils.minimessage("<gray>...") );

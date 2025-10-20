@@ -3,10 +3,13 @@ package com.prikolz.justhelper.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.commands.arguments.SignsSearchingArgumentType;
+import com.prikolz.justhelper.dev.BlockCodePos;
 import com.prikolz.justhelper.util.ComponentUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +29,7 @@ public class FindCommand extends JustHelperCommand {
     }
 
     public static SignsSearchingArgumentType.InfoPack lastFound = new SignsSearchingArgumentType.InfoPack(List.of());
+    public static String lastPrompt = ":3";
 
     public FindCommand() {
         super("find");
@@ -50,6 +54,7 @@ public class FindCommand extends JustHelperCommand {
         var level = Minecraft.getInstance().level;
         if (level == null) return;
         lastFound = found;
+        lastPrompt = SignsSearchingArgumentType.lastInput;
         var unpack = found.pack();
 
         if (unpack.isEmpty()) {
@@ -123,6 +128,41 @@ public class FindCommand extends JustHelperCommand {
                 hoverText
         );
         return Component.literal(" ").append(pos.getBlockComponent()).append(result);
+    }
+
+    public static void findEach(BlockCodePos target) {
+        int i = 0;
+        for (var entry : lastFound.pack()) {
+            if ( entry.sign().codePos.equals(target) ) {
+                JustHelperCommand.feedback("┌");
+                JustHelperCommand.feedback("│ {0}<gray>/<white>{1}", entry.lines()[0], entry.lines()[1]);
+                String prev = getInLastFound(i - 1, "←");
+                String next = getInLastFound(i + 1, "→");
+                JustHelperCommand.feedback(
+                        "└{0} <white>{1}<gray>/<white>{2} {3}",
+                        prev,
+                        i + 1,
+                        lastFound.pack().size(),
+                        next
+                );
+                return;
+            }
+            i++;
+        }
+    }
+
+    private static String getInLastFound(int i, String str) {
+        if (i >= 0 && i < lastFound.pack().size()) {
+            var previous = lastFound.pack().get(i);
+            var hover = previous.createHoverInfo(lastPrompt);
+            var pos = previous.sign().pos;
+            return "<click:run_command:'/tp "
+                    + pos.getX() + " "
+                    + pos.getZ() + " "
+                    + pos.getZ()
+                    + "'><hover:show_text:'" + hover + "'><yellow>" + str;
+        }
+        return "<dark_gray>" + str;
     }
 
     private static HashMap<String, String> miniChars() {

@@ -1,7 +1,9 @@
 package com.prikolz.justhelper.dev.values;
 
+import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.util.Pair;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.List;
 public class Variable extends DevValue {
 
     public static String type = "variable";
-    public static DevValueRegistry<Variable> registry = DevValueRegistry.register(
+    public static DevValueRegistry<Variable> registry = DevValueRegistry.create(
             Variable.type,
             nbt -> {
                 var scope = nbt.getString("scope").orElse(null);
@@ -35,6 +37,11 @@ public class Variable extends DevValue {
         if (scope == null) throw new NullPointerException("Scope is null");
         this.scope = scope;
         this.variable = variable;
+    }
+
+    @Override
+    public void handleItemStack(ItemStack item) {
+        DevelopmentWorld.addToHistory(scope, variable);
     }
 
     @Override
