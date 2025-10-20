@@ -81,6 +81,13 @@ public class Config {
             (value, logger) -> new JsonPrimitive(value),
             (json, logger) -> json.getAsBoolean()
     );
+    public Parameter<Boolean, JsonPrimitive> findEach = new Parameter<>(
+            true,
+            "enable_each_find_list",
+            parameters,
+            (value, logger) -> new JsonPrimitive(value),
+            (child, logger) -> child.getAsBoolean()
+    );
     public Parameter<ValueFormats, JsonObject> valueFormats = new Parameter<>(
             defaultValueFormats(),
             "value_string_formats",

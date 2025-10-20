@@ -25,6 +25,7 @@ public class Array extends DevValue {
                 var list = new ArrayList<DevValue>();
                 for (Tag tag : valuesTag) {
                     if (!(tag instanceof CompoundTag valueTag)) continue;
+                    if (valueTag.isEmpty()) continue;
                     var value = DevValueRegistry.fromNBT(valueTag, false);
                     if (value == null) value = new UnknownValue();
                     list.add(value);
@@ -51,9 +52,6 @@ public class Array extends DevValue {
     @Override
     public void handleItemStack(ItemStack item) {
         var lines = new ArrayList<Component>();
-        ItemLore lore = item.get(DataComponents.LORE);
-        if (lore != null) lines.addAll(lore.lines());
-        lines.add(Component.literal(" "));
         int line = 0;
         for (var entry : values) {
             var key = entry.getStringFormat();
@@ -65,7 +63,7 @@ public class Array extends DevValue {
                 break;
             }
         }
-        item.set(DataComponents.LORE, new ItemLore(lines));
+        DevValue.changeLore(item, lines);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.prikolz.justhelper.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.commands.arguments.SignsSearchingArgumentType;
 import com.prikolz.justhelper.dev.BlockCodePos;
@@ -131,6 +132,7 @@ public class FindCommand extends JustHelperCommand {
     }
 
     public static void findEach(BlockCodePos target) {
+        if ( Config.get().findEach.value ) return;
         int i = 0;
         for (var entry : lastFound.pack()) {
             if ( entry.sign().codePos.equals(target) ) {
@@ -139,7 +141,7 @@ public class FindCommand extends JustHelperCommand {
                 String prev = getInLastFound(i - 1, "←");
                 String next = getInLastFound(i + 1, "→");
                 JustHelperCommand.feedback(
-                        "└{0} <white>{1}<gray>/<white>{2} {3}",
+                        "└{0} <white>{1}<reset><gray>/<white>{2} {3}",
                         prev,
                         i + 1,
                         lastFound.pack().size(),

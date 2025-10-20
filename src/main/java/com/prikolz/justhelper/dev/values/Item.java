@@ -2,7 +2,6 @@ package com.prikolz.justhelper.dev.values;
 
 import com.prikolz.justhelper.util.JustMCUtils;
 import com.prikolz.justhelper.util.Pair;
-import net.minecraft.world.item.ItemStack;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -27,7 +26,7 @@ public class Item extends DevValue {
     public String item;
 
     public Item(String item) {
-        super(Item.type, null, "Предмет({id})");
+        super(Item.type, null, "Предмет");
         this.item = item;
     }
 

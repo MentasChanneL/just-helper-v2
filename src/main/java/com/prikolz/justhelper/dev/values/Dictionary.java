@@ -3,14 +3,11 @@ package com.prikolz.justhelper.dev.values;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.util.ComponentUtils;
 import com.prikolz.justhelper.util.Pair;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ItemLore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +24,7 @@ public class Dictionary extends DevValue {
                 for (String key : values.keySet()) {
                     CompoundTag value = values.getCompound(key).orElse(null);
                     if (value == null) continue;
+                    if (value.isEmpty()) continue;
                     var index = key.indexOf("{");
                     if (index == -1) continue;
                     key = key.substring(index);
@@ -66,11 +64,9 @@ public class Dictionary extends DevValue {
     @Override
     public void handleItemStack(ItemStack item) {
         var lines = new ArrayList<Component>();
-        ItemLore lore = item.get(DataComponents.LORE);
-        if (lore != null) lines.addAll(lore.lines());
-        lines.add(Component.literal(" "));
         int line = 0;
         for (var entry : values) {
+            if (entry == null || entry.first == null || entry.second == null) continue;
             var key = entry.first.getStringFormat();
             var value = entry.second.getStringFormat();
             if (key.length() > 30) key = key.substring(0, 30) + "...";
@@ -82,7 +78,7 @@ public class Dictionary extends DevValue {
                 break;
             }
         }
-        item.set(DataComponents.LORE, new ItemLore(lines));
+        DevValue.changeLore(item, lines);
     }
 
     @Override

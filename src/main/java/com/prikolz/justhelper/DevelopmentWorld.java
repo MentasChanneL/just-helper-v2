@@ -10,7 +10,9 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 
@@ -75,6 +77,7 @@ public abstract class DevelopmentWorld {
         if (!isActive()) return;
         var value = DevValueRegistry.fromItem(item);
         if (value == null) return;
+
         value.handleItemStack(item);
     }
 
@@ -100,7 +103,6 @@ public abstract class DevelopmentWorld {
         var level = Minecraft.getInstance().level;
         if (player == null || level == null) return;
         var pos = new BlockCodePos(player.getBlockX(), player.getBlockY(), player.getBlockY());
-        Minecraft.getInstance().schedule(() -> FindCommand.findEach(pos));
         if (!Config.get().teleportAnchor.value) return;
         var signInfo = SignInfo.getSign(pos);
         String hover;

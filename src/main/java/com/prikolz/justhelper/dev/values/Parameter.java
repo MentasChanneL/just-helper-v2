@@ -30,6 +30,6 @@ public class Parameter extends DevValue {
 
     @Override
     public List<Pair<String, String>> getFormatPlaceholders() {
-        return List.of();
+        return List.of(Pair.of("name", name));
     }
 }

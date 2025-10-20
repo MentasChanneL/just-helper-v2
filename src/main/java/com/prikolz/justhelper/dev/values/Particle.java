@@ -47,6 +47,12 @@ public class Particle extends DevValue {
 
     @Override
     public List<Pair<String, String>> getFormatPlaceholders() {
-        return List.of();
+        return List.of(
+                Pair.of("id", particle),
+                Pair.of("count", String.valueOf(count)),
+                Pair.of("size", String.valueOf(size)),
+                Pair.of("spread1", String.valueOf(firstSpread)),
+                Pair.of("spread2", String.valueOf(secondSpread))
+        );
     }
 }

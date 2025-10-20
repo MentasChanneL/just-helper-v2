@@ -1,9 +1,12 @@
 package com.prikolz.justhelper.mixin;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.JustHelperClient;
+import com.prikolz.justhelper.commands.FindCommand;
 import com.prikolz.justhelper.commands.JustHelperCommands;
+import com.prikolz.justhelper.dev.BlockCodePos;
 import com.prikolz.justhelper.dev.VariablesHistory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -48,8 +51,20 @@ public class ClientPacketListenerMixin {
             ci.cancel();
             return;
         }
-        if (command.startsWith("tp") || command.startsWith("teleport") || command.startsWith("editor teleport"))
-            Minecraft.getInstance().schedule(DevelopmentWorld::teleportAnchor);
+        if (command.startsWith("tp") || command.startsWith("teleport") || command.startsWith("editor teleport")) {
+            var args = command.split(" ");
+            DevelopmentWorld.teleportAnchor();
+            try {
+                var pos = new BlockCodePos(
+                        (int) Double.parseDouble(args[1]),
+                        (int) Double.parseDouble(args[2]),
+                        (int) Double.parseDouble(args[3])
+                );
+                FindCommand.findEach(pos);
+            } catch (Throwable t) {
+                JustHelperClient.LOGGER.warn("Fail find each: {}", t.getMessage());
+            }
+        }
     }
 
     @Inject(method = "handleCommands", at = @At("TAIL"))

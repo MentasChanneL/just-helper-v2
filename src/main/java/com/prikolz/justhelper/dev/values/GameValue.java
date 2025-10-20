@@ -41,11 +41,8 @@ public class GameValue extends DevValue {
     @Override
     public void handleItemStack(ItemStack item) {
         var lines = new ArrayList<Component>();
-        ItemLore lore = item.get(DataComponents.LORE);
-        if (lore != null) lines.addAll(lore.lines());
-        lines.add(Component.literal(" "));
         lines.add(ComponentUtils.minimessage("<gray><italic:false>ID: {0}", this.gameValue));
-        item.set(DataComponents.LORE, new ItemLore(lines));
+        DevValue.changeLore(item, lines);
     }
 
     @Override
