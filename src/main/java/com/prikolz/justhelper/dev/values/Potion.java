@@ -3,7 +3,6 @@ package com.prikolz.justhelper.dev.values;
 import com.prikolz.justhelper.util.Pair;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
@@ -39,6 +38,10 @@ public class Potion extends DevValue {
 
     @Override
     public List<Pair<String, String>> getFormatPlaceholders() {
-        return List.of();
+        return List.of(
+                Pair.of("id", this.id),
+                Pair.of("level", this.amplifier + ""),
+                Pair.of("duration", this.duration + "")
+        );
     }
 }

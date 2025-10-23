@@ -71,7 +71,7 @@ public class Dictionary extends DevValue {
             var value = entry.second.getStringFormat();
             if (key.length() > 30) key = key.substring(0, 30) + "...";
             if (value.length() > 30) value = value.substring(0, 30) + "...";
-            lines.add( ComponentUtils.minimessage("<yellow><italic:false>{0} <gray>= <aqua>{1}", key, value) );
+            lines.add( ComponentUtils.minimessage("<yellow><italic:false>{0} <gray>= <white>{1}", key, value) );
             line++;
             if (line > 21) {
                 lines.add( ComponentUtils.minimessage("<gray>...") );
@@ -85,7 +85,9 @@ public class Dictionary extends DevValue {
     public List<Pair<String, String>> getFormatPlaceholders() {
         var values = new StringBuilder();
         for (var entry : this.values) {
-            values.append(entry.first.getStringFormat()).append(" = ").append(entry.second.getStringFormat());
+            var formatKey = entry.first == null ? "null" : entry.first.getStringFormat();
+            var formatValue = entry.second == null ? "null" : entry.second.getStringFormat();
+            values.append(formatKey).append(" = ").append(formatValue);
         }
         return List.of( Pair.of("values", values.toString()) );
     }

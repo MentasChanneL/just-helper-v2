@@ -56,7 +56,7 @@ public class Array extends DevValue {
         for (var entry : values) {
             var key = entry.getStringFormat();
             if (key.length() > 30) key = key.substring(0, 30) + "...";
-            lines.add( ComponentUtils.minimessage("<aqua><italic:false>{0}", key) );
+            lines.add( ComponentUtils.minimessage(" <white><italic:false>{0}", key) );
             line++;
             if (line > 21) {
                 lines.add( ComponentUtils.minimessage("<gray>...") );
