@@ -7,7 +7,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.dev.values.Variable;
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
 import java.util.ArrayList;
@@ -26,13 +26,15 @@ public class JustHelperCommands {
         register( new FloorCommand() );
         register( new DescribeCommand() );
         register( new ItemEditorCommand() );
-        register( new VarCommand(Variable.Scope.LOCAL) );
-        register( new VarCommand(Variable.Scope.GAME) );
-        register( new VarCommand(Variable.Scope.SAVE) );
+        register( new VarCommand(Variable.Scope.LOCAL, "vlc") );
+        register( new VarCommand(Variable.Scope.GAME, "vg") );
+        register( new VarCommand(Variable.Scope.SAVE, "vs") );
+        register( new VarCommand(Variable.Scope.LINE, "vl") );
         register( new GetDataTypeCommand("n", " ", "num") );
         register( new GetDataTypeCommand("t", null, "txt") );
         register( new ZeroCommand() );
         register( new StupidCommand() );
+        register( new Base64Command() );
     }
 
     public static void registerDispatcher(CommandDispatcher<ClientSuggestionProvider> dispatcher) {
@@ -69,7 +71,7 @@ public class JustHelperCommands {
                     dispatcher.execute(parse);
                 } catch (Throwable t) {
                     JustHelperCommand.feedback(
-                       ComponentUtils.minimessage("<red>[Just Helper] <tr:command.exception:'" + t.getMessage() + "'>")
+                       TextUtils.minimessage("<red>[Just Helper] <tr:command.exception:'" + t.getMessage() + "'>")
                     );
                     JustHelperClient.LOGGER.printStackTrace(t);
                 }

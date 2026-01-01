@@ -1,7 +1,7 @@
 package com.prikolz.justhelper.config;
 
 
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -36,6 +36,6 @@ public record CodeBlockNames(Map<String, String> names, Map<Block, String> regis
         if (key == null) return block.getName();
         var name = names.get(key);
         if (name == null) return block.getName();
-        return ComponentUtils.minimessage(name);
+        return TextUtils.minimessage(name);
     }
 }

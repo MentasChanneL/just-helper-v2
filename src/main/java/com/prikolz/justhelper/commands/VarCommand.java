@@ -13,8 +13,8 @@ public class VarCommand extends JustHelperCommand {
     private final Variable.Scope type;
     private final String split = ";";
 
-    public VarCommand(Variable.Scope type) {
-        super("v" + type.id.charAt(0));
+    public VarCommand(Variable.Scope type, String literal) {
+        super(literal);
         this.type = type;
         this.description = "[Названия] <gray>- Получение переменных типа " + type.id + ". Названия разделяются через '" + split + "'";
     }

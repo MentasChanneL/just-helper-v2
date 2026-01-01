@@ -1,15 +1,13 @@
 package com.prikolz.justhelper.dev.values;
 
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.Pair;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ItemLore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,10 +54,10 @@ public class Array extends DevValue {
         for (var entry : values) {
             var key = entry.getStringFormat();
             if (key.length() > 30) key = key.substring(0, 30) + "...";
-            lines.add( ComponentUtils.minimessage(" <white><italic:false>{0}", key) );
+            lines.add( TextUtils.minimessage(" <white><italic:false>{0}", key) );
             line++;
             if (line > 21) {
-                lines.add( ComponentUtils.minimessage("<gray>...") );
+                lines.add( TextUtils.minimessage("<gray>...") );
                 break;
             }
         }

@@ -1,7 +1,7 @@
 package com.prikolz.justhelper.dev.values;
 
 import com.prikolz.justhelper.JustHelperClient;
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
@@ -71,10 +71,10 @@ public class Dictionary extends DevValue {
             var value = entry.second.getStringFormat();
             if (key.length() > 30) key = key.substring(0, 30) + "...";
             if (value.length() > 30) value = value.substring(0, 30) + "...";
-            lines.add( ComponentUtils.minimessage("<yellow><italic:false>{0} <gray>= <white>{1}", key, value) );
+            lines.add( TextUtils.minimessage("<yellow><italic:false>{0} <gray>= <white>{1}", key, value) );
             line++;
             if (line > 21) {
-                lines.add( ComponentUtils.minimessage("<gray>...") );
+                lines.add( TextUtils.minimessage("<gray>...") );
                 break;
             }
         }

@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.prikolz.justhelper.DevelopmentWorld;
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.network.chat.Component;
 
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public class FloorArgumentType implements ArgumentType<Integer> {
 
     public static final DynamicCommandExceptionType MUST_BE_IN_DEV = new DynamicCommandExceptionType((object) -> Component.literal("Недоступно вне мира разработки /dev."));
-    public static final DynamicCommandExceptionType FLOOR_NOT_FOUND = new DynamicCommandExceptionType((object) -> ComponentUtils.minimessage("Этаж {0} не найден!", object));
+    public static final DynamicCommandExceptionType FLOOR_NOT_FOUND = new DynamicCommandExceptionType((object) -> TextUtils.minimessage("Этаж {0} не найден!", object));
     public static final StringArgumentType parser = StringArgumentType.greedyString();
 
     @Override

@@ -1,13 +1,11 @@
 package com.prikolz.justhelper.dev.values;
 
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.Pair;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ItemLore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +39,7 @@ public class GameValue extends DevValue {
     @Override
     public void handleItemStack(ItemStack item) {
         var lines = new ArrayList<Component>();
-        lines.add(ComponentUtils.minimessage("<gray><italic:false>ID: {0}", this.gameValue));
+        lines.add(TextUtils.minimessage("<gray><italic:false>ID: {0}", this.gameValue));
         DevValue.changeLore(item, lines);
     }
 

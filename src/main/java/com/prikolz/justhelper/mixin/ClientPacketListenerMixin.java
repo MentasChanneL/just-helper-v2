@@ -5,6 +5,7 @@ import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.commands.FindCommand;
+import com.prikolz.justhelper.commands.JustHelperCommand;
 import com.prikolz.justhelper.commands.JustHelperCommands;
 import com.prikolz.justhelper.dev.BlockCodePos;
 import com.prikolz.justhelper.dev.VariablesHistory;
@@ -48,6 +49,11 @@ public class ClientPacketListenerMixin {
     @Inject(method = "sendUnattendedCommand", at = @At("HEAD"), cancellable = true)
     private void sendUnattendedCommand(String command, @Nullable Screen screen, CallbackInfo ci) {
         if (JustHelperCommands.handleCommand(command, suggestionsProvider, commands)) {
+            ci.cancel();
+            return;
+        }
+        if (command.length() > 256) {
+            JustHelperCommand.feedback("<red>[Just Helper] The server command size > 256 chars!");
             ci.cancel();
             return;
         }

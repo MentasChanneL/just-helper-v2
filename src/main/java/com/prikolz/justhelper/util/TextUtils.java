@@ -13,7 +13,10 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.util.parsing.packrat.commands.CommandArgumentParser;
 import net.minecraft.util.parsing.packrat.commands.Grammar;
 
-public class ComponentUtils {
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
+public class TextUtils {
 
     public static final DynamicCommandExceptionType ERROR_INVALID_COMPONENT = new DynamicCommandExceptionType((object) -> Component.translatableEscape("argument.component.invalid", new Object[]{object}));
     public static final NbtOps OPS = NbtOps.INSTANCE;
@@ -49,5 +52,19 @@ public class ComponentUtils {
             i++;
         }
         return builder.toString();
+    }
+
+    public static String encodeBase64(String string) {
+        return Base64.getEncoder().encodeToString(string.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static String decodeBase64(String base64) {
+        byte[] decodedBytes = Base64.getDecoder().decode(base64);
+        return new String(decodedBytes, StandardCharsets.UTF_8);
+    }
+
+    public static String copyValue(Object value) {
+        var str = value == null ? "null" : value.toString();
+        return "<hover:show_text:'<tr:chat.copy> " + str + "'><click:copy_to_clipboard:'" + str + "'>" + str;
     }
 }

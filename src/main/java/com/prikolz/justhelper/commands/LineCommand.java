@@ -6,7 +6,6 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.prikolz.justhelper.JustHelperClient;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import java.util.ArrayList;
@@ -14,13 +13,13 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
-public class SimpleCommand {
+public class LineCommand {
     private final List<SimpleCommandArg> line = new ArrayList<>();
     private final LiteralArgumentBuilder<ClientSuggestionProvider> main;
     private Predicate<ClientSuggestionProvider> requires = null;
     private BiFunction<CommandContext<ClientSuggestionProvider>, Throwable, Integer> onRunError = null;
 
-    public SimpleCommand(String name) {
+    public LineCommand(String name) {
         this.main = JustHelperCommands.literal(name);
         this.onRunError = (context, error) -> {
             JustHelperCommand.feedback("<red>При выполнении команды произошла ошибка: {0}\nПодробнее /justhelper logs", error.getMessage());
@@ -29,27 +28,27 @@ public class SimpleCommand {
         };
     }
 
-    public SimpleCommand add(LiteralArgumentBuilder<ClientSuggestionProvider> arg) {
+    public LineCommand add(LiteralArgumentBuilder<ClientSuggestionProvider> arg) {
         line.add(new LiteralArg(arg));
         return this;
     }
 
-    public SimpleCommand add(RequiredArgumentBuilder<ClientSuggestionProvider, ?> arg) {
+    public LineCommand add(RequiredArgumentBuilder<ClientSuggestionProvider, ?> arg) {
         line.add(new Arg(arg));
         return this;
     }
 
-    public SimpleCommand arg(String name, ArgumentType<?> arg) {
+    public LineCommand arg(String name, ArgumentType<?> arg) {
         line.add(new Arg(JustHelperCommands.argument(name, arg)));
         return this;
     }
 
-    public SimpleCommand requires(Predicate<ClientSuggestionProvider> predicate) {
+    public LineCommand requires(Predicate<ClientSuggestionProvider> predicate) {
         this.requires = predicate;
         return this;
     }
 
-    public SimpleCommand run(Command<ClientSuggestionProvider> run) {
+    public LineCommand run(Command<ClientSuggestionProvider> run) {
         if (onRunError != null) {
             BiFunction<CommandContext<ClientSuggestionProvider>, Throwable, Integer> onError = this.onRunError;
             try {

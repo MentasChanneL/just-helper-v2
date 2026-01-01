@@ -5,7 +5,7 @@ import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.commands.JustHelperCommand;
 import com.prikolz.justhelper.mixin.MultiLineEditBoxMixin;
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
@@ -40,7 +40,7 @@ public class ConfigScreen extends Screen {
     protected void init() {
         var json = editBox == null ? Config.getJSON() : editBox.box.getValue();
         var minecraft = Minecraft.getInstance();
-        var title = new StringWidget(ComponentUtils.minimessage("<blue>Just<red>Helper <#FFFFBB>JSON Config"), minecraft.font);
+        var title = new StringWidget(TextUtils.minimessage("<blue>Just<red>Helper <#FFFFBB>JSON Config"), minecraft.font);
         title.setPosition(width / 2 - title.getWidth() / 2, 5);
         saveButton = Button.builder(Component.translatable("gui.done"), (btn) -> {
             Config.saveConfig(this.editBox.box.getValue());
@@ -74,7 +74,7 @@ public class ConfigScreen extends Screen {
             ));
         }).pos(width - 70, height - 40).width(50).build();
 
-        var folderButton = ImageButton.builder(ComponentUtils.minimessage("<white><font:just-helper:icons>0"), (btn) -> {
+        var folderButton = ImageButton.builder(TextUtils.minimessage("<white><font:just-helper:icons>0"), (btn) -> {
             Config.openConfigFolder();
         }).tooltip(Tooltip.create(Component.literal("Открыть папку"))).pos(20, height - 40).width(20).build();
 
@@ -130,7 +130,7 @@ public class ConfigScreen extends Screen {
                 error = new ExceptionInfo(lineError, true, t.getMessage());
                 saveButton.active = false;
                 saveButton.setTooltip(Tooltip.create(
-                        ComponentUtils.minimessage("<red>Ошибка JSON\n" + ComponentUtils.splitByWord(t.getMessage(), 40)),
+                        TextUtils.minimessage("<red>Ошибка JSON\n" + TextUtils.splitByWord(t.getMessage(), 40)),
                         Component.literal( t.getMessage() )
                 ));
             }

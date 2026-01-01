@@ -8,14 +8,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 public class ValidStringArgumentType implements ArgumentType<String> {
 
-    public static final DynamicCommandExceptionType STRING_NO_MATCHES = new DynamicCommandExceptionType((object) -> ComponentUtils.minimessage("Строка не соответствует формату {0}", object));
+    public static final DynamicCommandExceptionType STRING_NO_MATCHES = new DynamicCommandExceptionType((object) -> TextUtils.minimessage("Строка не соответствует формату {0}", object));
 
     private final Pattern pattern;
     private final String feedback;

@@ -2,7 +2,7 @@ package com.prikolz.justhelper.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.prikolz.justhelper.Config;
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.network.chat.Component;
@@ -30,11 +30,11 @@ public abstract class JustHelperCommand {
     public abstract LiteralArgumentBuilder<ClientSuggestionProvider> create(LiteralArgumentBuilder<ClientSuggestionProvider> main);
 
     public static int feedback(String m, Object ... placeholders) {
-        return feedback(ComponentUtils.minimessage(m, placeholders));
+        return feedback(TextUtils.minimessage(m, placeholders));
     }
 
     public static int feedback(int value, String m, Object ... placeholders) {
-        feedback(ComponentUtils.minimessage(m, placeholders));
+        feedback(TextUtils.minimessage(m, placeholders));
         return value;
     }
 

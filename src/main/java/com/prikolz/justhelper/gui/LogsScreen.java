@@ -1,7 +1,7 @@
 package com.prikolz.justhelper.gui;
 
 import com.prikolz.justhelper.JustHelperClient;
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -20,7 +20,7 @@ public class LogsScreen extends Screen {
     @Override
     protected void init() {
         this.minecraft = Minecraft.getInstance();
-        var title = new StringWidget(ComponentUtils.minimessage("<blue>Just<red>Helper <#FFFFBB>Logs"), minecraft.font);
+        var title = new StringWidget(TextUtils.minimessage("<blue>Just<red>Helper <#FFFFBB>Logs"), minecraft.font);
         title.setPosition(width / 2 - minecraft.font.width(title.getMessage().getString()) / 2, 10);
         var box = MultiLineEditBox.builder()
                 .setX(width / 4).setY(30)

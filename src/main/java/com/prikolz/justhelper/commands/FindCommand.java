@@ -5,12 +5,10 @@ import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.commands.arguments.SignsSearchingArgumentType;
 import com.prikolz.justhelper.dev.BlockCodePos;
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -120,7 +118,7 @@ public class FindCommand extends JustHelperCommand {
         String floor = "" + pos.floor;
         var describe = DevelopmentWorld.describes.describes.get(pos.floor);
         if (describe != null) floor = "(" + describe + "<yellow>)";
-        var result = ComponentUtils.minimessage(
+        var result = TextUtils.minimessage(
                 " <click:run_command:'{3}'><hover:show_text:'{4}'><yellow>{0}{1} {2}",
                 floor,
                 miniLine,
@@ -132,7 +130,7 @@ public class FindCommand extends JustHelperCommand {
     }
 
     public static void findEach(BlockCodePos target) {
-        if ( Config.get().findEach.value ) return;
+        if ( !Config.get().findEach.value ) return;
         int i = 0;
         for (var entry : lastFound.pack()) {
             if ( entry.sign().codePos.equals(target) ) {
@@ -160,7 +158,7 @@ public class FindCommand extends JustHelperCommand {
             var pos = previous.sign().pos;
             return "<click:run_command:'/tp "
                     + pos.getX() + " "
-                    + pos.getZ() + " "
+                    + pos.getY() + " "
                     + pos.getZ()
                     + "'><hover:show_text:'" + hover + "'><yellow>" + str;
         }

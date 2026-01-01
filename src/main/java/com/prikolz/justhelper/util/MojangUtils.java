@@ -32,6 +32,6 @@ public class MojangUtils {
     }
 
     public static ResourceLocation getId(CommandContext<?> commandContext, String string) {
-        return (ResourceLocation) commandContext.getArgument(string, ResourceLocation.class);
+        return commandContext.getArgument(string, ResourceLocation.class);
     }
 }

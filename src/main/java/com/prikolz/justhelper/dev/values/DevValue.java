@@ -2,12 +2,11 @@ package com.prikolz.justhelper.dev.values;
 
 import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.config.ValueFormats;
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.Pair;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
@@ -53,9 +52,9 @@ public abstract class DevValue {
             i++;
         }
         if (index != -1) while (lines.size() > index) lines.removeLast();
-        lines.add(ComponentUtils.minimessage("<gray>-"));
+        lines.add(TextUtils.minimessage("<gray>-"));
         lines.addAll(add);
-        lines.add(ComponentUtils.minimessage("<gray>-"));
+        lines.add(TextUtils.minimessage("<gray>-"));
         item.set(DataComponents.LORE, new ItemLore(lines));
     }
 

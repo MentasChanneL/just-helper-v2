@@ -6,7 +6,7 @@ import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.mixin.DisplayMixin;
 import com.prikolz.justhelper.mixin.TextDisplayMixin;
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.FileUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -47,7 +47,7 @@ public class FloorDescribes {
                 var floor = Integer.parseInt(key);
                 var value = json.get(key);
                 describes.put(floor, value.getAsString());
-                plainDescribes.put(floor, ComponentUtils.minimessage(value.getAsString()).getString());
+                plainDescribes.put(floor, TextUtils.minimessage(value.getAsString()).getString());
             }
             JustHelperClient.LOGGER.info("{} floor describes", describes.size());
         } catch (Throwable t) {
@@ -62,7 +62,7 @@ public class FloorDescribes {
 
     public void spawnDescribe(int floor, ClientLevel level) {
         if (level == null) return;
-        var text = ComponentUtils.minimessage(describes.get(floor));
+        var text = TextUtils.minimessage(describes.get(floor));
         var ent = entities.get(floor);
         if (ent != null) ent.remove(Entity.RemovalReason.KILLED);
 
@@ -86,7 +86,7 @@ public class FloorDescribes {
         var level = Minecraft.getInstance().level;
         if (level == null) return;
         describes.put(floor, floor + " " + text);
-        plainDescribes.put(floor, ComponentUtils.minimessage(floor + " " + text).getString());
+        plainDescribes.put(floor, TextUtils.minimessage(floor + " " + text).getString());
         File configFile = getConfigFile(world);
         var json = new JsonObject();
         describes.forEach((k, v) -> {

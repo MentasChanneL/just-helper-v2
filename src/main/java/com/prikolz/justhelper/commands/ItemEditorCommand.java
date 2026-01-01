@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.commands.arguments.ReferenceArgumentType;
 import com.prikolz.justhelper.commands.arguments.ValidStringArgumentType;
-import com.prikolz.justhelper.util.ComponentUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.MojangUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
@@ -20,7 +20,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
-import net.minecraft.server.commands.AttributeCommand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -45,7 +44,24 @@ public class ItemEditorCommand extends JustHelperCommand {
 
     @Override
     public LiteralArgumentBuilder<ClientSuggestionProvider> create(LiteralArgumentBuilder<ClientSuggestionProvider> main) {
-        return main.then( tagBranch() ).then( modifierBranch() );
+        return main.then( tagBranch() ).then( modifierBranch() ).then( profileBranch() );
+    }
+
+    private LiteralArgumentBuilder<ClientSuggestionProvider> profileBranch() {
+        return new LineCommand("profile")
+                .run(context -> itemResolver(item -> {
+                    var profile = item.get(DataComponents.PROFILE);
+                    if (profile == null) return JustHelperCommand.feedback("<yellow>Профиль предмета не задан!");
+                    JustHelperCommand.feedback("<aqua>ⓘ<white> Профиль предмета:");
+                    JustHelperCommand.feedback("");
+                    profile.properties().forEach((k, v) -> JustHelperCommand.feedback(
+                            " • <aqua>{0}<white> = <aqua>{1}",
+                            TextUtils.copyValue(k),
+                            TextUtils.copyValue(v == null ? "null" : v.value())
+                    ));
+                    return 0;
+                }))
+                .build();
     }
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> modifierBranch() {
@@ -61,7 +77,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                 )
         );
 
-        var add = new SimpleCommand("add")
+        var add = new LineCommand("add")
                 .arg("attribute", ResourceArgument.resource(buildContext, Registries.ATTRIBUTE))
                 .arg("name", ResourceLocationArgument.id())
                 .arg("amount", DoubleArgumentType.doubleArg())
@@ -84,12 +100,12 @@ public class ItemEditorCommand extends JustHelperCommand {
                     return JustHelperCommand.feedback(1,
                             "<green>Добавлен атрибут <white><tr:'{0}'>/{1}",
                             attribute.value().getDescriptionId(),
-                            name
+                            TextUtils.copyValue(name)
                     );
                 }))
                 .build();
 
-        var remove = new SimpleCommand("remove")
+        var remove = new LineCommand("remove")
                 .arg("attribute", ResourceArgument.resource(buildContext, Registries.ATTRIBUTE))
                 .run(context -> itemResolver(item -> {
                     var attribute = MojangUtils.getResource(context, "attribute", Registries.ATTRIBUTE);
@@ -150,7 +166,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                 }))
                 .build();
 
-        var list = new SimpleCommand("list")
+        var list = new LineCommand("list")
                 .run(context -> itemResolver(item -> {
                     var modifiers = item.get(DataComponents.ATTRIBUTE_MODIFIERS);
                     if (modifiers == null) return JustHelperCommand.feedback("<yellow>Модификаторы не найдены!");
@@ -159,9 +175,9 @@ public class ItemEditorCommand extends JustHelperCommand {
                     modifiers.modifiers().forEach(entry -> {
                         var modifier = entry.modifier();
                         var messages = messagesMap.computeIfAbsent(entry.attribute(), k -> new ArrayList<>());
-                        var message = ComponentUtils.minimessage(
-                                "    - <hover:show_text:'Скопировать {0}'><click:copy_to_clipboard:'{0}'><yellow>{0} <white>{1} <gold>{2} {3}",
-                                modifier.id(),
+                        var message = TextUtils.minimessage(
+                                "    - <yellow>{0} <white>{1} <gold>{2} {3}",
+                                TextUtils.copyValue(modifier.id()),
                                 modifier.amount(),
                                 operationArg.getKeyOrDefault(modifier.operation(), "?"),
                                 entry.slot().name().toLowerCase()
@@ -170,7 +186,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                     });
                     messagesMap.forEach((k, v) -> {
                         JustHelperCommand.feedback(
-                                "  • <hover:show_text:'Скопировать {1}'><click:copy_to_clipboard:'{1}'><aqua><tr:'{0}'>",
+                                "  • <hover:show_text:'<tr:chat.copy> {1}'><click:copy_to_clipboard:'{1}'><aqua><tr:'{0}'>",
                                 k.value().getDescriptionId(),
                                 k.unwrapKey().orElseThrow().location()
                         );
@@ -185,7 +201,7 @@ public class ItemEditorCommand extends JustHelperCommand {
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> tagBranch() {
 
-        var add = new SimpleCommand("add")
+        var add = new LineCommand("add")
                 .arg("key", new ValidStringArgumentType())
                 .arg("value", StringArgumentType.greedyString())
                 .run(context -> itemResolver(item -> {
@@ -198,7 +214,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                 }))
                 .build();
 
-        var remove = new SimpleCommand("remove")
+        var remove = new LineCommand("remove")
                 .arg("key", new ValidStringArgumentType())
                 .run(context -> itemResolver(item -> {
                     var key = StringArgumentType.getString(context, "key");
@@ -210,7 +226,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                 }))
                 .build();
 
-        var list = new SimpleCommand("list")
+        var list = new LineCommand("list")
                 .run(context -> itemResolver(item -> {
                     var tags = getBukkitTags(item);
                     JustHelperCommand.feedback("\n<yellow>ⓘ<white> Установленные теги предмета:\n");
@@ -219,10 +235,10 @@ public class ItemEditorCommand extends JustHelperCommand {
                         var key = keyRaw.substring(TAG_NAMESPACE.length());
                         var value = tags.getString(keyRaw).orElse("?");
                         var shortValue = value;
-                        if (shortValue.length() > 15) shortValue = shortValue.substring(0, 15) + "...";
+                        if (shortValue.length() > 15) shortValue = shortValue.substring(0, 25) + "...";
                         JustHelperCommand.feedback(1,
-                                " <yellow>● <white><click:copy_to_clipboard:'{0}'><hover:show_text:'Скопировать\n{0}'>{0}<reset> <yellow>= <click:copy_to_clipboard:'{2}'><hover:show_text:'Скопировать\n{2}'><white>{1}",
-                                key,
+                                " <yellow>● <white>{0}<reset> <yellow>= <click:copy_to_clipboard:'{2}'><hover:show_text:'<tr:chat.copy>\n{2}'><white>{1}",
+                                TextUtils.copyValue(key),
                                 shortValue,
                                 value
                         );
@@ -231,7 +247,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                 }))
                 .build();
 
-        var clear = new SimpleCommand("clear")
+        var clear = new LineCommand("clear")
                 .add(JustHelperCommands.literal("confirm"))
                 .run(context -> itemResolver(item -> {
                     var tags = getBukkitTags(item);
@@ -249,7 +265,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                 }))
                 .build();
 
-        var copy = new SimpleCommand("copy")
+        var copy = new LineCommand("copy")
                 .run(context -> itemResolver(item -> {
                     var tags = getBukkitTags(item);
                     tagsClipboard.clear();
@@ -267,7 +283,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                 }))
                 .build();
 
-        var paste = new SimpleCommand("paste")
+        var paste = new LineCommand("paste")
                 .run(context -> itemResolver(item -> {
                     var tags = getBukkitTags(item);
                     for (String key : tagsClipboard.keySet())

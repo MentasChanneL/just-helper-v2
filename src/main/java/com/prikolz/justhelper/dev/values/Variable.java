@@ -55,7 +55,8 @@ public class Variable extends DevValue {
     public enum Scope {
         GAME("game"),
         LOCAL("local"),
-        SAVE("save");
+        SAVE("save"),
+        LINE("line");
 
         public static Scope getByID(String id) {
             if (id == null) return null;
