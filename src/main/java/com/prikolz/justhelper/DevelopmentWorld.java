@@ -62,9 +62,9 @@ public abstract class DevelopmentWorld {
         history.forEach((k, v) -> v.save());
         history.clear();
         signs.clear();
-        history.put( Variable.Scope.LOCAL, new VariablesHistory(worldUUID, Variable.Scope.LOCAL) );
-        history.put( Variable.Scope.GAME, new VariablesHistory(worldUUID, Variable.Scope.GAME) );
-        history.put( Variable.Scope.SAVE, new VariablesHistory(worldUUID, Variable.Scope.SAVE) );
+        for (Variable.Scope scope : Variable.Scope.values()) {
+            history.put( scope, new VariablesHistory(worldUUID, scope) );
+        }
         describes = new FloorDescribes(worldUUID);
         describes.spawn();
     }

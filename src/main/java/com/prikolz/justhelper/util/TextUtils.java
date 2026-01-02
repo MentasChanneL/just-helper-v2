@@ -24,12 +24,36 @@ public class TextUtils {
     public static final CommandArgumentParser<Component> PARSER = TAG_PARSER.withCodec(OPS, TAG_PARSER, ComponentSerialization.CODEC, ERROR_INVALID_COMPONENT);
 
     public static Component minimessage(String minimessage, Object ... placeholders) {
-        var i = 0;
-        for (Object placeholder : placeholders) {
-            minimessage = minimessage.replaceAll("\\{" + i + "}", placeholder.toString());
-            i++;
+        var builder = new StringBuilder();
+        boolean openBracketMode = false;
+        var numberReader = new StringBuilder();
+        for (char c : minimessage.toCharArray()) {
+            if (openBracketMode) {
+                if (c == '}') {
+                    openBracketMode = false;
+                    int i;
+                    try { i = Integer.parseInt(numberReader.toString()); } catch (Throwable t) { i = -1; }
+                    if (i >= placeholders.length || i < 0) {
+                        builder.append('{').append(numberReader).append('}');
+                        continue;
+                    }
+                    Object placeholder = placeholders[i];
+                    var placeholderChars = placeholder == null ? "null".toCharArray() : placeholder.toString().toCharArray();
+                    for (char placeholderChar : placeholderChars) builder.append(placeholderChar);
+                    continue;
+                }
+                numberReader.append(c);
+            } else {
+                if (c == '{') {
+                    openBracketMode = true;
+                    numberReader = new StringBuilder();
+                    continue;
+                }
+                builder.append(c);
+            }
         }
-        var json = GsonComponentSerializer.gson().serialize( MiniMessage.miniMessage().deserialize(minimessage) );
+        if (openBracketMode) builder.append('{').append(numberReader);
+        var json = GsonComponentSerializer.gson().serialize( MiniMessage.miniMessage().deserialize(builder.toString()) );
         try {
             return PARSER.parseForCommands( new StringReader( json) );
         } catch (Throwable t) {
