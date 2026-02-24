@@ -1,13 +1,9 @@
 package com.prikolz.justhelper.dev.values;
 
-import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.Pair;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GameValue extends DevValue {
@@ -34,13 +30,6 @@ public class GameValue extends DevValue {
         super(GameValue.type, Items.NAME_TAG, "Игровое значение({id}, {selection})");
         this.selection = selection;
         this.gameValue = gameValue;
-    }
-
-    @Override
-    public void handleItemStack(ItemStack item) {
-        var lines = new ArrayList<Component>();
-        lines.add(TextUtils.minimessage("<gray><italic:false>ID: {0}", this.gameValue));
-        DevValue.changeLore(item, lines);
     }
 
     @Override

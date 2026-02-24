@@ -4,7 +4,7 @@ package com.prikolz.justhelper.config;
 import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 
 import java.util.Map;
@@ -13,7 +13,7 @@ public record CodeBlockNames(Map<String, String> names, Map<Block, String> regis
 
     public static Block getBlock(String key) {
         try {
-            return BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(key));
+            return BuiltInRegistries.BLOCK.getValue(Identifier.parse(key));
         } catch (Throwable t) {
             return null;
         }

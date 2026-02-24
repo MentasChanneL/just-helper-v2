@@ -16,6 +16,9 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.ScreenDirection;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -168,57 +171,47 @@ public class ConfigScreen extends Screen {
         }
 
         @Override
+        public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
+            return box.mouseClicked(event, bl);
+        }
+
+        @Override
+        public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
+            return box.mouseReleased(mouseButtonEvent);
+        }
+
+        @Override
+        public boolean mouseDragged(MouseButtonEvent mouseButtonEvent, double d, double e) {
+            return box.mouseDragged(mouseButtonEvent, d, e);
+        }
+
+        @Override
+        protected void onDrag(MouseButtonEvent mouseButtonEvent, double d, double e) {
+            ((MultiLineEditBoxMixin) box).onDrag(mouseButtonEvent, d, e);
+        }
+
+        @Override
+        public boolean keyPressed(KeyEvent keyEvent) {
+            boolean result = box.keyPressed(keyEvent);
+            checkValid();
+            return result;
+        }
+
+        @Override
+        public boolean charTyped(CharacterEvent event) {
+            boolean result = box.charTyped(event);
+            checkValid();
+            return result;
+        }
+
+        @Override
         public boolean mouseScrolled(double d, double e, double f, double g) {
             return box.mouseScrolled(d, e, f ,g);
         }
 
         @Override
-        public boolean mouseClicked(double d, double e, int i) {
-            return box.mouseClicked(d, e, i);
-        }
-
-        @Override
-        public boolean mouseReleased(double d, double e, int i) {
-            return box.mouseReleased(d, e, i);
-        }
-
-        @Override
-        public boolean mouseDragged(double d, double e, int i, double f, double g) {
-            return box.mouseDragged(d, e, i, f, g);
-        }
-
-        @Override
         public boolean isMouseOver(double d, double e) {
             return box.isMouseOver(d, e);
-        }
-
-        @Override
-        public void onClick(double d, double e) {
-            box.onClick(d, e);
-        }
-
-        @Override
-        public void onRelease(double d, double e) {
-            box.onRelease(d, e);
-        }
-
-        @Override
-        public boolean keyPressed(int i, int j, int k) {
-            var result = box.keyPressed(i, j, k);
-            checkValid();
-            return result;
-        }
-
-        @Override
-        public boolean keyReleased(int i, int j, int k) {
-            return box.keyReleased(i, j, k);
-        }
-
-        @Override
-        public boolean charTyped(char c, int i) {
-            var result = box.charTyped(c, i);
-            checkValid();
-            return result;
         }
 
         @Override

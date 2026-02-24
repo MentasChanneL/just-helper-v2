@@ -1,6 +1,5 @@
 package com.prikolz.justhelper;
 
-import com.prikolz.justhelper.commands.FindCommand;
 import com.prikolz.justhelper.commands.JustHelperCommand;
 import com.prikolz.justhelper.commands.arguments.SignsSearchingArgumentType;
 import com.prikolz.justhelper.dev.*;
@@ -10,9 +9,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 
@@ -41,7 +38,7 @@ public abstract class DevelopmentWorld {
     private static String getWorldName() {
         var level = Minecraft.getInstance().level;
         if (level == null) return null;
-        return level.dimension().location().getPath();
+        return level.dimension().identifier().getPath();
     }
 
     public static void initialize() {
@@ -102,7 +99,7 @@ public abstract class DevelopmentWorld {
         var player = Minecraft.getInstance().player;
         var level = Minecraft.getInstance().level;
         if (player == null || level == null) return;
-        var pos = new BlockCodePos(player.getBlockX(), player.getBlockY(), player.getBlockY());
+        var pos = new BlockCodePos(4, player.getBlockY(), player.getBlockZ());
         if (!Config.get().teleportAnchor.value) return;
         var signInfo = SignInfo.getSign(pos);
         String hover;

@@ -6,7 +6,7 @@ import com.prikolz.justhelper.config.CodeBlockNames;
 import com.prikolz.justhelper.config.CommandParameters;
 import com.prikolz.justhelper.config.ValueFormats;
 import com.prikolz.justhelper.util.FileUtils;
-import net.minecraft.FileUtil;
+import net.minecraft.util.FileUtil;
 import net.minecraft.world.level.block.Blocks;
 
 import java.io.File;

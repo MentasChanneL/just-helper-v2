@@ -5,18 +5,19 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
 public class ChatCheckbox extends AbstractWidget {
-    private static final ResourceLocation CHECKBOX_SELECTED_SPRITE = ResourceLocation.parse("just-helper:checkbox_selected");
-    private static final ResourceLocation CHECKBOX_SPRITE = ResourceLocation.parse("just-helper:checkbox");
-    private static final ResourceLocation CHECKBOX_SWAG = ResourceLocation.parse("just-helper:ludi");
+    private static final Identifier CHECKBOX_SELECTED_SPRITE = Identifier.parse("just-helper:checkbox_selected");
+    private static final Identifier CHECKBOX_SPRITE = Identifier.parse("just-helper:checkbox");
+    private static final Identifier CHECKBOX_SWAG = Identifier.parse("just-helper:ludi");
     private final Font font;
 
-    private ResourceLocation resource;
+    private Identifier resource;
     private boolean isSelected;
     private final OnChange onChange;
 
@@ -39,7 +40,7 @@ public class ChatCheckbox extends AbstractWidget {
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {}
 
     @Override
-    public void onClick(double d, double e) {
+    public void onClick(MouseButtonEvent event, boolean bl) {
         isSelected = !isSelected;
         resource = isSelected ? CHECKBOX_SELECTED_SPRITE : CHECKBOX_SPRITE;
         onChange.onChange(this, isSelected);

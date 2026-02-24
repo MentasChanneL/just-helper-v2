@@ -4,12 +4,11 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlagSet;
 
 import static net.minecraft.commands.arguments.ResourceArgument.ERROR_INVALID_RESOURCE_TYPE;
@@ -27,11 +26,11 @@ public class MojangUtils {
         if (resourceKey2.isFor(resourceKey)) {
             return reference;
         } else {
-            throw ERROR_INVALID_RESOURCE_TYPE.create(resourceKey2.location(), resourceKey2.registry(), resourceKey.location());
+            throw ERROR_INVALID_RESOURCE_TYPE.create(resourceKey2.identifier(), resourceKey2.registry(), resourceKey.identifier());
         }
     }
 
-    public static ResourceLocation getId(CommandContext<?> commandContext, String string) {
-        return commandContext.getArgument(string, ResourceLocation.class);
+    public static Identifier getId(CommandContext<?> commandContext, String string) {
+        return commandContext.getArgument(string, Identifier.class);
     }
 }

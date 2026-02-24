@@ -4,11 +4,8 @@ import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.mixin.SpriteContentsMixin;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.*;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -19,7 +16,7 @@ public abstract class BlockStateComponent {
     private static final char[] LINES = new char[]{ '0', '1', '2', '3', '4', '5', '6', '7' };
 
     private static final HashMap<Block, Component> processed = new HashMap<>();
-    private static final ResourceLocation FONT = ResourceLocation.parse("just-helper:pixel");
+    private static final FontDescription FONT = new FontDescription.Resource(Identifier.parse("just-helper:pixel"));
 
     public static Component create(BlockState block) {
         var bl = block.getBlock();

@@ -19,7 +19,6 @@ public class LogsScreen extends Screen {
 
     @Override
     protected void init() {
-        this.minecraft = Minecraft.getInstance();
         var title = new StringWidget(TextUtils.minimessage("<blue>Just<red>Helper <#FFFFBB>Logs"), minecraft.font);
         title.setPosition(width / 2 - minecraft.font.width(title.getMessage().getString()) / 2, 10);
         var box = MultiLineEditBox.builder()
@@ -63,28 +62,9 @@ public class LogsScreen extends Screen {
         }
 
         @Override
-        public boolean mouseClicked(double d, double e, int i) {
-            return box.mouseClicked(d, e, i);
-        }
-
-        @Override
-        public boolean mouseReleased(double d, double e, int i) {
-            return box.mouseReleased(d, e, i);
-        }
-
-        @Override
-        public boolean mouseDragged(double d, double e, int i, double f, double g) {
-            return box.mouseDragged(d, e, i, f, g);
-        }
-
-        @Override
         public boolean isMouseOver(double d, double e) {
             return box.isMouseOver(d, e);
         }
 
-        @Override
-        public void onClick(double d, double e) {
-            box.onClick(d, e);
-        }
     }
 }

@@ -22,16 +22,16 @@ public class ZlibCommand extends JustHelperCommand{
                 .run(context -> {
                     var string = StringArgumentType.getString(context, "string");
                     var compressed = JustMCUtils.zlibCompress(string);
-                    return JustHelperCommand.feedback("<green>Сжатый текст: {0}", TextUtils.copyValue(compressed));
+                    return JustHelperCommand.feedback("<green>Сжатый текст zlib:<white> {0}", TextUtils.copyValue(compressed));
                 });
 
         var decompressBranch = new LineCommand("decompress")
-                .arg("string", StringArgumentType.greedyString())
+                .arg("zlib", StringArgumentType.greedyString())
                 .run(context -> {
-                    var string = StringArgumentType.getString(context, "string");
+                    var string = StringArgumentType.getString(context, "zlib");
                     try {
-                        var decompressed = JustMCUtils.zlibDecompress(string.getBytes(StandardCharsets.UTF_8));
-                        return JustHelperCommand.feedback("<green>Распакованный текст: {0}", TextUtils.copyValue(decompressed));
+                        var decompressed = JustMCUtils.zlibDecompress(string);
+                        return JustHelperCommand.feedback("<green>Распакованный текст zlib:<white> {0}", TextUtils.copyValue(decompressed));
                     } catch (Throwable t) {
                         JustHelperClient.LOGGER.printStackTrace(t, JustHelperClient.JustHelperLogger.LogType.ERROR);
                         return JustHelperCommand.feedback("Ошибка распаковки: {0}", t.getMessage());

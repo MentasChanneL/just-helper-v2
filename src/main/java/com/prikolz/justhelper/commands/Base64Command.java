@@ -10,7 +10,6 @@ public class Base64Command extends JustHelperCommand {
     public Base64Command() {
         super("base64");
         this.description = "encode/decode [Текст] <gray>- Кодирует/Декодирует текст в base64.";
-
     }
 
     @Override
@@ -22,7 +21,7 @@ public class Base64Command extends JustHelperCommand {
                     var text = StringArgumentType.getString(context, "text");
                     var base64 = TextUtils.encodeBase64(text);
                     return JustHelperCommand.feedback(
-                            "<green>Закодированный текст:<white>\n{0}",
+                            "<green>Закодированный текст base64:<white>\n{0}",
                             TextUtils.copyValue(base64)
                     );
                 })
@@ -34,7 +33,7 @@ public class Base64Command extends JustHelperCommand {
                     var base64 = StringArgumentType.getString(context, "base64");
                     var text = TextUtils.decodeBase64(base64);
                     return JustHelperCommand.feedback(
-                            "<green>Декодированный текст:<white>\n{0}",
+                            "<green>Декодированный текст base64:<white>\n{0}",
                             TextUtils.copyValue(text)
                     );
                 })

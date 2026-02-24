@@ -11,8 +11,8 @@ import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.MojangUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -54,7 +54,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                     if (profile == null) return JustHelperCommand.feedback("<yellow>Профиль предмета не задан!");
                     JustHelperCommand.feedback("<aqua>ⓘ<white> Профиль предмета:");
                     JustHelperCommand.feedback("");
-                    profile.properties().forEach((k, v) -> JustHelperCommand.feedback(
+                    profile.partialProfile().properties().forEach((k, v) -> JustHelperCommand.feedback(
                             " • <aqua>{0}<white> = <aqua>{1}",
                             TextUtils.copyValue(k),
                             TextUtils.copyValue(v == null ? "null" : v.value())
@@ -63,6 +63,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                 }))
                 .build();
     }
+
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> modifierBranch() {
 
@@ -79,7 +80,7 @@ public class ItemEditorCommand extends JustHelperCommand {
 
         var add = new LineCommand("add")
                 .arg("attribute", ResourceArgument.resource(buildContext, Registries.ATTRIBUTE))
-                .arg("name", ResourceLocationArgument.id())
+                .arg("name", IdentifierArgument.id())
                 .arg("amount", DoubleArgumentType.doubleArg())
                 .arg("operation", operationArg)
                 .arg("slot", ReferenceArgumentType.ofEnums( true, EquipmentSlotGroup.values() ))
@@ -134,7 +135,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                             attribute.value().getDescriptionId()
                     );
                 }))
-                .arg("name", ResourceLocationArgument.id())
+                .arg("name", IdentifierArgument.id())
                 .run(context -> itemResolver(item -> {
                     var attribute = MojangUtils.getResource(context, "attribute", Registries.ATTRIBUTE);
                     var name = MojangUtils.getId(context, "name");
@@ -188,7 +189,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                         JustHelperCommand.feedback(
                                 "  • <hover:show_text:'<tr:chat.copy> {1}'><click:copy_to_clipboard:'{1}'><aqua><tr:'{0}'>",
                                 k.value().getDescriptionId(),
-                                k.unwrapKey().orElseThrow().location()
+                                k.unwrapKey().orElseThrow().identifier()
                         );
                         v.forEach(JustHelperCommand::feedback);
                     });

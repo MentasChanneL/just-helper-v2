@@ -36,6 +36,7 @@ public class JustHelperCommands {
         register( new StupidCommand() );
         register( new Base64Command() );
         register( new ZlibCommand() );
+        register( new GzipCommand() );
     }
 
     public static void registerDispatcher(CommandDispatcher<ClientSuggestionProvider> dispatcher) {

@@ -52,8 +52,8 @@ dependencies {
 	includeInternal ("net.kyori:adventure-api:4.24.0")
 
 	//modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation 'net.fabricmc.fabric-api:fabric-resource-loader-v0:3.1.10+fa6cb72b9c'
-	includeInternal ('net.fabricmc.fabric-api:fabric-resource-loader-v0:3.1.10+fa6cb72b9c')
+	modImplementation 'net.fabricmc.fabric-api:fabric-resource-loader-v1:1.0.4+65ffd040de'
+	includeInternal ('net.fabricmc.fabric-api:fabric-resource-loader-v1:1.0.4+65ffd040de')
 }
 
 processResources {
