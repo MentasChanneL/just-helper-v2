@@ -4,10 +4,12 @@ import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.config.ValueFormats;
 import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.Pair;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
@@ -18,7 +20,7 @@ import java.util.List;
 public abstract class DevValue {
 
     public final String type;
-    public final Item material;
+    public Item material;
     public final String defaultStringFormat;
     public DevValueRegistry<DevValue> registry = null;
     public CompoundTag unusedFields = null;
@@ -41,6 +43,13 @@ public abstract class DevValue {
     }
 
     public final String getMiniVersion() {
+        if (material instanceof BlockItem blockItem) {
+            var render = Minecraft.getInstance().getBlockRenderer();
+            try {
+                var sprite = render.getBlockModel(blockItem.getBlock().defaultBlockState()).particleIcon().contents();
+                return "<sprite:\"minecraft:blocks\":\"" + sprite.name().getPath() + "\"> " + miniBuilder();
+            } catch (Throwable ignore) {}
+        }
         var path = BuiltInRegistries.ITEM.getKey(material).getPath();
         return "<sprite:\"minecraft:items\":\"item/" + path + "\"> " + miniBuilder();
     }

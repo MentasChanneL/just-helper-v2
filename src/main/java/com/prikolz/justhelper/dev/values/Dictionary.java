@@ -66,9 +66,9 @@ public class Dictionary extends DevValue {
         var lines = new ArrayList<Component>();
         int line = 0;
         for (var entry : values) {
-            if (entry == null || entry.first == null || entry.second == null) continue;
-            var key = entry.first.getMiniVersion();
-            var value = entry.second.getMiniVersion();
+            if (entry == null) continue;
+            var key = entry.first != null ? entry.first.getMiniVersion() : "";
+            var value = entry.second != null ? entry.second.getMiniVersion() : "";
             if (key.length() > 150) key = key.substring(0, 150) + "...";
             if (value.length() > 150) value = value.substring(0, 150) + "...";
             lines.add( TextUtils.minimessage("<white><italic:false>{0} <gray>= <white>{1}", key, value) );

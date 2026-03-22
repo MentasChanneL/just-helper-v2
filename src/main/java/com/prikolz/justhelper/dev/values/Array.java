@@ -80,11 +80,8 @@ public class Array extends DevValue {
     public String miniBuilder() {
         if (values.isEmpty()) return "[]";
         StringBuilder values = new StringBuilder();
-        int i = 0;
         for (var value : this.values) {
-            values.append(value.getMiniVersion());
-            i++;
-            if (i < this.values.size()) values.append(", ");
+            values.append(", ").append( value.getMiniVersion() );
         }
         return "[" + values.substring(2) + "]";
     }

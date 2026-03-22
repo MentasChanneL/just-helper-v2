@@ -2,8 +2,10 @@ package com.prikolz.justhelper.dev.values;
 
 import com.prikolz.justhelper.util.JustMCUtils;
 import com.prikolz.justhelper.util.Pair;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Items;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class Item extends DevValue {
@@ -24,14 +26,11 @@ public class Item extends DevValue {
     );
 
     public String item;
+    public String id;
 
     public Item(String item) {
         super(Item.type, null, "Предмет({id})");
         this.item = item;
-    }
-
-    @Override
-    public List<Pair<String, String>> getFormatPlaceholders() {
         var id = new StringBuilder();
         int[] subsequence = new int[]{ 105, 100, 0 };
         int value = 0;
@@ -57,12 +56,19 @@ public class Item extends DevValue {
                 }
             }
         }
-        return List.of(Pair.of("id", id.toString()));
+        this.id = id.toString();
+        var identifier = Identifier.parse(this.id);
+        material = BuiltInRegistries.ITEM.getValue(identifier);
+    }
+
+    @Override
+    public List<Pair<String, String>> getFormatPlaceholders() {
+        return List.of(Pair.of("id", id));
     }
 
     @Override
     public String miniBuilder() {
-        return item;
+        return id;
     }
 
     private enum ReadMode {
