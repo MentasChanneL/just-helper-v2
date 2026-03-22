@@ -53,7 +53,7 @@ public class Array extends DevValue {
         int line = 0;
         for (var entry : values) {
             var key = entry.getMiniVersion();
-            if (key.length() > 150) key = key.substring(0, 30) + "...";
+            if (key.length() > 150) key = key.substring(0, 150) + "...";
             lines.add( TextUtils.minimessage(" <white><italic:false>{0}", key) );
             line++;
             if (line > 21) {

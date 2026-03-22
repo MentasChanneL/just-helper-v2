@@ -69,8 +69,8 @@ public class Dictionary extends DevValue {
             if (entry == null || entry.first == null || entry.second == null) continue;
             var key = entry.first.getMiniVersion();
             var value = entry.second.getMiniVersion();
-            if (key.length() > 150) key = key.substring(0, 30) + "...";
-            if (value.length() > 150) value = value.substring(0, 30) + "...";
+            if (key.length() > 150) key = key.substring(0, 150) + "...";
+            if (value.length() > 150) value = value.substring(0, 150) + "...";
             lines.add( TextUtils.minimessage("<white><italic:false>{0} <gray>= <white>{1}", key, value) );
             line++;
             if (line > 21) {
