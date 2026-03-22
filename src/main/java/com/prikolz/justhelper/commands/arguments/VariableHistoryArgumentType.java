@@ -8,8 +8,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.prikolz.justhelper.DevelopmentWorld;
+import com.prikolz.justhelper.commands.VarCommand;
 import com.prikolz.justhelper.dev.values.Variable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class VariableHistoryArgumentType implements ArgumentType<String> {
@@ -35,10 +38,11 @@ public class VariableHistoryArgumentType implements ArgumentType<String> {
             for (String key : history) builder.suggest(key);
             return builder.buildFuture();
         }
-        for (String name : lastInput.split("`")) {
-            if (name.startsWith(" ")) name = name.substring(1);
-            for (String key : history) if (key.contains(name)) builder.suggest(key);
-        }
+        var lastIndex = lastInput.lastIndexOf(";");
+        var name = lastInput.substring(lastIndex + 1);
+        var prefix = lastInput.substring(0, lastIndex + 1);
+        if (name.startsWith(" ")) name = name.substring(1);
+        for (String key : history) if (key.contains(name)) builder.suggest(prefix + key);
         return builder.buildFuture();
     }
 }

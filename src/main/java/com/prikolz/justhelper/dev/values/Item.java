@@ -60,6 +60,11 @@ public class Item extends DevValue {
         return List.of(Pair.of("id", id.toString()));
     }
 
+    @Override
+    public String miniBuilder() {
+        return item;
+    }
+
     private enum ReadMode {
         HEAD, LENGTH, ID
     }

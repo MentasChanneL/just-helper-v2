@@ -55,4 +55,9 @@ public class Particle extends DevValue {
                 Pair.of("spread2", String.valueOf(secondSpread))
         );
     }
+
+    @Override
+    public String miniBuilder() {
+        return particle + " " + count + " " + size + " " + firstSpread + " " + secondSpread;
+    }
 }

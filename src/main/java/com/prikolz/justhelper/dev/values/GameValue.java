@@ -39,4 +39,9 @@ public class GameValue extends DevValue {
                 Pair.of("selection", this.selection)
         );
     }
+
+    @Override
+    public String miniBuilder() {
+        return gameValue + "(" + selection + ")";
+    }
 }

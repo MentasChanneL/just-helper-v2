@@ -52,6 +52,11 @@ public class Variable extends DevValue {
         );
     }
 
+    @Override
+    public String miniBuilder() {
+        return variable + "(" + scope.id + ")";
+    }
+
     public enum Scope {
         GAME("game"),
         LOCAL("local"),

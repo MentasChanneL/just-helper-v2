@@ -24,10 +24,23 @@ public class TextUtils {
     public static final CommandArgumentParser<Component> PARSER = TAG_PARSER.withCodec(OPS, TAG_PARSER, ComponentSerialization.CODEC, ERROR_INVALID_COMPONENT);
 
     public static Component minimessage(String minimessage, Object ... placeholders) {
+        String message = handlePlaceholders(0, minimessage, placeholders);
+        var json = GsonComponentSerializer.gson().serialize( MiniMessage.miniMessage().deserialize(message) );
+        try {
+            return PARSER.parseForCommands( new StringReader( json) );
+        } catch (Throwable t) {
+            JustHelperClient.LOGGER.error("Send minimessage error: {}", t.getMessage());
+        }
+        return Component.literal("[ERROR | CHECK LOGS]");
+    }
+
+    private static String handlePlaceholders(int calls, String string, Object ... placeholders) {
+        if (calls > 99) return string + "(Infinite recursion)";
+        boolean hasPlaceholders = false;
         var builder = new StringBuilder();
         boolean openBracketMode = false;
         var numberReader = new StringBuilder();
-        for (char c : minimessage.toCharArray()) {
+        for (char c : string.toCharArray()) {
             if (openBracketMode) {
                 if (c == '}') {
                     openBracketMode = false;
@@ -40,6 +53,7 @@ public class TextUtils {
                     Object placeholder = placeholders[i];
                     var placeholderChars = placeholder == null ? "null".toCharArray() : placeholder.toString().toCharArray();
                     for (char placeholderChar : placeholderChars) builder.append(placeholderChar);
+                    hasPlaceholders = true;
                     continue;
                 }
                 numberReader.append(c);
@@ -53,13 +67,8 @@ public class TextUtils {
             }
         }
         if (openBracketMode) builder.append('{').append(numberReader);
-        var json = GsonComponentSerializer.gson().serialize( MiniMessage.miniMessage().deserialize(builder.toString()) );
-        try {
-            return PARSER.parseForCommands( new StringReader( json) );
-        } catch (Throwable t) {
-            JustHelperClient.LOGGER.error("Send minimessage error: {}", t.getMessage());
-        }
-        return Component.literal("[ERROR | CHECK LOGS]");
+        if (hasPlaceholders) return handlePlaceholders(calls + 1, builder.toString(), placeholders);
+        return builder.toString();
     }
 
     public static String splitByWord(String string, int charCount) {

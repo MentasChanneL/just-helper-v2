@@ -1,5 +1,6 @@
 package com.prikolz.justhelper.dev;
 
+import com.prikolz.justhelper.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -40,5 +41,23 @@ public class SignInfo {
             i++;
         }
         return lines;
+    }
+
+    public String getMiniBlockSprite() { return getMiniBlockSprite(true); }
+
+    public String getMiniBlockSprite(boolean addHover) {
+        var level = Minecraft.getInstance().level;
+        if (level == null) return "";
+        var blockState = Minecraft.getInstance().level.getBlockState(codePos.blockPos);
+        var render = Minecraft.getInstance().getBlockRenderer();
+        try {
+            var sprite = render.getBlockModel(blockState).particleIcon().contents();
+            var name = Config.get().codeBlockNames.value.getMiniName(blockState.getBlock());
+            if (addHover)
+                return "<hover:show_text:\"" + name + "\"><sprite:\"minecraft:blocks\":\"" + sprite.name().getPath() + "\"></hover>";
+            else
+                return "<sprite:\"minecraft:blocks\":\"" + sprite.name().getPath() + "\">";
+        } catch (Throwable ignore) {}
+        return "";
     }
 }

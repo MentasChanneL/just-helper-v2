@@ -40,6 +40,11 @@ public class Text extends DevValue {
         );
     }
 
+    @Override
+    public String miniBuilder() {
+        return text;
+    }
+
     public enum ParsingType {
         LEGACY("legacy"),
         PLAIN("plain"),

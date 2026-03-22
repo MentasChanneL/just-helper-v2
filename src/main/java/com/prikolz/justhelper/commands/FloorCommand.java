@@ -17,7 +17,7 @@ public class FloorCommand extends JustHelperCommand {
     public LiteralArgumentBuilder<ClientSuggestionProvider> create(LiteralArgumentBuilder<ClientSuggestionProvider> main) {
         return main.then(
                 JustHelperCommands.argument("floor", new FloorArgumentType()).executes( context -> {
-                    int floor = context.getArgument("floor", Integer.class);
+                    int floor = FloorArgumentType.getFloor(context, "floor");
                     return execute(floor);
                 })
         );

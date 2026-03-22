@@ -32,4 +32,9 @@ public class Parameter extends DevValue {
     public List<Pair<String, String>> getFormatPlaceholders() {
         return List.of(Pair.of("name", name));
     }
+
+    @Override
+    public String miniBuilder() {
+        return name;
+    }
 }

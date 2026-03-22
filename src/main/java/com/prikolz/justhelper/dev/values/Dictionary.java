@@ -67,11 +67,11 @@ public class Dictionary extends DevValue {
         int line = 0;
         for (var entry : values) {
             if (entry == null || entry.first == null || entry.second == null) continue;
-            var key = entry.first.getStringFormat();
-            var value = entry.second.getStringFormat();
-            if (key.length() > 30) key = key.substring(0, 30) + "...";
-            if (value.length() > 30) value = value.substring(0, 30) + "...";
-            lines.add( TextUtils.minimessage("<yellow><italic:false>{0} <gray>= <white>{1}", key, value) );
+            var key = entry.first.getMiniVersion();
+            var value = entry.second.getMiniVersion();
+            if (key.length() > 150) key = key.substring(0, 30) + "...";
+            if (value.length() > 150) value = value.substring(0, 30) + "...";
+            lines.add( TextUtils.minimessage("<white><italic:false>{0} <gray>= <white>{1}", key, value) );
             line++;
             if (line > 21) {
                 lines.add( TextUtils.minimessage("<gray>...") );
@@ -90,5 +90,17 @@ public class Dictionary extends DevValue {
             values.append(formatKey).append(" = ").append(formatValue);
         }
         return List.of( Pair.of("values", values.toString()) );
+    }
+
+    @Override
+    public String miniBuilder() {
+        if (values.isEmpty()) return "{}";
+        var values = new StringBuilder();
+        for (var entry : this.values) {
+            var formatKey = entry.first == null ? "null" : entry.first.getMiniVersion();
+            var formatValue = entry.second == null ? "null" : entry.second.getMiniVersion();
+            values.append(", ").append(formatKey).append(":").append(formatValue);
+        }
+        return "{" + values.substring(2) + "}";
     }
 }

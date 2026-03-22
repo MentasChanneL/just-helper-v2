@@ -5,6 +5,7 @@ import com.prikolz.justhelper.config.ValueFormats;
 import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.Pair;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -29,6 +30,7 @@ public abstract class DevValue {
     }
 
     public abstract List<Pair<String, String>> getFormatPlaceholders();
+    public abstract String miniBuilder();
     public void handleItemStack(ItemStack item) {}
 
     public final String getStringFormat() {
@@ -36,6 +38,11 @@ public abstract class DevValue {
         var result = Config.get().valueFormats.value.getFormatted(type, placeholders);
         if (result == null) return ValueFormats.format(placeholders, defaultStringFormat);
         return result;
+    }
+
+    public final String getMiniVersion() {
+        var path = BuiltInRegistries.ITEM.getKey(material).getPath();
+        return "<sprite:\"minecraft:items\":\"item/" + path + "\"> " + miniBuilder();
     }
 
     public static void changeLore(ItemStack item, List<Component> add) {

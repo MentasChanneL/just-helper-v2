@@ -38,4 +38,12 @@ public record CodeBlockNames(Map<String, String> names, Map<Block, String> regis
         if (name == null) return block.getName();
         return TextUtils.minimessage(name);
     }
+
+    public String getMiniName(Block block) {
+        var key = registry.get(block);
+        if (key == null) return block.getName().getString();
+        var name = names.get(key);
+        if (name == null) return block.getName().getString();
+        return name;
+    }
 }

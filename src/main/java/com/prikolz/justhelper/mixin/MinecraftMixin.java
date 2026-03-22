@@ -1,5 +1,6 @@
 package com.prikolz.justhelper.mixin;
 
+import com.prikolz.justhelper.CommandBuffer;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.JustHelperClient;
 import net.minecraft.client.Minecraft;
@@ -11,6 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    public void onTick(CallbackInfo ci) {
+        CommandBuffer.tick(50);
+    }
 
     @Inject(method = "setLevel", at = @At("TAIL"))
     public void onSetLevel(ClientLevel clientLevel, CallbackInfo ci) {

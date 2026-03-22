@@ -30,7 +30,6 @@ public class JustHelperClient implements ClientModInitializer {
 		JustHelperCommands.initialize();
 		CONFIG = new Config();
 		CONFIG.read();
-		CommandBuffer.runTimer();
         DevValueRegistry.registerAll();
 		LOGGER.info("hello");
 	}

@@ -52,8 +52,8 @@ public class Array extends DevValue {
         var lines = new ArrayList<Component>();
         int line = 0;
         for (var entry : values) {
-            var key = entry.getStringFormat();
-            if (key.length() > 30) key = key.substring(0, 30) + "...";
+            var key = entry.getMiniVersion();
+            if (key.length() > 150) key = key.substring(0, 30) + "...";
             lines.add( TextUtils.minimessage(" <white><italic:false>{0}", key) );
             line++;
             if (line > 21) {
@@ -74,5 +74,18 @@ public class Array extends DevValue {
             if (i < this.values.size()) values.append(", ");
         }
         return List.of( Pair.of("values", values.toString()) );
+    }
+
+    @Override
+    public String miniBuilder() {
+        if (values.isEmpty()) return "[]";
+        StringBuilder values = new StringBuilder();
+        int i = 0;
+        for (var value : this.values) {
+            values.append(value.getMiniVersion());
+            i++;
+            if (i < this.values.size()) values.append(", ");
+        }
+        return "[" + values.substring(2) + "]";
     }
 }

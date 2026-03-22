@@ -1,9 +1,8 @@
 package com.prikolz.justhelper.dev;
 
-import com.prikolz.justhelper.component.BlockStateComponent;
+import com.prikolz.justhelper.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 
 public class BlockCodePos {
 
@@ -20,19 +19,18 @@ public class BlockCodePos {
         blockPos = new BlockPos(x, y, z);
     }
 
+    public String getMiniBlockName() {
+        var level = Minecraft.getInstance().level;
+        if (level == null) return "";
+        return Config.get().codeBlockNames.value.getMiniName(level.getBlockState(blockPos).getBlock());
+    }
+
     public static int getX(int pos) { return 2 * pos + 2; }
     public static int getY(int floor) { return 7 * floor - 2; }
     public static int getZ(int line) { return line * 4; }
 
     public BlockPos toPos() {
         return new BlockPos(getX(pos), getY(floor) , getZ(line));
-    }
-
-    public Component getBlockComponent() {
-        var level = Minecraft.getInstance().level;
-        if (level == null) return Component.empty();
-        var state = level.getBlockState(blockPos);
-        return BlockStateComponent.create(state);
     }
 
     @Override

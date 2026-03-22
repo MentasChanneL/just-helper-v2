@@ -119,14 +119,15 @@ public class FindCommand extends JustHelperCommand {
         var describe = DevelopmentWorld.describes.describes.get(pos.floor);
         if (describe != null) floor = "(" + describe + "<yellow>)";
         var result = TextUtils.minimessage(
-                " <click:run_command:'{3}'><hover:show_text:'{4}'><yellow>{0}{1} {2}",
+                " {5} <click:run_command:'{3}'><hover:show_text:'{4}'><yellow>{0}{1} {2}",
                 floor,
                 miniLine,
                 signMainLine,
                 clickCommand,
-                hoverText
+                hoverText,
+                sign.getMiniBlockSprite()
         );
-        return Component.literal(" ").append(pos.getBlockComponent()).append(result);
+        return Component.literal(" ").append(result);
     }
 
     public static void findEach(BlockCodePos target) {

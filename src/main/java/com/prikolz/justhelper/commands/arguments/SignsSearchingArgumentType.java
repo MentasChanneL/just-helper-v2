@@ -102,7 +102,14 @@ public class SignsSearchingArgumentType implements ArgumentType<SignsSearchingAr
 
         public String createHoverInfo(String prompt) {
             var hoverTextBuilder = new StringBuilder("<white>");
+            var first = true;
             for (String line: lines) {
+                if (first) {
+                    first = false;
+                    hoverTextBuilder.append(sign.getMiniBlockSprite(false)).append(" ")
+                            .append(sign.codePos.getMiniBlockName()).append("\n<reset>");
+                    continue;
+                }
                 if (prompt == null)
                     hoverTextBuilder.append(line).append('\n');
                 else

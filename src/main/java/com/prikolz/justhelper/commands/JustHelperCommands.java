@@ -26,6 +26,8 @@ public class JustHelperCommands {
         register( new FloorCommand() );
         register( new DescribeCommand() );
         register( new ItemEditorCommand() );
+        register( new PosCommand("pos", true) );
+        register( new PosCommand("back", false) );
         register( new VarCommand(Variable.Scope.LOCAL, "vlc") );
         register( new VarCommand(Variable.Scope.GAME, "vg") );
         register( new VarCommand(Variable.Scope.SAVE, "vs") );

@@ -20,10 +20,13 @@ public class FloorArgumentType implements ArgumentType<Integer> {
     public static final DynamicCommandExceptionType FLOOR_NOT_FOUND = new DynamicCommandExceptionType((object) -> TextUtils.minimessage("Этаж {0} не найден!", object));
     public static final StringArgumentType parser = StringArgumentType.greedyString();
 
+    private static String input = "";
+
     @Override
     public Integer parse(StringReader reader) throws CommandSyntaxException {
         if (!DevelopmentWorld.isActive()) throw MUST_BE_IN_DEV.create("");
         String name = parser.parse(reader);
+        input = name;
         try {
             int floor = Integer.parseInt(name);
             if (floor < 1) throw FLOOR_NOT_FOUND.create(floor);
@@ -32,20 +35,27 @@ public class FloorArgumentType implements ArgumentType<Integer> {
         var describes = DevelopmentWorld.describes.plainDescribes;
         for (int floor : describes.keySet()) {
             var describe = describes.get(floor);
-            if (describe.equals(name)) return floor;
+            if (describe.contains(name)) return floor;
         }
         throw FLOOR_NOT_FOUND.create(name);
+    }
+
+    public static <S> int getFloor(CommandContext<S> context, String argument) {
+        input = "";
+        return context.getArgument(argument, Integer.class);
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         if (DevelopmentWorld.isActive()) {
             var describes = DevelopmentWorld.describes.plainDescribes;
-            describes.values().forEach(builder::suggest);
-            for (int floor : describes.keySet()) {
-                var describe = describes.get(floor);
-                builder.suggest(describe);
+            if (input.isEmpty()) {
+                describes.values().forEach(builder::suggest);
+                return builder.buildFuture();
             }
+            describes.values().forEach(value -> {
+                if (value.contains(input)) builder.suggest(value);
+            });
         }
         return builder.buildFuture();
     }

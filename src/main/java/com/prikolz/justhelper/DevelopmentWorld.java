@@ -107,9 +107,10 @@ public abstract class DevelopmentWorld {
         if (signInfo != null) {
             var found = SignsSearchingArgumentType.FoundSignInfo.create(signInfo);
             hover = found.createHoverInfo(":3");
-            var line = found.lines()[0];
-            if (found.lines().length > 1) line = line + "/" + found.lines()[1];
-            display = line;
+            if (found.lines().length > 1)
+                display = signInfo.getMiniBlockSprite() + " " + found.lines()[1];
+            else
+                display = found.lines()[0];
         } else {
             hover = "<gray>Нажмите для телепортации";
             var floor = describes.describes.get(pos.floor);

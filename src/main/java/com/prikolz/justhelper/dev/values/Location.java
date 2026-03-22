@@ -54,4 +54,9 @@ public class Location extends DevValue {
                 Pair.of("pitch", this.pitch + "")
         );
     }
+
+    @Override
+    public String miniBuilder() {
+        return x + "/" + y + "/" + z + "(" + yaw + "/" + pitch + ")";
+    }
 }

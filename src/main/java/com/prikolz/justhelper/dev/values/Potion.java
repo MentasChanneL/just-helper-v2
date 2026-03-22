@@ -44,4 +44,9 @@ public class Potion extends DevValue {
                 Pair.of("duration", this.duration + "")
         );
     }
+
+    @Override
+    public String miniBuilder() {
+        return id + " " + duration + "t " + amplifier;
+    }
 }

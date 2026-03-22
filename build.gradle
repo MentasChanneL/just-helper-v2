@@ -41,12 +41,12 @@ dependencies {
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	implementation ("net.kyori:adventure-text-minimessage:4.17.0")
+	implementation ("net.kyori:adventure-text-minimessage:4.26.1")
 	implementation ("net.kyori:adventure-text-serializer-gson:4.17.0")
 	implementation ("net.kyori:adventure-text-serializer-legacy:4.17.0")
 	implementation ("net.kyori:adventure-api:4.24.0")
 
-	includeInternal ("net.kyori:adventure-text-minimessage:4.17.0")
+	includeInternal ("net.kyori:adventure-text-minimessage:4.26.1")
 	includeInternal ("net.kyori:adventure-text-serializer-gson:4.17.0")
 	includeInternal ("net.kyori:adventure-text-serializer-legacy:4.17.0")
 	includeInternal ("net.kyori:adventure-api:4.24.0")

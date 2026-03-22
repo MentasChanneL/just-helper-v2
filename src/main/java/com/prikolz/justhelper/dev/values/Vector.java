@@ -47,4 +47,9 @@ public class Vector extends DevValue {
                 Pair.of("z", round(z))
         );
     }
+
+    @Override
+    public String miniBuilder() {
+        return x + "/" + y + "/" + z;
+    }
 }

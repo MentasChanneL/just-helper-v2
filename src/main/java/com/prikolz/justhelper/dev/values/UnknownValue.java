@@ -15,4 +15,9 @@ public class UnknownValue extends DevValue {
     public List<Pair<String, String>> getFormatPlaceholders() {
         return List.of();
     }
+
+    @Override
+    public String miniBuilder() {
+        return "";
+    }
 }

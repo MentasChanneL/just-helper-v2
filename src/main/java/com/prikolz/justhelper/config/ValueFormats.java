@@ -15,7 +15,7 @@ public record ValueFormats(Map<String, String> formats) {
     public static String format(List<Pair<String, String>> placeholders, String value) {
         var result = value;
         for (var placeholder : placeholders) {
-            result = result.replaceAll("\\{" + placeholder.first + "}", placeholder.second);
+            result = result.replace("\\{" + placeholder.first + "}", placeholder.second);
         }
         return result;
     }

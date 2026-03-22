@@ -52,4 +52,9 @@ public class Sound extends DevValue {
                 Pair.of("pitch", String.valueOf(pitch))
         );
     }
+
+    @Override
+    public String miniBuilder() {
+        return sound + "(" + variation + ")" + " " + volume + " " + pitch;
+    }
 }
