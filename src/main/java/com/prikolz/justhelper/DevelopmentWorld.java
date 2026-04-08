@@ -108,7 +108,7 @@ public abstract class DevelopmentWorld {
             var found = SignsSearchingArgumentType.FoundSignInfo.create(signInfo);
             hover = found.createHoverInfo(":3");
             if (found.lines().length > 1)
-                display = signInfo.getMiniBlockSprite() + " " + found.lines()[1];
+                display = "<white>" + signInfo.getMiniBlockSprite() + "<aqua> " + found.lines()[1];
             else
                 display = found.lines()[0];
         } else {

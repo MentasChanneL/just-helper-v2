@@ -2,6 +2,7 @@ package com.prikolz.justhelper.util;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.serialization.JsonOps;
 import com.prikolz.justhelper.JustHelperClient;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -19,9 +20,8 @@ import java.util.Base64;
 public class TextUtils {
 
     public static final DynamicCommandExceptionType ERROR_INVALID_COMPONENT = new DynamicCommandExceptionType((object) -> Component.translatableEscape("argument.component.invalid", new Object[]{object}));
-    public static final NbtOps OPS = NbtOps.INSTANCE;
-    public static final Grammar<Tag> TAG_PARSER = SnbtGrammar.createParser(OPS);
-    public static final CommandArgumentParser<Component> PARSER = TAG_PARSER.withCodec(OPS, TAG_PARSER, ComponentSerialization.CODEC, ERROR_INVALID_COMPONENT);
+    public static final Grammar<Tag> TAG_PARSER = SnbtGrammar.createParser(NbtOps.INSTANCE);
+    public static final CommandArgumentParser<Component> PARSER = TAG_PARSER.withCodec(NbtOps.INSTANCE, TAG_PARSER, ComponentSerialization.CODEC, ERROR_INVALID_COMPONENT);
 
     public static Component minimessage(String minimessage, Object ... placeholders) {
         String message = handlePlaceholders(0, minimessage, placeholders);
@@ -29,9 +29,19 @@ public class TextUtils {
         try {
             return PARSER.parseForCommands( new StringReader( json) );
         } catch (Throwable t) {
-            JustHelperClient.LOGGER.error("Send minimessage error: {}", t.getMessage());
+            JustHelperClient.LOGGER.error("Minimessage parse error: {}", t.getMessage());
         }
         return Component.literal("[ERROR | CHECK LOGS]");
+    }
+
+    public static String toMiniMessage(Component component) {
+        try {
+            var json = ComponentSerialization.CODEC.encodeStart(JsonOps.INSTANCE, component).getOrThrow();
+            return MiniMessage.miniMessage().serialize( GsonComponentSerializer.gson().deserializeFromTree(json) );
+        } catch (Throwable t) {
+            JustHelperClient.LOGGER.error("Component to minimessage convert error: " + t.getMessage());
+        }
+        return "[ERROR | CHECK LOGS]";
     }
 
     private static String handlePlaceholders(int calls, String string, Object ... placeholders) {

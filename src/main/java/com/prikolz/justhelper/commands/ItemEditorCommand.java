@@ -10,7 +10,13 @@ import com.prikolz.justhelper.commands.arguments.ValidStringArgumentType;
 import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.MojangUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.MultiLineEditBox;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.core.Holder;
@@ -20,6 +26,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -27,15 +35,28 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.ItemLore;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class ItemEditorCommand extends JustHelperCommand {
 
     private static final String TAG_NAMESPACE = "justcreativeplus:";
     private static final HashMap<String, String> tagsClipboard = new HashMap<>();
+    private static final ReferenceArgumentType<String> tagArgumentResolver = new ReferenceArgumentType<>(() -> {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return Map.of();
+        var item = player.getItemBySlot(EquipmentSlot.MAINHAND);
+        if (item.isEmpty()) return Map.of();
+        var result = new HashMap<String, String>();
+        var tags = getBukkitTags(item);
+        for (String keyRaw : tags.keySet()) {
+            if (!keyRaw.startsWith(TAG_NAMESPACE)) continue;
+            var tag = keyRaw.substring(TAG_NAMESPACE.length());
+            result.put(tag, tag);
+        }
+        return result;
+    });
 
     public ItemEditorCommand() {
         super("item+");
@@ -44,7 +65,15 @@ public class ItemEditorCommand extends JustHelperCommand {
 
     @Override
     public LiteralArgumentBuilder<ClientSuggestionProvider> create(LiteralArgumentBuilder<ClientSuggestionProvider> main) {
-        return main.then( tagBranch() ).then( modifierBranch() ).then( profileBranch() );
+        return main.then( tagBranch() )
+                .then( modifierBranch() )
+                .then( profileBranch() )
+                .then( JustHelperCommands.literal("display").executes(context -> itemResolver(item -> {
+                    Minecraft.getInstance().schedule(() ->
+                            Minecraft.getInstance().setScreen( new ItemDisplayEditorScreen(item) )
+                    );
+                    return 0;
+                })));
     }
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> profileBranch() {
@@ -216,9 +245,9 @@ public class ItemEditorCommand extends JustHelperCommand {
                 .build();
 
         var remove = new LineCommand("remove")
-                .arg("key", new ValidStringArgumentType())
+                .arg("key", tagArgumentResolver)
                 .run(context -> itemResolver(item -> {
-                    var key = StringArgumentType.getString(context, "key");
+                    var key = ReferenceArgumentType.<String>getReference(context, "key");
                     var tags = getBukkitTags(item);
                     if (!tags.contains(TAG_NAMESPACE + key)) return JustHelperCommand.feedback("<yellow>Тег <white>{0} <yellow>не найден!", key);
                     tags.remove(TAG_NAMESPACE + key);
@@ -236,7 +265,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                         var key = keyRaw.substring(TAG_NAMESPACE.length());
                         var value = tags.getString(keyRaw).orElse("?");
                         var shortValue = value;
-                        if (shortValue.length() > 15) shortValue = shortValue.substring(0, 25) + "...";
+                        if (shortValue.length() > 15) shortValue = shortValue.substring(0, 15) + "...";
                         JustHelperCommand.feedback(1,
                                 " <yellow>● <white>{0}<reset> <yellow>= <click:copy_to_clipboard:'{2}'><hover:show_text:'<tr:chat.copy>\n{2}'><white>{1}",
                                 TextUtils.copyValue(key),
@@ -253,7 +282,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                 .run(context -> itemResolver(item -> {
                     var tags = getBukkitTags(item);
                     var count = 0;
-                    for (String key : tags.keySet()) {
+                    for (String key : new HashSet<>(tags.keySet())) {
                         if (!key.startsWith(TAG_NAMESPACE)) continue;
                         tags.remove(key);
                         count++;
@@ -314,8 +343,10 @@ public class ItemEditorCommand extends JustHelperCommand {
             return JustHelperCommand.feedback("<red>Item+ >> Ошибка выполнения: " + t.getMessage());
         }
         if (result > 0) {
+            player.swing(InteractionHand.MAIN_HAND, false);
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.AMETHYST_BLOCK_CHIME, 2f));
             player.connection.send(
-                    new ServerboundSetCreativeModeSlotPacket(player.getInventory().getSelectedSlot(), item)
+                    new ServerboundSetCreativeModeSlotPacket(36 + player.getInventory().getSelectedSlot(), item)
             );
         }
 
@@ -340,5 +371,75 @@ public class ItemEditorCommand extends JustHelperCommand {
 
     public interface ItemStackProvider {
         int provide(ItemStack item) throws CommandSyntaxException;
+    }
+
+    public static class ItemDisplayEditorScreen extends Screen {
+
+        private String nameField;
+        private String loreField;
+        private EditBox nameEditBox = null;
+        private MultiLineEditBox loreEditBox = null;
+
+        protected ItemDisplayEditorScreen(ItemStack item) {
+            super(Component.literal("Редактирование отображения предмета"));
+            var lore = item.get(DataComponents.LORE);
+
+            var lines = lore == null ? List.<Component>of() : lore.lines();
+            StringBuilder minimessage = new StringBuilder();
+            for (Component line : lines) {
+                minimessage.append( TextUtils.toMiniMessage(line) ).append('\n');
+            }
+            loreField = minimessage.toString();
+            nameField = TextUtils.toMiniMessage( item.getOrDefault(DataComponents.CUSTOM_NAME, item.getItemName()) );
+        }
+
+        @Override
+        protected void init() {
+            if (loreEditBox != null) loreField = loreEditBox.getValue();
+            if (nameEditBox != null) nameField = nameEditBox.getValue();
+
+            var font = Minecraft.getInstance().font;
+
+            var title = new StringWidget(this.title, font);
+            title.setPosition( width / 2 - font.width(this.title) / 2, 10 );
+
+            nameEditBox = new EditBox(font, 60, 30, Component.literal("Название"));
+            nameEditBox.setX(60);
+            nameEditBox.setY(30);
+            nameEditBox.setWidth(width - 120);
+            nameEditBox.setHeight(20);
+            nameEditBox.setMaxLength(Integer.MAX_VALUE);
+            nameEditBox.setValue(nameField);
+            var nameTitle = new StringWidget(Component.literal("Название"), font);
+            nameTitle.setPosition( nameEditBox.getX(), nameEditBox.getY() - 10 );
+
+            loreEditBox = new MultiLineEditBox.Builder().setX(60).setY(nameEditBox.getY() + nameEditBox.getHeight() + 20)
+                    .build(font, width - 120, height - 120, Component.literal("Описание"));
+            loreEditBox.setValue(loreField);
+            var loreTitle = new StringWidget(Component.literal("Описание"), font);
+            loreTitle.setPosition( loreEditBox.getX(), loreEditBox.getY() - 10 );
+
+            var ok = Button.builder(Component.literal("Применить"), button -> itemResolver(item -> {
+                var list = new ArrayList<Component>();
+                var content = loreEditBox.getValue();
+                for (String line : content.split("\n")) list.add( TextUtils.minimessage(line) );
+                item.set(DataComponents.LORE, new ItemLore(list));
+                item.set(DataComponents.CUSTOM_NAME, TextUtils.minimessage(nameEditBox.getValue()) );
+                Minecraft.getInstance().setScreen(null);
+                return 1;
+            })).pos(width / 2 + 5, loreEditBox.getHeight() + loreEditBox.getY() + 10).width(100).build();
+
+            var cancel = Button.builder(Component.literal("Отмена"), button -> {
+                Minecraft.getInstance().setScreen(null);
+            }).pos(width / 2 - 105, loreEditBox.getHeight() + loreEditBox.getY() + 10).width(100).build();
+
+            addRenderableWidget(title);
+            addRenderableWidget(nameTitle);
+            addRenderableWidget(nameEditBox);
+            addRenderableWidget(loreTitle);
+            addRenderableWidget(loreEditBox);
+            addRenderableWidget(ok);
+            addRenderableWidget(cancel);
+        }
     }
 }

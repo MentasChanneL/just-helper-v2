@@ -21,7 +21,7 @@ public class ValidStringArgumentType implements ArgumentType<String> {
     private final String feedback;
 
     public ValidStringArgumentType() {
-        this("^[a-z_0-9]+$", "a-z_0-9");
+        this("^[a-z_0-9-]+$", "a-z_0-9");
     }
 
     public ValidStringArgumentType(String pattern, String feedback) {
