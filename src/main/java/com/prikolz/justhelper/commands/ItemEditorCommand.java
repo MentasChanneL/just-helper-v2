@@ -1,10 +1,14 @@
 package com.prikolz.justhelper.commands;
 
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.prikolz.justhelper.JustHelperClient;
+import com.prikolz.justhelper.commands.arguments.ColorArgumentType;
+import com.prikolz.justhelper.commands.arguments.GreedyArgumentType;
 import com.prikolz.justhelper.commands.arguments.ReferenceArgumentType;
 import com.prikolz.justhelper.commands.arguments.ValidStringArgumentType;
 import com.prikolz.justhelper.util.TextUtils;
@@ -20,6 +24,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -27,15 +32,19 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.equipment.Equippable;
 
 import java.util.*;
 
@@ -73,7 +82,201 @@ public class ItemEditorCommand extends JustHelperCommand {
                             Minecraft.getInstance().setScreen( new ItemDisplayEditorScreen(item) )
                     );
                     return 0;
-                })));
+                })))
+                .then( equipmentBranch() )
+                .then( colorBranch() );
+    }
+
+    private LiteralArgumentBuilder<ClientSuggestionProvider> colorBranch() {
+        return new LineCommand("color")
+                .run(context -> itemResolver(item -> {
+                    var color = item.get(DataComponents.DYED_COLOR);
+                    if (color == null) return JustHelperCommand.feedback("<yellow>Компонент цвета не установлен");
+                    var hex = String.format("%06x", color.rgb());
+                    return JustHelperCommand.feedback(
+                            "Установленный цвет предмета: <underlined><#{1}>#{0}",
+                            TextUtils.copyValue(hex),
+                            hex
+                    );
+                }))
+                .arg("color", new ColorArgumentType())
+                .run(context -> itemResolver(item -> {
+                    var color = IntegerArgumentType.getInteger(context, "color");
+                    item.set(DataComponents.DYED_COLOR, new DyedItemColor(color));
+                    var hex = String.format("%06x", color);
+                    return JustHelperCommand.feedback(
+                            "<green>Установлен цвет предмета: <underlined><#{1}>#{0}",
+                            TextUtils.copyValue(hex),
+                            hex
+                    );
+                }))
+                .build();
+    }
+
+    private LiteralArgumentBuilder<ClientSuggestionProvider> equipmentBranch() {
+
+        var buildContext = MojangUtils.createBuildContext();
+
+        var slotBranch = new LineCommand("slot")
+                .arg("slot", ReferenceArgumentType.ofEnums(true, EquipmentSlot.values()))
+                .run(context -> itemResolver(item -> {
+                    var slot = ReferenceArgumentType.<EquipmentSlot>getReference(context, "slot");
+                    var data = equippableCopy(item, slot);
+                    item.set(DataComponents.EQUIPPABLE, data.build());
+                    return JustHelperCommand.feedback(1, "<green>Слот для экипировки: <white>{0}", slot);
+                })).build();
+
+        var overlayBranch = new LineCommand("overlay")
+                .arg("overlay", IdentifierArgument.id())
+                .run(context -> itemResolver(item -> {
+                    var overlay = MojangUtils.getId(context, "overlay");
+                    var data = equippableCopy(item, null).setCameraOverlay(overlay);
+                    item.set(DataComponents.EQUIPPABLE, data.build());
+                    return JustHelperCommand.feedback(1, "<green>Оверлей камеры: <white>{0}", overlay);
+                })).build();
+
+        var entitiesBranch = new LineCommand("entities")
+                .arg("entities", new GreedyArgumentType<>(ResourceArgument.resource(buildContext, Registries.ENTITY_TYPE), " "))
+                .run(context -> itemResolver(item -> {
+                    var entities = GreedyArgumentType.<Holder.Reference<EntityType<?>>>getArgument(context, "entities");
+                    var data = equippableCopy(item, null).setAllowedEntities( HolderSet.direct(entities) );
+                    item.set(DataComponents.EQUIPPABLE, data.build());
+                    return JustHelperCommand.feedback(1, "<green>Разрешенные сущности: <white>{0}", entities);
+                })).build();
+
+        var dispensableBranch = new LineCommand("dispensable")
+                .arg("dispensable", BoolArgumentType.bool())
+                .run(context -> itemResolver(item -> {
+                    var value = BoolArgumentType.getBool(context, "dispensable");
+                    var data = equippableCopy(item, null).setDispensable(value);
+                    item.set(DataComponents.EQUIPPABLE, data.build());
+                    return JustHelperCommand.feedback(1, "<green>'Необязательность': <white>{0}", value);
+                })).build();
+
+        var swappableBranch = new LineCommand("swappable")
+                .arg("swappable", BoolArgumentType.bool())
+                .run(context -> itemResolver(item -> {
+                    var value = BoolArgumentType.getBool(context, "swappable");
+                    var data = equippableCopy(item, null).setSwappable(value);
+                    item.set(DataComponents.EQUIPPABLE, data.build());
+                    return JustHelperCommand.feedback(1, "<green>Свап брони: <white>{0}", value);
+                })).build();
+
+        var damageOnHurtBranch = new LineCommand("damageOnHurt")
+                .arg("damageOnHurt", BoolArgumentType.bool())
+                .run(context -> itemResolver(item -> {
+                    var value = BoolArgumentType.getBool(context, "damageOnHurt");
+                    var data = equippableCopy(item, null).setDamageOnHurt(value);
+                    item.set(DataComponents.EQUIPPABLE, data.build());
+                    return JustHelperCommand.feedback(1, "<green>Разрушение от урона: <white>{0}", value);
+                })).build();
+
+        var equipOnInteract = new LineCommand("equipOnInteract")
+                .arg("equipOnInteract", BoolArgumentType.bool())
+                .run(context -> itemResolver(item -> {
+                    var value = BoolArgumentType.getBool(context, "equipOnInteract");
+                    var data = equippableCopy(item, null).setEquipOnInteract(value);
+                    item.set(DataComponents.EQUIPPABLE, data.build());
+                    return JustHelperCommand.feedback(1, "<green>Экипировка от взаимодействия: <white>{0}", value);
+                })).build();
+
+        var equipSoundBranch = new LineCommand("equipSound")
+                .arg("sound", ResourceArgument.resource(buildContext, Registries.SOUND_EVENT))
+                .run(context -> itemResolver(item -> {
+                    var value = MojangUtils.getResource(context, "sound", Registries.SOUND_EVENT);
+                    var data = equippableCopy(item, null).setEquipSound(value);
+                    item.set(DataComponents.EQUIPPABLE, data.build());
+                    return JustHelperCommand.feedback(1, "<green>Звук экипировки: <white>{0}", value.key().identifier());
+                })).build();
+
+        var gliderBranch = new LineCommand("glider")
+                .arg("glider", BoolArgumentType.bool())
+                .run(context -> itemResolver(item -> {
+                    var value = BoolArgumentType.getBool(context, "glider");
+                    if (value) item.set(DataComponents.GLIDER, Unit.INSTANCE); else item.set(DataComponents.GLIDER, null);
+                    return JustHelperCommand.feedback(1, "<green>Режим планирования: <white>{0}", value);
+                })).build();
+
+        var canShearingBranch = new LineCommand("canBeSheared")
+                .arg("canBeSheared", BoolArgumentType.bool())
+                .run(context -> itemResolver(item -> {
+                    var value = BoolArgumentType.getBool(context, "canBeSheared");
+                    var data = equippableCopy(item, null).setCanBeSheared(value);
+                    item.set(DataComponents.EQUIPPABLE, data.build());
+                    return JustHelperCommand.feedback(1, "<green>Можно срезать: <white>{0}", value);
+                })).build();
+
+        var shearingSoundBranch = new LineCommand("shearingSound")
+                .arg("sound", ResourceArgument.resource(buildContext, Registries.SOUND_EVENT))
+                .run(context -> itemResolver(item -> {
+                    var value = MojangUtils.getResource(context, "sound", Registries.SOUND_EVENT);
+                    var data = equippableCopy(item, null).setShearingSound(value);
+                    item.set(DataComponents.EQUIPPABLE, data.build());
+                    return JustHelperCommand.feedback(1, "<green>Звук срезания брони: <white>{0}", value.key().identifier());
+                })).build();
+
+        var removeBranch = new LineCommand("remove")
+                .add(JustHelperCommands.literal("confirm"))
+                .run(context -> itemResolver(item -> {
+                    item.set(DataComponents.EQUIPPABLE, null);
+                    return JustHelperCommand.feedback(1, "<yellow>Компонент брони был удален");
+                })).build();
+
+        return JustHelperCommands.literal("equipment")
+                .executes(context -> itemResolver(item -> {
+                    var data = item.get(DataComponents.EQUIPPABLE);
+                    if (data == null) return JustHelperCommand.feedback("<yellow>Компонент экипировки не установлен");
+                    return JustHelperCommand.feedback(
+                            """
+                            <green>Заданные параметры <white>экипировки<green>:
+                            <white>- Слот: <green>{0}
+                            <white>- Звук экипировки: <green>{1}
+                            <white>- Ассет: <green>{2}
+                            <white>- Оверлей: <green>{3}
+                            <white>- Сущности: <green>{4}
+                            <white>- Необязательный: <green>{5}
+                            <white>- Свап: <green>{6}
+                            <white>- Повреждения от урона: <green>{7}
+                            <white>- Экипировка от взаимодействия: <green>{8}
+                            <white>- Можно срезать: <green>{9}
+                            <white>- Звук срезки: <green>{10}
+                            
+                            <white>- (Доп.) Глайдер: <green>{11}
+                            """,
+                            data.slot(),
+                            data.equipSound(),
+                            data.assetId().orElse(null),
+                            data.cameraOverlay(),
+                            data.allowedEntities().orElse(null),
+                            data.dispensable(),
+                            data.swappable(),
+                            data.damageOnHurt(),
+                            data.equipOnInteract(),
+                            data.canBeSheared(),
+                            data.shearingSound(),
+                            item.get(DataComponents.GLIDER) != null
+                    );
+                }))
+                .then(slotBranch).then(overlayBranch).then(entitiesBranch).then(dispensableBranch)
+                .then(swappableBranch).then(damageOnHurtBranch).then(equipSoundBranch)
+                .then(shearingSoundBranch).then(gliderBranch).then(removeBranch)
+                .then(canShearingBranch).then(equipOnInteract);
+    }
+
+    private Equippable.Builder equippableCopy(ItemStack item, EquipmentSlot hotSlot) {
+        var prev = item.get(DataComponents.EQUIPPABLE);
+        var result = Equippable.builder(hotSlot == null && prev == null ? EquipmentSlot.HEAD : hotSlot == null ? prev.slot() : hotSlot);
+        if (prev == null) return result;
+        result.setEquipSound(prev.equipSound());
+        prev.assetId().ifPresent(result::setAsset);
+        prev.cameraOverlay().ifPresent(result::setCameraOverlay);
+        prev.allowedEntities().ifPresent(result::setAllowedEntities);
+        result.setDispensable(prev.dispensable());
+        result.setSwappable(prev.swappable());
+        result.setDamageOnHurt(prev.damageOnHurt());
+        result.setShearingSound(prev.shearingSound());
+
+        return result;
     }
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> profileBranch() {
@@ -92,7 +295,6 @@ public class ItemEditorCommand extends JustHelperCommand {
                 }))
                 .build();
     }
-
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> modifierBranch() {
 
@@ -344,7 +546,6 @@ public class ItemEditorCommand extends JustHelperCommand {
         }
         if (result > 0) {
             player.swing(InteractionHand.MAIN_HAND, false);
-            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.AMETHYST_BLOCK_CHIME, 2f));
             player.connection.send(
                     new ServerboundSetCreativeModeSlotPacket(36 + player.getInventory().getSelectedSlot(), item)
             );

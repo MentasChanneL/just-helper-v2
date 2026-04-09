@@ -10,6 +10,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.network.chat.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,10 @@ import java.util.concurrent.CompletableFuture;
 public class ReferenceArgumentType<T> implements ArgumentType<ReferenceArgumentType.Holder<T>> {
     public static final DynamicCommandExceptionType UNKNOWN_REFERENCE = new DynamicCommandExceptionType((object) -> Component.literal("Неизвестное значение " + object));
     public static final StringArgumentType reader = StringArgumentType.string();
+    public static final StringArgumentType greedyReader = StringArgumentType.greedyString();
 
+    public boolean enableCounting = false;
+    public String countingSplit = " ";
     public Resolver<T> references;
 
     public ReferenceArgumentType(List<String> keys, List<T> values) {
@@ -30,6 +34,13 @@ public class ReferenceArgumentType<T> implements ArgumentType<ReferenceArgumentT
 
     public ReferenceArgumentType(Resolver<T> resolver) {
         references = resolver;
+    }
+
+    @SafeVarargs
+    public static <T extends Enum<?>> ReferenceArgumentType<T> ofEnums(boolean lowercase, boolean enableCounting, T ... enums) {
+        var result = ofEnums(lowercase, enums);
+        result.enableCounting = enableCounting;
+        return result;
     }
 
     @SafeVarargs
@@ -48,9 +59,19 @@ public class ReferenceArgumentType<T> implements ArgumentType<ReferenceArgumentT
     @Override
     public Holder<T> parse(StringReader stringReader) throws CommandSyntaxException {
         var map = references.resolve();
+        if (enableCounting) {
+            var keys = greedyReader.parse(stringReader).split(countingSplit);
+            var list = new ArrayList<T>();
+            for (var key : keys) {
+                var value = map.get(key);
+                if (value == null) throw UNKNOWN_REFERENCE.create(key);
+                list.add(value);
+            }
+            return new Holder<>(list);
+        }
         var key = reader.parse(stringReader);
         if (!map.containsKey(key)) throw UNKNOWN_REFERENCE.create(key);
-        return new Holder<>(map.get(key));
+        return new Holder<>( List.of(map.get(key)) );
     }
 
     @Override
@@ -70,9 +91,14 @@ public class ReferenceArgumentType<T> implements ArgumentType<ReferenceArgumentT
 
     @SuppressWarnings("unchecked")
     public static <T> T getReference(CommandContext<?> context, String name) {
+        return ((Holder<T>) context.getArgument(name, Holder.class)).value.getFirst();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> getReferences(CommandContext<?> context, String name) {
         return ((Holder<T>) context.getArgument(name, Holder.class)).value;
     }
 
-    public record Holder<T>(T value) {}
+    public record Holder<T>(List<T> value) {}
     public interface Resolver<T> { Map<String, T> resolve(); }
 }

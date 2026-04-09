@@ -60,7 +60,7 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
         var value = input.getValue();
         if (spacesCheckBox != null && spacesCheckBox.isFocused()) Minecraft.getInstance().schedule(() -> this.setFocused(input));
         if ( JustHelperCommands.isJustHelperCommand(value) ) {
-            guiGraphics.fill(x1, y1, x2, y2,0x3300AAFF);
+            guiGraphics.fill(x1, y1, x2, y2,0x550077AA);
             limit = Integer.MAX_VALUE;
         } else {
             guiGraphics.fill(x1, y1, x2, y2, color);
