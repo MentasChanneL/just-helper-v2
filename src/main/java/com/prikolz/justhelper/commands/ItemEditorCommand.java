@@ -92,11 +92,17 @@ public class ItemEditorCommand extends JustHelperCommand {
                 .run(context -> itemResolver(item -> {
                     var color = item.get(DataComponents.DYED_COLOR);
                     if (color == null) return JustHelperCommand.feedback("<yellow>Компонент цвета не установлен");
-                    var hex = String.format("%06x", color.rgb());
+                    var rgb = color.rgb();
+                    var hex = String.format("%06x", rgb);
+                    int r = (rgb >> 16) & 0xFF;
+                    int g = (rgb >> 8) & 0xFF;
+                    int b = rgb & 0xFF;
+                    String rgbStr = r + " " + g + " " + b;
                     return JustHelperCommand.feedback(
-                            "Установленный цвет предмета: <underlined><#{1}>#{0}",
-                            TextUtils.copyValue(hex),
-                            hex
+                            "Установленный цвет предмета:\n♯ HEX: <underlined><#{1}>#{0}<reset>\n☰ RGB: <underlined><#{1}> {2}",
+                            TextUtils.copyValue('#' + hex),
+                            hex,
+                            TextUtils.copyValue(rgbStr)
                     );
                 }))
                 .arg("color", new ColorArgumentType())
@@ -104,10 +110,15 @@ public class ItemEditorCommand extends JustHelperCommand {
                     var color = IntegerArgumentType.getInteger(context, "color");
                     item.set(DataComponents.DYED_COLOR, new DyedItemColor(color));
                     var hex = String.format("%06x", color);
+                    int r = (color >> 16) & 0xFF;
+                    int g = (color >> 8) & 0xFF;
+                    int b = color & 0xFF;
+                    String rgbStr = r + " " + g + " " + b;
                     return JustHelperCommand.feedback(
-                            "<green>Установлен цвет предмета: <underlined><#{1}>#{0}",
-                            TextUtils.copyValue(hex),
-                            hex
+                            "<green>Новый цвет предмета:\n♯ HEX: <underlined><#{1}>#{0}<reset>\n☰ RGB: <underlined><#{1}> {2}",
+                            TextUtils.copyValue('#' + hex),
+                            hex,
+                            TextUtils.copyValue(rgbStr)
                     );
                 }))
                 .build();

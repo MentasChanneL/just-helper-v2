@@ -28,7 +28,7 @@ public class GreedyArgumentType<A, T extends ArgumentType<A>> implements Argumen
         String line = greedyParser.parse(stringReader);
         var args = line.split(split);
         var list = new ArrayList<A>();
-        for (var arg : args) list.add( parser.parse(new StringReader(" " + arg + " ")) );
+        for (var arg : args) list.add( parser.parse(new StringReader(arg)) );
 
         return new Holder<>(list);
     }
