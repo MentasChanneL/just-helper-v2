@@ -99,7 +99,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                     int b = rgb & 0xFF;
                     String rgbStr = r + " " + g + " " + b;
                     return JustHelperCommand.feedback(
-                            "Установленный цвет предмета:\n♯ HEX: <underlined><#{1}>#{0}<reset>\n☰ RGB: <underlined><#{1}> {2}",
+                            "Установленный цвет предмета:\n<reset>♯ HEX: <underlined><#{1}>{0}<reset>\n☰ RGB: <underlined><#{1}> {2}",
                             TextUtils.copyValue('#' + hex),
                             hex,
                             TextUtils.copyValue(rgbStr)
@@ -115,7 +115,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                     int b = color & 0xFF;
                     String rgbStr = r + " " + g + " " + b;
                     return JustHelperCommand.feedback(
-                            "<green>Новый цвет предмета:\n♯ HEX: <underlined><#{1}>#{0}<reset>\n☰ RGB: <underlined><#{1}> {2}",
+                            "<green>Новый цвет предмета:\n<reset>♯ HEX: <underlined><#{1}>{0}<reset>\n☰ RGB: <underlined><#{1}> {2}",
                             TextUtils.copyValue('#' + hex),
                             hex,
                             TextUtils.copyValue(rgbStr)
