@@ -1,9 +1,11 @@
+import java.text.SimpleDateFormat
+
 plugins {
 	id 'fabric-loom' version "${loom_version}"
 	id 'maven-publish'
 }
 
-version = project.mod_version
+version = new SimpleDateFormat("dd.MM.yy").format(new Date())
 group = project.maven_group
 
 base {

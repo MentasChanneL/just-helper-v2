@@ -3,6 +3,7 @@ package com.prikolz.justhelper.mixin;
 import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.commands.JustHelperCommands;
 import com.prikolz.justhelper.gui.widgets.ChatCheckbox;
+import com.prikolz.justhelper.util.ReflectionUtils;
 import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -40,9 +41,10 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
     )
     private void init(CallbackInfo ci) {
         if (!Config.get().chatParameters.value.enableMarkers.value) return;
+
         spacesCheckBox = new ChatCheckbox(
-                width - 15,
-                height - 25,
+                width - (ReflectionUtils.isClassLoaded("com.aizistral.nochatreports.common.NCRCore") ? 40 : 15),
+                height - 30,
                 TextUtils.minimessage("<font:just-helper:icons>1"),
                 allowDoubleSpaces,
                 (w, v) -> allowDoubleSpaces = v
@@ -67,7 +69,14 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
         }
         input.setMaxLength(limit);
         if (!Config.get().chatParameters.value.showLineLimit.value) return;
-        guiGraphics.drawString(Minecraft.getInstance().font, value.length() + "/" + limit, x1 + 2, y1 - 10, 0xffAAAAAA);
+        guiGraphics.drawString(
+                Minecraft.getInstance().font,
+                value.length() + "/" + limit,
+                ReflectionUtils.isClassLoaded("obro1961.chatpatches.ChatPatches") ?
+                        (int) (width * 0.32) : x1 + 2,
+                y1 - 10,
+                0xffAAAAAA
+        );
     }
 
     @Redirect(
