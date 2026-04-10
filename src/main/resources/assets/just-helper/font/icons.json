@@ -1,0 +1,24 @@
+{
+    "providers": [
+        {
+            "type": "bitmap",
+            "file": "just-helper:font/folder.png",
+            "ascent": 11,
+            "height": 16,
+            "chars": ["0"]
+        },
+        {
+            "type": "bitmap",
+            "file": "just-helper:font/space.png",
+            "ascent": 7,
+            "height": 8,
+            "chars": ["1"]
+        },
+        {
+            "type": "space",
+            "advances": {
+                ".": -1
+            }
+        }
+    ]
+}
