@@ -16,7 +16,7 @@ public class MainModCommand extends JustHelperCommand {
     public LiteralArgumentBuilder<ClientSuggestionProvider> create(LiteralArgumentBuilder<ClientSuggestionProvider> main) {
         return main
                 .then(
-                    JustHelperCommands.literal("config").executes(context -> executeConfig())
+                        JustHelperCommands.literal("config").executes(context -> executeConfig())
                 )
                 .then(
                         JustHelperCommands.literal("help").executes(context -> executeHelp())
@@ -29,20 +29,20 @@ public class MainModCommand extends JustHelperCommand {
 
     public int execute() {
         JustHelperCommand.feedback("<yellow>ⓘ<white> Команда <yellow>/{0}<white>:", this.name);
-        JustHelperCommand.feedback( helpEntry("help", "Помощь по моду/Все команды.") );
-        JustHelperCommand.feedback( helpEntry("config", "Редактирование/Просмотр конфига.") );
-        JustHelperCommand.feedback( helpEntry("logs", "Логи(Журнал о работе) мода.") );
+        JustHelperCommand.feedback(helpEntry("help", "Помощь по моду/Все команды."));
+        JustHelperCommand.feedback(helpEntry("config", "Редактирование/Просмотр конфига."));
+        JustHelperCommand.feedback(helpEntry("logs", "Логи(Журнал о работе) мода."));
         return 1;
     }
 
     private String helpEntry(String command, String description) {
-        return  "  <click:suggest_command:'/" + this.name + " " + command
+        return "  <click:suggest_command:'/" + this.name + " " + command
                 + "'><hover:show_text:'/" + this.name + " " + command
                 + "'><white>/" + this.name + " <yellow>" + command + " <gray>- " + description;
     }
 
     public static int executeConfig() {
-        Minecraft.getInstance().schedule(() -> Minecraft.getInstance().setScreen( ConfigScreen.create() ));
+        Minecraft.getInstance().schedule(() -> Minecraft.getInstance().setScreen(ConfigScreen.create()));
         return 1;
     }
 

@@ -15,36 +15,35 @@ import java.util.HashMap;
 import java.util.List;
 
 public class JustHelperCommands {
-
     public static final HashMap<String, JustHelperCommand> commands = new HashMap<>();
     public static final List<JustHelperCommand> registerOrder = new ArrayList<>();
 
     public static void initialize() {
-        register( new MainModCommand() );
-        register( new FindCommand() );
-        register( new FoundListCommand() );
-        register( new FloorCommand() );
-        register( new DescribeCommand() );
-        register( new ItemEditorCommand() );
-        register( new PosCommand("pos", true) );
-        register( new PosCommand("back", false) );
-        register( new VarCommand(Variable.Scope.LOCAL, "vlc") );
-        register( new VarCommand(Variable.Scope.GAME, "vg") );
-        register( new VarCommand(Variable.Scope.SAVE, "vs") );
-        register( new VarCommand(Variable.Scope.LINE, "vl") );
-        register( new GetDataTypeCommand("n", " ", "num") );
-        register( new GetDataTypeCommand("t", null, "txt") );
-        register( new ZeroCommand() );
-        register( new StupidCommand() );
-        register( new Base64Command() );
-        register( new ZlibCommand() );
-        register( new GzipCommand() );
+        register(new MainModCommand());
+        register(new FindCommand());
+        register(new FoundListCommand());
+        register(new FloorCommand());
+        register(new DescribeCommand());
+        register(new ItemEditorCommand());
+        register(new PosCommand("pos", true));
+        register(new PosCommand("back", false));
+        register(new VarCommand(Variable.Scope.LOCAL, "vlc"));
+        register(new VarCommand(Variable.Scope.GAME, "vg"));
+        register(new VarCommand(Variable.Scope.SAVE, "vs"));
+        register(new VarCommand(Variable.Scope.LINE, "vl"));
+        register(new GetDataTypeCommand("n", " ", "num"));
+        register(new GetDataTypeCommand("t", null, "txt"));
+        register(new ZeroCommand());
+        register(new StupidCommand());
+        register(new Base64Command());
+        register(new ZlibCommand());
+        register(new GzipCommand());
+        register(new TextEditorCommand());
     }
 
     public static void registerDispatcher(CommandDispatcher<ClientSuggestionProvider> dispatcher) {
-
         commands.values().forEach((v) -> {
-            if (v.isEnabled()) dispatcher.register( v.build() );
+            if (v.isEnabled()) dispatcher.register(v.build());
         });
 
         JustHelperClient.LOGGER.info("Registered {} commands", commands.size());
@@ -75,7 +74,7 @@ public class JustHelperCommands {
                     dispatcher.execute(parse);
                 } catch (Throwable t) {
                     JustHelperCommand.feedback(
-                       TextUtils.minimessage("<red>[Just Helper] <tr:command.exception:'" + t.getMessage() + "'>")
+                            TextUtils.minimessage("<red>[Just Helper] <tr:command.exception:'" + t.getMessage() + "'>")
                     );
                     JustHelperClient.LOGGER.printStackTrace(t);
                 }
@@ -93,5 +92,4 @@ public class JustHelperCommands {
         }
         return false;
     }
-
 }

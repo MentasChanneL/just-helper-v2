@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class DevValueRegistry<T extends DevValue> {
-
     private static final HashMap<String, DevValueRegistry<? extends DevValue>> registries = new HashMap<>();
 
     public final String type;
@@ -43,31 +42,26 @@ public class DevValueRegistry<T extends DevValue> {
         return registries.values();
     }
 
-    /*
-    public ItemStack toItem(T value) {
-        var result = new ItemStack(value.material);
-        var nbt = new CompoundTag();
-        var creativePlus = new CompoundTag();
-        creativePlus.put("type", StringTag.valueOf(value.type) );
-        nbtResolver.resolve(value, creativePlus);
-        nbt.put("creative_plus", creativePlus);
-        result.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
-        var displays = value.buildItemDisplays();
-        result.set(DataComponents.LORE, new ItemLore(displays.second));
-        result.set(DataComponents.CUSTOM_NAME, displays.first);
-        return result;
-    }
-    */
-
     @SuppressWarnings("unchecked")
     public static <T extends DevValue> T fromNBT(CompoundTag nbt, boolean fullPath) {
-        if (nbt == null) return null;
+        if (nbt == null) {
+            JustHelperClient.LOGGER.warn("NBT is null");
+            return null;
+        }
         var valueTag = fullPath ? NBTUtils.get(nbt, "creative_plus.value") : nbt;
-        if (!(valueTag instanceof CompoundTag value)) return null;
+        if (!(valueTag instanceof CompoundTag value)) {
+            return null;
+        }
         String type = value.getString("type").orElse(null);
-        if (type == null) return null;
+        if (type == null) {
+            JustHelperClient.LOGGER.warn("Type is null");
+            return null;
+        }
         var resolver = DevValueRegistry.getRegistry(type);
-        if (resolver == null) return null;
+        if (resolver == null) {
+            JustHelperClient.LOGGER.warn("Resolver is null");
+            return null;
+        }
         try {
             var result = (T) resolver.valueResolver.resolve(new TagReader(value));
             result.registry = (DevValueRegistry<DevValue>) resolver;
@@ -100,19 +94,19 @@ public class DevValueRegistry<T extends DevValue> {
     }
 
     public static void registerAll() {
-        register( Variable.registry );
-        register( Text.registry );
-        register( Number.registry );
-        register( Location.registry );
-        register( Dictionary.registry );
-        register( Array.registry );
-        register( GameValue.registry );
-        register( Parameter.registry );
-        register( Vector.registry );
-        register( Potion.registry );
-        register( Sound.registry );
-        register( Particle.registry );
-        register( Item.registry );
+        register(Variable.registry);
+        register(Text.registry);
+        register(Number.registry);
+        register(Location.registry);
+        register(Dictionary.registry);
+        register(Array.registry);
+        register(GameValue.registry);
+        register(Parameter.registry);
+        register(Vector.registry);
+        register(Potion.registry);
+        register(Sound.registry);
+        register(Particle.registry);
+        register(Item.registry);
     }
 
     public interface NBTResolver<T> {
@@ -124,7 +118,6 @@ public class DevValueRegistry<T extends DevValue> {
     }
 
     public record TagReader(CompoundTag tag) {
-
         private <T> T send(T value, String member) {
             tag.remove(member);
             return value;
@@ -134,22 +127,27 @@ public class DevValueRegistry<T extends DevValue> {
             var result = tag.get(member);
             return send(result, member);
         }
+
         public Optional<String> getString(String member) {
             var result = tag.getString(member);
             return send(result, member);
         }
+
         public Optional<Integer> getInt(String member) {
             var result = tag.getInt(member);
             return send(result, member);
         }
+
         public Optional<Double> getDouble(String member) {
             var result = tag.getDouble(member);
             return send(result, member);
         }
+
         public Optional<CompoundTag> getCompound(String member) {
             var result = tag.getCompound(member);
             return send(result, member);
         }
+
         public Optional<ListTag> getList(String member) {
             var result = tag.getList(member);
             return send(result, member);

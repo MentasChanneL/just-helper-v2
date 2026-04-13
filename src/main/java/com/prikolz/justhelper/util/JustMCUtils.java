@@ -1,5 +1,11 @@
 package com.prikolz.justhelper.util;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,6 +14,34 @@ import java.util.Base64;
 import java.util.zip.*;
 
 public class JustMCUtils {
+    public static boolean isTextValue(ItemStack item) {
+        // простые метрики для отсеивания очевидных несоответствий
+        if(item == null || item.isEmpty() || item.getItem() != Items.BOOK) return false;
+
+        var nbt = item.get(DataComponents.CUSTOM_DATA);
+        if(nbt == null) return false;
+        var compound = nbt.copyTag();
+        CompoundTag tag = (CompoundTag) NBTUtils.get(compound, "creative_plus.value");
+
+        return tag.getString("type").orElse(null) != null &&
+                tag.getString("text").orElse(null) != null &&
+                tag.getString("parsing").orElse(null) != null;
+    }
+
+    public static ItemStack setTextValue(ItemStack item, String text) {
+        CustomData customData = item.get(DataComponents.CUSTOM_DATA);
+        CompoundTag root = (customData != null) ? customData.copyTag() : new CompoundTag();
+        CompoundTag creativePlusCompound = root.getCompound("creative_plus").orElse(null);
+        CompoundTag valueCompound = creativePlusCompound.getCompound("value").orElse(null);
+        valueCompound.putString("text", text);
+        creativePlusCompound.put("value", valueCompound);
+        root.put("creative_plus", creativePlusCompound);
+        item.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
+        item.set(DataComponents.CUSTOM_NAME, TextUtils.minimessage("<white>" + TextUtils.cut(text, 150)));
+
+        return item;
+    }
+
     public static String zlibCompress(String str) {
         var input = str.getBytes();
         var output = new byte[input.length * 4];

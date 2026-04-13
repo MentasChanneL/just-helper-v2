@@ -24,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChatScreen.class)
 public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
-
     @Shadow
     protected EditBox input;
 
@@ -33,7 +32,9 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
     @Unique
     private ChatCheckbox spacesCheckBox = null;
 
-    protected ChatScreenMixin(Component component) { super(component); }
+    protected ChatScreenMixin(Component component) {
+        super(component);
+    }
 
     @Inject(
             method = "init",
@@ -49,7 +50,7 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
                 allowDoubleSpaces,
                 (w, v) -> allowDoubleSpaces = v
         );
-        spacesCheckBox.setTooltip( Tooltip.create(Component.literal("Включить/Выключить\nдвойные пробелы в чате")) );
+        spacesCheckBox.setTooltip(Tooltip.create(Component.literal("Включить/Выключить\nдвойные пробелы в чате")));
         this.addRenderableWidget(spacesCheckBox);
     }
 
@@ -61,8 +62,8 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
         int limit = 256;
         var value = input.getValue();
         if (spacesCheckBox != null && spacesCheckBox.isFocused()) Minecraft.getInstance().schedule(() -> this.setFocused(input));
-        if ( JustHelperCommands.isJustHelperCommand(value) ) {
-            guiGraphics.fill(x1, y1, x2, y2,0xAA002255);
+        if (JustHelperCommands.isJustHelperCommand(value)) {
+            guiGraphics.fill(x1, y1, x2, y2, 0xAA002255);
             limit = Integer.MAX_VALUE;
         } else {
             guiGraphics.fill(x1, y1, x2, y2, color);

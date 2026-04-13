@@ -7,7 +7,7 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 public class ZeroCommand extends JustHelperCommand {
     public ZeroCommand() {
         super("0");
-        this.description = "<gray>- Коротка версия команды '/num 0'";
+        this.description = "<gray>- Короткая версия команды '/num 0'";
     }
 
     @Override

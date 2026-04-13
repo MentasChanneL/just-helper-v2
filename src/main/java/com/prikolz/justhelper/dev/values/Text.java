@@ -1,13 +1,14 @@
 package com.prikolz.justhelper.dev.values;
 
 import com.prikolz.justhelper.util.Pair;
+import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
 
 public class Text extends DevValue {
-
     public static final String type = "text";
     public static DevValueRegistry<Text> registry = DevValueRegistry.create(
             Text.type,
@@ -63,6 +64,16 @@ public class Text extends DevValue {
                 if (type.id.equals(id)) return type;
             }
             return null;
+        }
+
+        public Component getNameComponent() {
+            return switch (this.id) {
+                case "plain" -> TextUtils.minimessage("<sprite:items:item/filled_map> <white>Обычный");
+                case "legacy" -> TextUtils.minimessage("<sprite:items:item/field_masoned_banner_pattern> <yellow>Цветной");
+                case "json" -> TextUtils.minimessage("<sprite:items:item/green_bundle> <gold>JSON");
+                case "minimessage" -> TextUtils.minimessage("<sprite:items:item/knowledge_book> <#9AFF1F>Стилизуемый");
+                default -> TextUtils.minimessage("<sprite:items:item/barrier> <red>Ошибка");
+            };
         }
     }
 }

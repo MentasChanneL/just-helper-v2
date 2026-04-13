@@ -18,8 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class TextUtils {
-
-    public static final DynamicCommandExceptionType ERROR_INVALID_COMPONENT = new DynamicCommandExceptionType((object) -> Component.translatableEscape("argument.component.invalid", new Object[]{object}));
+    public static final DynamicCommandExceptionType ERROR_INVALID_COMPONENT = new DynamicCommandExceptionType((object) -> Component.translatableEscape("argument.component.invalid", object));
     public static final Grammar<Tag> TAG_PARSER = SnbtGrammar.createParser(NbtOps.INSTANCE);
     public static final CommandArgumentParser<Component> PARSER = TAG_PARSER.withCodec(NbtOps.INSTANCE, TAG_PARSER, ComponentSerialization.CODEC, ERROR_INVALID_COMPONENT);
 
@@ -109,5 +108,10 @@ public class TextUtils {
     public static String copyValue(Object value) {
         var str = value == null ? "null" : value.toString();
         return "<hover:show_text:'<tr:chat.copy> " + str + "'><click:copy_to_clipboard:'" + str + "'>" + str;
+    }
+
+    public static String cut(String text, int length) {
+        if(text.length() <= length) return text;
+        return text.substring(0, length) + "... (+" + (text.length() - length) + ")";
     }
 }
