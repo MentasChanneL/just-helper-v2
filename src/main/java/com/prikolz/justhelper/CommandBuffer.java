@@ -6,8 +6,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class CommandBuffer {
-    public static Queue<String> buffer = new ConcurrentLinkedQueue<>() {
-    };
+    public static Queue<String> buffer = new ConcurrentLinkedQueue<>() {};
     public static long currentCd = 0;
 
     public static void tick(long delta) {

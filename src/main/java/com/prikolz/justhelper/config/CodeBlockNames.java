@@ -10,7 +10,6 @@ import net.minecraft.world.level.block.Block;
 import java.util.Map;
 
 public record CodeBlockNames(Map<String, String> names, Map<Block, String> registry) {
-
     public static Block getBlock(String key) {
         try {
             return BuiltInRegistries.BLOCK.getValue(Identifier.parse(key));

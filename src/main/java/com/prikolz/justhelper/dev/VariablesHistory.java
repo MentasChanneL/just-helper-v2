@@ -1,24 +1,19 @@
 package com.prikolz.justhelper.dev;
 
-import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.dev.values.Variable;
 import com.prikolz.justhelper.util.FileUtils;
-import com.prikolz.justhelper.util.NBTUtils;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
 
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
 public class VariablesHistory {
-
-    public Set<String> history;
     public final Variable.Scope type;
     public final String worldUUID;
     public final File file;
+
+    public Set<String> history;
     public boolean isValid = true;
 
     public VariablesHistory(String worldUUID, Variable.Scope type) {

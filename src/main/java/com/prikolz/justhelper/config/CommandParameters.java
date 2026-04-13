@@ -82,7 +82,12 @@ public class CommandParameters {
             );
         }
 
-        public boolean isEnabled() { return enabled.value; }
-        public String getName() { return name.value; }
+        public boolean isEnabled() {
+            return enabled.value;
+        }
+
+        public String getName() {
+            return name.value;
+        }
     }
 }

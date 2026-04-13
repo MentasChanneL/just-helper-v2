@@ -17,12 +17,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class JustHelperClient implements ClientModInitializer {
-
 	public static final String MOD_ID = "just-helper";
-
 	public static final JustHelperLogger LOGGER = new JustHelperLogger(LoggerFactory.getLogger(MOD_ID));
-
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
 	public static Config CONFIG = null;
 
 	@Override
@@ -35,7 +33,6 @@ public class JustHelperClient implements ClientModInitializer {
 	}
 
     public static class JustHelperLogger extends OutputStream {
-
         public static final int CACHE_LIMIT = 50;
 
         public Logger logger;
@@ -89,7 +86,7 @@ public class JustHelperClient implements ClientModInitializer {
         }
 
         @Override
-        public void write(int b) throws IOException {
+        public void write(int b) {
             outputBuffer.append((char) b);
         }
 

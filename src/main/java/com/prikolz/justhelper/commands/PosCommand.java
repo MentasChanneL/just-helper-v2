@@ -9,9 +9,9 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.world.phys.Vec3;
 
 public class PosCommand extends JustHelperCommand {
+    final boolean mustSave;
 
     static Vec3 pos = null;
-    final boolean mustSave;
 
     public PosCommand(String id, boolean mustSave) {
         super(id);

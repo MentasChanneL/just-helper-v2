@@ -16,10 +16,10 @@ public class ChatCheckbox extends AbstractWidget {
     private static final Identifier CHECKBOX_SPRITE = Identifier.parse("just-helper:checkbox");
     private static final Identifier CHECKBOX_SWAG = Identifier.parse("just-helper:ludi");
     private final Font font;
+    private final OnChange onChange;
 
     private Identifier resource;
     private boolean isSelected;
-    private final OnChange onChange;
 
     public ChatCheckbox(int i, int j, Component component, boolean initial, OnChange onChange) {
         super(i, j, 10, 10, component);

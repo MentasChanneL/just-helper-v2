@@ -12,16 +12,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
 public class DevRender {
+    private final Font font = Minecraft.getInstance().font;
+    private final Minecraft minecraft = Minecraft.getInstance();
 
     private int updateCooldown = 0;
-
     private BlockCodePos pos = new BlockCodePos(0, 0, 0);
     private Component floorText = Component.empty();
     private Component lineText = Component.empty();
     private Component blockText = Component.empty();
-
-    private final Font font = Minecraft.getInstance().font;
-    private final Minecraft minecraft = Minecraft.getInstance();
 
     private void infoUpdate() {
         var level = minecraft.level;
@@ -55,7 +53,6 @@ public class DevRender {
     }
 
     private void renderPosition(GuiGraphics guiGraphics) {
-
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
 
         int textWidth = font.width(floorText);

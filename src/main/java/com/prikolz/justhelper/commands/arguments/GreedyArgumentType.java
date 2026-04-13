@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class GreedyArgumentType<A, T extends ArgumentType<A>> implements ArgumentType<GreedyArgumentType.Holder<A>> {
-
     public final String split;
     public final T parser;
     public final StringArgumentType greedyParser = StringArgumentType.greedyString();

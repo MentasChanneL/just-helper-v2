@@ -7,7 +7,6 @@ import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
 public class GzipCommand extends JustHelperCommand {
-
     public GzipCommand() {
         super("gzip");
         this.description = "encode/decode [Текст] <gray>- Сжимает/Распаковывает текст в gzip.";
@@ -15,7 +14,6 @@ public class GzipCommand extends JustHelperCommand {
 
     @Override
     public LiteralArgumentBuilder<ClientSuggestionProvider> create(LiteralArgumentBuilder<ClientSuggestionProvider> main) {
-
         var encode = new LineCommand("compress")
                 .arg("text", StringArgumentType.greedyString())
                 .run(context -> {

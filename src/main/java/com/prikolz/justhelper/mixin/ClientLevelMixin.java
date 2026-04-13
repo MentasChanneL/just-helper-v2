@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientLevel.class)
 public class ClientLevelMixin {
-
     @Inject(method = "onBlockEntityAdded", at = @At("HEAD"))
     private void onBlockEntityAdded(BlockEntity blockEntity, CallbackInfo ci) {
         DevelopmentWorld.addSign(blockEntity);

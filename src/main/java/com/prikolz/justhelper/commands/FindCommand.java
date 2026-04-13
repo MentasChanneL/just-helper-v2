@@ -14,10 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class FindCommand extends JustHelperCommand {
+    public static final int PAGE_SIZE = 12;
 
     public static HashMap<String, String> miniChars = miniChars();
-
-    public static final int PAGE_SIZE = 12;
+    public static SignsSearchingArgumentType.InfoPack lastFound = new SignsSearchingArgumentType.InfoPack(List.of());
+    public static String lastPrompt = ":3";
 
     public static String toMini(String str) {
         String result = str;
@@ -26,9 +27,6 @@ public class FindCommand extends JustHelperCommand {
         }
         return result;
     }
-
-    public static SignsSearchingArgumentType.InfoPack lastFound = new SignsSearchingArgumentType.InfoPack(List.of());
-    public static String lastPrompt = ":3";
 
     public FindCommand() {
         super("find");

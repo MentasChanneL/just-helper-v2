@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Dictionary extends DevValue {
-
     public static final String type = "map";
     public static final DevValueRegistry<Dictionary> registry = DevValueRegistry.create(
             Dictionary.type,

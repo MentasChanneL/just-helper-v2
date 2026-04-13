@@ -6,7 +6,6 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 
 public class FrameWidget extends AbstractWidget {
-
     public int backgroundColor = 0xff000000;
     public int frameColor1 = 0xffFFFFFF;
     public int frameColor2 = frameColor1;

@@ -6,7 +6,6 @@ import com.prikolz.justhelper.CommandBuffer;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
 public class GetDataTypeCommand extends JustHelperCommand {
-
     private final String split;
     private final String command;
 

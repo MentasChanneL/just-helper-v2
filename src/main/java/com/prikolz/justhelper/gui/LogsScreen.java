@@ -35,7 +35,6 @@ public class LogsScreen extends Screen {
     }
 
     public static class LogsHolder extends AbstractWidget {
-
         public final MultiLineEditBox box;
 
         public LogsHolder(MultiLineEditBox box) {
@@ -65,6 +64,5 @@ public class LogsScreen extends Screen {
         public boolean isMouseOver(double d, double e) {
             return box.isMouseOver(d, e);
         }
-
     }
 }

@@ -17,16 +17,13 @@ import java.util.HashMap;
 import java.util.Set;
 
 public abstract class DevelopmentWorld {
-
     private static final String DEV_SUFFIX = "_creativeplus_editor";
     private static final String DEV_PREFIX = "world_";
-
     public static final HashMap<Variable.Scope, VariablesHistory> history = new HashMap<>();
     public static final HashMap<BlockPos, SignInfo> signs = new HashMap<>();
+
     public static FloorDescribes describes = null;
-
     private static DevRender render = null;
-
     private static String worldUUID;
 
     public static boolean isActive() {

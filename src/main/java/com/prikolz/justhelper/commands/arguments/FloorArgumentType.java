@@ -15,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import java.util.concurrent.CompletableFuture;
 
 public class FloorArgumentType implements ArgumentType<Integer> {
-
     public static final DynamicCommandExceptionType MUST_BE_IN_DEV = new DynamicCommandExceptionType((object) -> Component.literal("Недоступно вне мира разработки /dev."));
     public static final DynamicCommandExceptionType FLOOR_NOT_FOUND = new DynamicCommandExceptionType((object) -> TextUtils.minimessage("Этаж {0} не найден!", object));
     public static final StringArgumentType parser = StringArgumentType.greedyString();

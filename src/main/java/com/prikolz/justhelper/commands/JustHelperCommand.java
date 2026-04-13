@@ -8,8 +8,8 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.network.chat.Component;
 
 public abstract class JustHelperCommand {
-
     public final String id;
+
     public String name;
     public String description = "Нет описания";
 

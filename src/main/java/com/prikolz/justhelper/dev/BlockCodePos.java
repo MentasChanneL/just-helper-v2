@@ -5,11 +5,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 
 public class BlockCodePos {
-
     public final int floor;
     public final int line;
     public final int pos;
-
     public final BlockPos blockPos;
 
     public BlockCodePos(int x, int y, int z) {

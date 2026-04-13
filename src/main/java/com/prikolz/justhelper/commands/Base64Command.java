@@ -6,7 +6,6 @@ import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
 public class Base64Command extends JustHelperCommand {
-
     public Base64Command() {
         super("base64");
         this.description = "encode/decode [Текст] <gray>- Кодирует/Декодирует текст в base64.";

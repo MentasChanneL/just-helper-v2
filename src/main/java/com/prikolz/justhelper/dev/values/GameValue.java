@@ -7,7 +7,6 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 
 public class GameValue extends DevValue {
-
     public static final String type = "game_value";
     public static final DevValueRegistry<GameValue> registry = DevValueRegistry.create(
             GameValue.type,

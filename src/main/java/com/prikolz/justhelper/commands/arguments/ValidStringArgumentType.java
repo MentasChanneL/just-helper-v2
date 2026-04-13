@@ -14,9 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 public class ValidStringArgumentType implements ArgumentType<String> {
-
     public static final DynamicCommandExceptionType STRING_NO_MATCHES = new DynamicCommandExceptionType((object) -> TextUtils.minimessage("Строка не соответствует формату {0}", object));
-
     private final Pattern pattern;
     private final String feedback;
 

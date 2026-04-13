@@ -8,6 +8,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.prikolz.justhelper.JustHelperClient;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -16,6 +17,7 @@ import java.util.function.Predicate;
 public class LineCommand {
     private final List<SimpleCommandArg> line = new ArrayList<>();
     private final LiteralArgumentBuilder<ClientSuggestionProvider> main;
+
     private Predicate<ClientSuggestionProvider> requires = null;
     private BiFunction<CommandContext<ClientSuggestionProvider>, Throwable, Integer> onRunError = null;
 

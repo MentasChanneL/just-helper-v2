@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Array extends DevValue {
-
     public static final String type = "array";
+
     public static DevValueRegistry<Array> registry = DevValueRegistry.create(
             Array.type,
             nbt -> {

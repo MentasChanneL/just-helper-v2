@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 public class ConfigScreen extends Screen {
-
     private JSONHolder editBox;
     private Button saveButton;
     private Button closeButton;
@@ -236,5 +235,4 @@ public class ConfigScreen extends Screen {
 
         public record ExceptionInfo(int line, boolean error, String message) {}
     }
-
 }

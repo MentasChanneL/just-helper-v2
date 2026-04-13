@@ -26,7 +26,6 @@ public class SignInfo {
     }
 
     public String[] getLines() {
-
         var level = Minecraft.getInstance().level;
         if (level == null) return new String[0];
         var ent = Minecraft.getInstance().level.getBlockEntity(pos);

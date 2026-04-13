@@ -9,17 +9,15 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.dev.SignInfo;
-import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class SignsSearchingArgumentType implements ArgumentType<SignsSearchingArgumentType.InfoPack> {
-
     private static final StringArgumentType parser = StringArgumentType.greedyString();
-
     private static final List<String> lastFind = new ArrayList<>();
+
     public static String lastInput = "";
 
     @Override
@@ -94,7 +92,6 @@ public class SignsSearchingArgumentType implements ArgumentType<SignsSearchingAr
     public record InfoPack(List<FoundSignInfo> pack) {}
 
     public record FoundSignInfo(String[] lines, int mainLine, SignInfo sign) {
-
         public static FoundSignInfo create(SignInfo sign) {
             var lines = sign.getLines();
             return new FoundSignInfo(lines, 0, sign);

@@ -9,7 +9,6 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 
 public class Variable extends DevValue {
-
     public static String type = "variable";
     public static DevValueRegistry<Variable> registry = DevValueRegistry.create(
             Variable.type,

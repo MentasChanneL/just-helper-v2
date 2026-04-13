@@ -1,7 +1,6 @@
 package com.prikolz.justhelper.util;
 
 public class Pair<A, B> {
-
     public final A first;
     public final B second;
 

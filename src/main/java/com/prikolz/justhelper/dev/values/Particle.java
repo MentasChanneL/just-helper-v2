@@ -9,7 +9,6 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 
 public class Particle extends DevValue {
-
     public static final String type = "particle";
     public static final DevValueRegistry<Particle> registry = DevValueRegistry.create(
             Particle.type,

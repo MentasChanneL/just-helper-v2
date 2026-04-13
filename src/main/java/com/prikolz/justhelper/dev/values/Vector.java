@@ -7,7 +7,6 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 
 public class Vector extends DevValue {
-
     public static final String type = "vector";
     public static final DevValueRegistry<Vector> registry = DevValueRegistry.create(
             Vector.type,

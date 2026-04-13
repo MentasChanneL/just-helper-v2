@@ -26,7 +26,6 @@ import java.util.Map;
 import static com.prikolz.justhelper.JustHelperClient.GSON;
 
 public class FloorDescribes {
-
     public final String world;
     public final Map<Integer, String> describes = new HashMap<>();
     public final Map<Integer, Entity> entities = new HashMap<>();
@@ -89,9 +88,7 @@ public class FloorDescribes {
         plainDescribes.put(floor, TextUtils.minimessage(floor + " " + text).getString());
         File configFile = getConfigFile(world);
         var json = new JsonObject();
-        describes.forEach((k, v) -> {
-            json.add(k.toString(), new JsonPrimitive(v));
-        });
+        describes.forEach((k, v) -> json.add(k.toString(), new JsonPrimitive(v)));
         String jsonStr = GSON.toJson(json);
         try {
             Files.createDirectories(FileUtils.getWorldFolder(world).toPath());

@@ -4,12 +4,10 @@ import com.prikolz.justhelper.util.JustMCUtils;
 import com.prikolz.justhelper.util.Pair;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Items;
 
 import java.util.List;
 
 public class Item extends DevValue {
-
     public static final String type = "item";
     public static final DevValueRegistry<Item> registry = DevValueRegistry.create(
             Item.type,

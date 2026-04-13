@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import java.util.concurrent.CompletableFuture;
 
 public class ColorArgumentType implements ArgumentType<Integer> {
-
     public static final DynamicCommandExceptionType NOT_COMPLETE_HEX_VALUE = new DynamicCommandExceptionType((object) -> Component.literal("HEX цвет должен состоять из 6 символов: " + object));
     public static final DynamicCommandExceptionType NOT_COMPLETE_RGB_VALUE = new DynamicCommandExceptionType((object) -> Component.literal("RGB цвет должен состоять из 3х чисел: " + object));
     public static final DynamicCommandExceptionType ILLEGAL_RGB_VALUE = new DynamicCommandExceptionType((object) -> Component.literal("RGB канал должен быть от 0 до 255: " + object));

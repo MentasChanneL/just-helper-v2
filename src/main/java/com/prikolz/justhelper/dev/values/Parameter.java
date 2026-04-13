@@ -2,13 +2,11 @@ package com.prikolz.justhelper.dev.values;
 
 import com.prikolz.justhelper.util.Pair;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
 
 public class Parameter extends DevValue {
-
     public static final String type = "parameter";
     public static final DevValueRegistry<Parameter> registry = DevValueRegistry.create(
             Parameter.type,
@@ -16,9 +14,7 @@ public class Parameter extends DevValue {
                 var name = nbt.getString("name").orElse("null");
                 return new Parameter(name);
             },
-            (value, nbt) -> {
-                nbt.put("name", StringTag.valueOf(value.name));
-            }
+            (value, nbt) -> nbt.put("name", StringTag.valueOf(value.name))
     );
 
     public String name;

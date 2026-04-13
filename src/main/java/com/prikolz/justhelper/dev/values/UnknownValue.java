@@ -6,7 +6,6 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 
 public class UnknownValue extends DevValue {
-
     public UnknownValue() {
         super("null", Items.BARRIER, "Неизвестное значение");
     }

@@ -8,7 +8,6 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 
 public class Sound extends DevValue {
-
     public static final String type = "sound";
     public static final DevValueRegistry<Sound> registry = DevValueRegistry.create(
             Sound.type,

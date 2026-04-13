@@ -9,7 +9,6 @@ import com.prikolz.justhelper.dev.values.Variable;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
 public class VarCommand extends JustHelperCommand {
-
     private final Variable.Scope type;
     private final String split = ";";
 

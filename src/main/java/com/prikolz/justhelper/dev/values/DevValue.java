@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class DevValue {
-
-    public final String type;
-    public Item material;
     public final String defaultStringFormat;
+    public final String type;
+
+    public Item material;
     public DevValueRegistry<DevValue> registry = null;
     public CompoundTag unusedFields = null;
 

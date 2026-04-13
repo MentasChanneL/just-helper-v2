@@ -7,7 +7,6 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 
 public class Number extends DevValue {
-
     public static final String type = "number";
     public static final DevValueRegistry<Number> registry = DevValueRegistry.create(
             Number.type,
@@ -16,9 +15,7 @@ public class Number extends DevValue {
                 if (valueTag == null) throw new NullPointerException("Number is null");
                 return new Number(valueTag.toString());
             },
-            (value, nbt) -> {
-                nbt.put("number", StringTag.valueOf(value.value));
-            }
+            (value, nbt) -> nbt.put("number", StringTag.valueOf(value.value))
     );
 
     public String value;
