@@ -103,7 +103,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                         return JustHelperCommand.feedback("<yellow>Не удалось распаковать код: " + t.getMessage());
                     }
                     return JustHelperCommand.feedback(
-                            "<green>Распакованный {0}<reset><green> -> <white><hover:show_text:'Скопировать в буфер обмена'><click:copy_to_clipboard:'{1}'>[СКОПИРОВАТЬ]",
+                            "<white>Код {0}<reset><white> -> <yellow><hover:show_text:'Скопировать в буфер обмена'><click:copy_to_clipboard:'{1}'>[СКОПИРОВАТЬ]",
                             TextUtils.toMiniMessage( item.getOrDefault(DataComponents.CUSTOM_NAME, item.getItemName()) ),
                             line
                     );
