@@ -8,15 +8,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.prikolz.justhelper.DevelopmentWorld;
-import com.prikolz.justhelper.commands.VarCommand;
 import com.prikolz.justhelper.dev.values.Variable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class VariableHistoryArgumentType implements ArgumentType<String> {
-
     private static final StringArgumentType parser = StringArgumentType.greedyString();
     private final Variable.Scope type;
     private String lastInput = "";

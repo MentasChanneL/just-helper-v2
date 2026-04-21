@@ -11,6 +11,7 @@ import com.prikolz.justhelper.commands.arguments.ColorArgumentType;
 import com.prikolz.justhelper.commands.arguments.GreedyArgumentType;
 import com.prikolz.justhelper.commands.arguments.ReferenceArgumentType;
 import com.prikolz.justhelper.commands.arguments.ValidStringArgumentType;
+import com.prikolz.justhelper.util.JustMCUtils;
 import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.MojangUtils;
 import net.minecraft.client.Minecraft;
@@ -84,7 +85,47 @@ public class ItemEditorCommand extends JustHelperCommand {
                     return 0;
                 })))
                 .then( equipmentBranch() )
-                .then( colorBranch() );
+                .then( colorBranch() )
+                .then( countBranch() )
+                .then( templateBranch() );
+    }
+
+    private LiteralArgumentBuilder<ClientSuggestionProvider> templateBranch() {
+        return new LineCommand("template")
+                .run(context -> itemResolver(item -> {
+                    var tags = getBukkitTags(item);
+                    var line = tags.getString("justmc:template").orElse(null);
+                    if (line == null) return JustHelperCommand.feedback("<yellow>Предмет не является шаблоном!");
+                    try {
+                        line = JustMCUtils.zlibDecompress(line);
+                    } catch (Throwable t) {
+                        JustHelperClient.LOGGER.printStackTrace(t);
+                        return JustHelperCommand.feedback("<yellow>Не удалось распаковать код: " + t.getMessage());
+                    }
+                    return JustHelperCommand.feedback(
+                            "<green>Распакованный {0}<reset><green> -> <white><hover:show_text:'Скопировать в буфер обмена'><click:copy_to_clipboard:'{1}'>[СКОПИРОВАТЬ]",
+                            TextUtils.toMiniMessage( item.getOrDefault(DataComponents.CUSTOM_NAME, item.getItemName()) ),
+                            line
+                    );
+                }))
+                .build();
+    }
+
+    private LiteralArgumentBuilder<ClientSuggestionProvider> countBranch() {
+        return new LineCommand("count")
+                .run(context -> itemResolver(item -> JustHelperCommand.feedback(
+                        "Максимальный размер стака предмета: <green>{0}",
+                        item.getMaxStackSize()
+                )))
+                .arg("size", IntegerArgumentType.integer(1, 99))
+                .run(context -> itemResolver(item -> {
+                    item.set(DataComponents.MAX_STACK_SIZE, IntegerArgumentType.getInteger(context, "size"));
+                    return JustHelperCommand.feedback(1,
+                            "<green>Установлен максимальный размер стака: <white>{0}",
+                            item.getMaxStackSize()
+                    );
+                }))
+                .build();
     }
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> colorBranch() {
@@ -114,7 +155,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                     int g = (color >> 8) & 0xFF;
                     int b = color & 0xFF;
                     String rgbStr = r + " " + g + " " + b;
-                    return JustHelperCommand.feedback(
+                    return JustHelperCommand.feedback(1,
                             "<green>Новый цвет предмета:\n<reset>♯ HEX: <underlined><#{1}>{0}<reset>\n☰ RGB: <underlined><#{1}> {2}",
                             TextUtils.copyValue('#' + hex),
                             hex,
@@ -134,7 +175,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                     var slot = ReferenceArgumentType.<EquipmentSlot>getReference(context, "slot");
                     var data = equippableCopy(item, slot);
                     item.set(DataComponents.EQUIPPABLE, data.build());
-                    return JustHelperCommand.feedback(1, "<green>Слот для экипировки: <white>{0}", slot);
+                    return JustHelperCommand.feedback(1, "<green>Слот экипировки: <white>{0}", slot);
                 })).build();
 
         var overlayBranch = new LineCommand("overlay")
@@ -161,7 +202,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                     var value = BoolArgumentType.getBool(context, "dispensable");
                     var data = equippableCopy(item, null).setDispensable(value);
                     item.set(DataComponents.EQUIPPABLE, data.build());
-                    return JustHelperCommand.feedback(1, "<green>'Необязательность': <white>{0}", value);
+                    return JustHelperCommand.feedback(1, "<green>Экипировка через раздатчик: <white>{0}", value);
                 })).build();
 
         var swappableBranch = new LineCommand("swappable")
@@ -188,7 +229,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                     var value = BoolArgumentType.getBool(context, "equipOnInteract");
                     var data = equippableCopy(item, null).setEquipOnInteract(value);
                     item.set(DataComponents.EQUIPPABLE, data.build());
-                    return JustHelperCommand.feedback(1, "<green>Экипировка от взаимодействия: <white>{0}", value);
+                    return JustHelperCommand.feedback(1, "<green><key:key.use> экипировка: <white>{0}", value);
                 })).build();
 
         var equipSoundBranch = new LineCommand("equipSound")
