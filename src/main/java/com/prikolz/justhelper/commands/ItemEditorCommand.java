@@ -11,15 +11,15 @@ import com.prikolz.justhelper.commands.arguments.ColorArgumentType;
 import com.prikolz.justhelper.commands.arguments.GreedyArgumentType;
 import com.prikolz.justhelper.commands.arguments.ReferenceArgumentType;
 import com.prikolz.justhelper.commands.arguments.ValidStringArgumentType;
+import com.prikolz.justhelper.gui.widgets.MultiLineEditBoxWrapper;
 import com.prikolz.justhelper.util.JustMCUtils;
 import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.MojangUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.MultiLineEditBox;
-import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.commands.arguments.IdentifierArgument;
@@ -630,11 +630,13 @@ public class ItemEditorCommand extends JustHelperCommand {
 
         private String nameField;
         private String loreField;
-        private EditBox nameEditBox = null;
+        private MultiLineEditBox nameEditBox = null;
         private MultiLineEditBox loreEditBox = null;
+        final private ItemStack item;
 
         protected ItemDisplayEditorScreen(ItemStack item) {
             super(Component.literal("Редактирование отображения предмета"));
+            this.item = item;
             var lore = item.get(DataComponents.LORE);
 
             var lines = lore == null ? List.<Component>of() : lore.lines();
@@ -656,43 +658,97 @@ public class ItemEditorCommand extends JustHelperCommand {
             var title = new StringWidget(this.title, font);
             title.setPosition( width / 2 - font.width(this.title) / 2, 10 );
 
-            nameEditBox = new EditBox(font, 60, 30, Component.literal("Название"));
-            nameEditBox.setX(60);
-            nameEditBox.setY(30);
-            nameEditBox.setWidth(width - 120);
-            nameEditBox.setHeight(20);
-            nameEditBox.setMaxLength(Integer.MAX_VALUE);
+            nameEditBox = new MultiLineEditBox.Builder()
+                    .setX(60)
+                    .setY(30)
+                    .build(font, width - 120, 16, Component.literal("Название"));
+            nameEditBox.setLineLimit(1);
             nameEditBox.setValue(nameField);
             var nameTitle = new StringWidget(Component.literal("Название"), font);
             nameTitle.setPosition( nameEditBox.getX(), nameEditBox.getY() - 10 );
 
-            loreEditBox = new MultiLineEditBox.Builder().setX(60).setY(nameEditBox.getY() + nameEditBox.getHeight() + 20)
+            loreEditBox = new MultiLineEditBox.Builder()
+                    .setX(60)
+                    .setY(nameEditBox.getY() + nameEditBox.getHeight() + 20)
                     .build(font, width - 120, height - 120, Component.literal("Описание"));
             loreEditBox.setValue(loreField);
             var loreTitle = new StringWidget(Component.literal("Описание"), font);
             loreTitle.setPosition( loreEditBox.getX(), loreEditBox.getY() - 10 );
 
-            var ok = Button.builder(Component.literal("Применить"), button -> itemResolver(item -> {
-                var list = new ArrayList<Component>();
-                var content = loreEditBox.getValue();
-                for (String line : content.split("\n")) list.add( TextUtils.minimessage(line) );
-                item.set(DataComponents.LORE, new ItemLore(list));
-                item.set(DataComponents.CUSTOM_NAME, TextUtils.minimessage(nameEditBox.getValue()) );
+            var ok = Button.builder(Component.translatable("gui.done"), button -> itemResolver(item -> {
+                updatePreview();
                 Minecraft.getInstance().setScreen(null);
                 return 1;
             })).pos(width / 2 + 5, loreEditBox.getHeight() + loreEditBox.getY() + 10).width(100).build();
 
-            var cancel = Button.builder(Component.literal("Отмена"), button -> {
+            var cancel = Button.builder(Component.translatable("gui.cancel"), button -> {
                 Minecraft.getInstance().setScreen(null);
             }).pos(width / 2 - 105, loreEditBox.getHeight() + loreEditBox.getY() + 10).width(100).build();
 
+            var itemWidget = new ItemDisplayWidget(
+                    minecraft,
+                    width,
+                    height,
+                    width,
+                    height,
+                    Component.literal("Превью"),
+                    item,
+                    true,
+                    true
+            );
+            //itemWidget.setX(width / 2 - 8);
+            //itemWidget.setY((nameEditBox.getY() + nameEditBox.getHeight() + loreEditBox.getY()) / 2);
+
             addRenderableWidget(title);
             addRenderableWidget(nameTitle);
-            addRenderableWidget(nameEditBox);
+            addRenderableWidget( new CharTypeTrigger(nameEditBox, this) );
             addRenderableWidget(loreTitle);
-            addRenderableWidget(loreEditBox);
+            addRenderableWidget( new CharTypeTrigger(loreEditBox, this) );
             addRenderableWidget(ok);
             addRenderableWidget(cancel);
+            addRenderableWidget(itemWidget);
+            updatePreview();
+        }
+
+        private void updatePreview() {
+            var nameContent = nameEditBox.getValue();
+            var loreContent = loreEditBox.getValue();
+            if (nameContent.isEmpty()) {
+                item.remove(DataComponents.CUSTOM_NAME);
+            } else {
+                item.set(DataComponents.CUSTOM_NAME, TextUtils.minimessage(nameContent) );
+            }
+            if (loreContent.isEmpty() || loreContent.equals("\n")) {
+                item.remove(DataComponents.LORE);
+            } else {
+                var list = new ArrayList<Component>();
+                for (String line : loreContent.split("\n")) list.add( TextUtils.minimessage(line) );
+                item.set(DataComponents.LORE, new ItemLore(list));
+            }
+        }
+
+        private static class CharTypeTrigger extends MultiLineEditBoxWrapper {
+            private final ItemDisplayEditorScreen screen;
+
+            public CharTypeTrigger(MultiLineEditBox hold, ItemDisplayEditorScreen screen) {
+                super(hold, true, true);
+                this.screen = screen;
+            }
+
+            @Override
+            public boolean keyReleased(KeyEvent keyEvent) {
+                var result = super.keyReleased(keyEvent);
+                screen.updatePreview();
+                return result;
+            }
+
+            @Override
+            public boolean charTyped(CharacterEvent characterEvent) {
+                var result = super.charTyped(characterEvent);
+                screen.updatePreview();
+                return result;
+            }
+
         }
     }
 }
