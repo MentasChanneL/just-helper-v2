@@ -36,6 +36,11 @@ public class ReferenceArgumentType<T> implements ArgumentType<ReferenceArgumentT
         references = resolver;
     }
 
+    public ReferenceArgumentType(Resolver<T> resolver, boolean enableCounting) {
+        references = resolver;
+        this.enableCounting = enableCounting;
+    }
+
     @SafeVarargs
     public static <T extends Enum<?>> ReferenceArgumentType<T> ofEnums(boolean lowercase, boolean enableCounting, T ... enums) {
         var result = ofEnums(lowercase, enums);

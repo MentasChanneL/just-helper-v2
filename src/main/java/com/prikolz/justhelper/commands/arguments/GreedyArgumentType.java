@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
@@ -35,7 +36,26 @@ public class GreedyArgumentType<A, T extends ArgumentType<A>> implements Argumen
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return parser.listSuggestions(context, builder);
+        String remaining = builder.getRemaining();
+        String[] parts = remaining.split(split, -1);
+        String lastArg = parts.length == 0 ? remaining : parts[parts.length - 1];
+
+        // Создаём билдер только для последнего аргумента
+        int lastArgStart = builder.getStart() + (remaining.length() - lastArg.length());
+        SuggestionsBuilder lastArgBuilder = new SuggestionsBuilder(builder.getInput(), lastArgStart);
+
+        return parser.listSuggestions(context, lastArgBuilder).thenApply(suggestions -> {
+            if (suggestions.isEmpty()) return suggestions;
+
+            SuggestionsBuilder resultBuilder = new SuggestionsBuilder(builder.getInput(), builder.getStart());
+            String prefix = parts.length > 1 ?
+                    remaining.substring(0, remaining.length() - lastArg.length()) : "";
+
+            for (Suggestion suggestion : suggestions.getList()) {
+                resultBuilder.suggest(prefix + suggestion.getText());
+            }
+            return resultBuilder.build();
+        });
     }
 
     @SuppressWarnings("unchecked")

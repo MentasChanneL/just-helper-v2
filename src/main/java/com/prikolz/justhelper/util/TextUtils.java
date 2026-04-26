@@ -16,6 +16,8 @@ import net.minecraft.util.parsing.packrat.commands.Grammar;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Collection;
+import java.util.Objects;
 
 public class TextUtils {
 
@@ -109,5 +111,35 @@ public class TextUtils {
     public static String copyValue(Object value) {
         var str = value == null ? "null" : value.toString();
         return "<hover:show_text:'<tr:chat.copy> " + str + "'><click:copy_to_clipboard:'" + str + "'>" + str;
+    }
+
+    public static <T> String joinToString(
+            Collection<T> list,
+            String separator,
+            String prefix,
+            String suffix,
+            StringResolver<T> resolver
+    ) {
+        Objects.requireNonNull(separator, "separator cannot be null");
+        Objects.requireNonNull(resolver, "resolver cannot be null");
+        StringBuilder builder = new StringBuilder();
+        if (prefix != null) builder.append(prefix);
+        if (list != null) {
+            int i = 0;
+            for (T object : list) {
+                if (i++ > 0) builder.append(separator);
+                builder.append(resolver.resolve(object));
+            }
+        }
+        if (suffix != null) builder.append(suffix);
+        return builder.toString();
+    }
+
+    public static <T> String joinToString(Collection<T> list, String separator, StringResolver<T> resolver) {
+        return joinToString(list, separator, null, null, resolver);
+    }
+
+    public interface StringResolver<T> {
+        String resolve(T object);
     }
 }

@@ -21,18 +21,17 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
@@ -41,10 +40,7 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.component.DyedItemColor;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.component.*;
 import net.minecraft.world.item.equipment.Equippable;
 
 import java.util.*;
@@ -86,8 +82,111 @@ public class ItemEditorCommand extends JustHelperCommand {
                 })))
                 .then( equipmentBranch() )
                 .then( colorBranch() )
-                .then( countBranch() )
-                .then( templateBranch() );
+                .then( stackBranch() )
+                .then( templateBranch() )
+                .then( tooltipBranch() );
+    }
+
+    private LiteralArgumentBuilder<ClientSuggestionProvider> tooltipBranch() {
+        var buildContext = MojangUtils.createBuildContext();
+        var arg = new GreedyArgumentType<>(ResourceArgument.resource(buildContext, Registries.DATA_COMPONENT_TYPE), " ");
+
+        var setNode = new LineCommand("set")
+                .arg("components", arg)
+                .run(context -> itemResolver(item -> {
+                    var components = GreedyArgumentType.<Holder.Reference<DataComponentType<?>>>getArgument(context, "components");
+                    var tooltip = item.get(DataComponents.TOOLTIP_DISPLAY);
+                    SequencedSet<DataComponentType<?>> set = new LinkedHashSet<>();
+                    for (var c : components) set.add(c.value());
+                    item.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(
+                            tooltip != null && tooltip.hideTooltip(),
+                            set
+                    ));
+                    return JustHelperCommand.feedback(1,
+                            "<green>Скрыты подсказки следующих компонентов: <white>{0}",
+                            TextUtils.joinToString(components, ", ", (c) -> c.value().toString())
+                    );
+                }))
+                .build();
+
+        var addNode = new LineCommand("add")
+                .arg("components", arg)
+                .run(context -> itemResolver(item -> {
+                    var components = GreedyArgumentType.<Holder.Reference<DataComponentType<?>>>getArgument(context, "components");
+                    var tooltip = item.get(DataComponents.TOOLTIP_DISPLAY);
+                    SequencedSet<DataComponentType<?>> set =
+                            tooltip == null ? new LinkedHashSet<>() : new LinkedHashSet<>(tooltip.hiddenComponents());
+                    for (var c : components) set.add(c.value());
+                    item.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(
+                            tooltip != null && tooltip.hideTooltip(),
+                            set
+                    ));
+                    return JustHelperCommand.feedback(1,
+                            "<green>Добавлено скрытие следующих компонентов: <white>{0}",
+                            TextUtils.joinToString(components, ", ", (c) -> c.value().toString())
+                    );
+                }))
+                .build();
+
+        var removeNode = new LineCommand("remove")
+                .arg("components", new ReferenceArgumentType<>(() -> {
+                    var map = new HashMap<String, String>();
+                    var player = Minecraft.getInstance().player;
+                    if (player == null) return map;
+                    var item = player.getItemBySlot(EquipmentSlot.MAINHAND);
+                    if (item.isEmpty()) return map;
+                    var tooltip = item.get(DataComponents.TOOLTIP_DISPLAY);
+                    if (tooltip == null) return map;
+                    for (var component : tooltip.hiddenComponents()) map.put(component.toString(), component.toString());
+                    return map;
+                }, true))
+                .run(context -> itemResolver(item -> {
+                    var tooltip = item.get(DataComponents.TOOLTIP_DISPLAY);
+                    if (tooltip == null) return JustHelperCommand.feedback("<yellow>Компонент скрытия подсказок не задан");
+                    var removeList = ReferenceArgumentType.getReferences(context, "components");
+                    SequencedSet<DataComponentType<?>> set = new LinkedHashSet<>(tooltip.hiddenComponents());
+                    set.removeIf( (c) -> removeList.contains(c.toString()) );
+                    item.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(
+                            tooltip.hideTooltip(),
+                            set
+                    ));
+                    return JustHelperCommand.feedback(1,
+                            "<green>Удалено скрытие <white>{0}<green> компонентов",
+                            tooltip.hiddenComponents().size() - set.size()
+                    );
+                }))
+                .build();
+
+        var hideAll = new LineCommand("hideAll")
+                .arg("hide", BoolArgumentType.bool())
+                .run(context -> itemResolver(item -> {
+                    var hide = BoolArgumentType.getBool(context, "hide");
+                    var tooltip = item.get(DataComponents.TOOLTIP_DISPLAY);
+                    item.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(
+                            hide,
+                            tooltip == null ? new LinkedHashSet<>() : tooltip.hiddenComponents()
+                    ));
+                    return JustHelperCommand.feedback(1,
+                            "<green>Скрытие всех компонентов: <white>{0}",
+                            hide
+                    );
+                }))
+                .build();
+
+        return JustHelperCommands.literal("tooltip")
+                .executes(context -> itemResolver(item -> {
+                    var tooltip = item.get(DataComponents.TOOLTIP_DISPLAY);
+                    if (tooltip == null) return JustHelperCommand.feedback("<yellow>Компонент скрытия подсказок не задан");
+                    return JustHelperCommand.feedback(
+                            "\n<yellow>Подсказки предмета:<white>\n<yellow>•<white> Скрывать подсказки: <yellow>{0}\n<yellow>•<white> Скрытые компоненты: <yellow>{1}\n",
+                            tooltip.hideTooltip(),
+                            TextUtils.joinToString(tooltip.hiddenComponents(), ", ", Object::toString)
+                    );
+                }))
+                .then(addNode)
+                .then(removeNode)
+                .then(setNode)
+                .then(hideAll);
     }
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> templateBranch() {
@@ -111,8 +210,8 @@ public class ItemEditorCommand extends JustHelperCommand {
                 .build();
     }
 
-    private LiteralArgumentBuilder<ClientSuggestionProvider> countBranch() {
-        return new LineCommand("count")
+    private LiteralArgumentBuilder<ClientSuggestionProvider> stackBranch() {
+        return new LineCommand("stack")
                 .run(context -> itemResolver(item -> JustHelperCommand.feedback(
                         "Максимальный размер стака предмета: <green>{0}",
                         item.getMaxStackSize()
