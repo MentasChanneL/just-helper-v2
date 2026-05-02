@@ -10,6 +10,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.prikolz.justhelper.util.TextUtils;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
@@ -19,14 +20,20 @@ public class ValidStringArgumentType implements ArgumentType<String> {
 
     private final Pattern pattern;
     private final String feedback;
+    private final SuggestionsResolver suggestionsResolver;
 
     public ValidStringArgumentType() {
-        this("^[a-z_0-9-]+$", "a-z_0-9");
+        this(List::of);
     }
 
-    public ValidStringArgumentType(String pattern, String feedback) {
+    public ValidStringArgumentType(SuggestionsResolver resolver) {
+        this("^[a-z_0-9-]+$", "a-z_0-9", resolver);
+    }
+
+    public ValidStringArgumentType(String pattern, String feedback, SuggestionsResolver suggestionsResolver) {
         this.pattern = Pattern.compile(pattern);
         this.feedback = feedback;
+        this.suggestionsResolver = suggestionsResolver;
     }
 
     @Override
@@ -40,6 +47,12 @@ public class ValidStringArgumentType implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return ArgumentType.super.listSuggestions(context, builder);
+        var suggestions = suggestionsResolver.resolve();
+        for (String s : suggestions) builder.suggest(s);
+        return builder.buildFuture();
+    }
+
+    public interface SuggestionsResolver {
+        List<String> resolve();
     }
 }

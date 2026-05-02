@@ -39,7 +39,7 @@ public class JustMCUtils {
         if (str == null || str.isEmpty()) return "";
         byte[] input = str.getBytes(StandardCharsets.UTF_8);
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             GZIPOutputStream gzip = new GZIPOutputStream(baos)) {
+            GZIPOutputStream gzip = new GZIPOutputStream(baos)) {
             gzip.write(input);
             gzip.finish();
             byte[] compressed = baos.toByteArray();
@@ -50,8 +50,8 @@ public class JustMCUtils {
     public static String gzipDecompress(String base64) {
         byte[] arr = Base64.getDecoder().decode(base64);
         try (ByteArrayInputStream bais = new ByteArrayInputStream(arr);
-             GZIPInputStream gzip = new GZIPInputStream(bais);
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            GZIPInputStream gzip = new GZIPInputStream(bais);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             byte[] buffer = new byte[1024];
             int len;
             while ((len = gzip.read(buffer)) > 0) {

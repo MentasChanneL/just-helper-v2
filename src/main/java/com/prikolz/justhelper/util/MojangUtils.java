@@ -7,13 +7,17 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.item.ItemStack;
 
 import static net.minecraft.commands.arguments.ResourceArgument.ERROR_INVALID_RESOURCE_TYPE;
 
 public class MojangUtils {
+
     public static CommandBuildContext createBuildContext() {
         var lookup = Minecraft.getInstance().level.registryAccess().listRegistries();
         return CommandBuildContext.simple(HolderLookup.Provider.create(lookup), FeatureFlagSet.of());

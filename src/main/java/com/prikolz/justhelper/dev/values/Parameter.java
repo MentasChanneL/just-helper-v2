@@ -2,7 +2,6 @@ package com.prikolz.justhelper.dev.values;
 
 import com.prikolz.justhelper.util.Pair;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 import java.util.List;

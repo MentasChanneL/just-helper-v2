@@ -58,6 +58,6 @@ public class Particle extends DevValue {
 
     @Override
     public String miniBuilder() {
-        return particle + " " + count + " " + size + " " + firstSpread + " " + secondSpread;
+        return particle + " " + count + " " + String.format("%.2f", size) + " " + String.format("%.2f", firstSpread) + " " + String.format("%.2f", secondSpread);
     }
 }

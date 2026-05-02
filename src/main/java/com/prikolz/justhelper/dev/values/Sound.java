@@ -55,6 +55,6 @@ public class Sound extends DevValue {
 
     @Override
     public String miniBuilder() {
-        return sound + "(" + variation + ")" + " " + volume + " " + pitch;
+        return sound + "(" + variation + ")" + " " + String.format("%.2f", volume) + " " + String.format("%.2f", pitch);
     }
 }

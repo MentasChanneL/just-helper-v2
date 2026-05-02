@@ -29,6 +29,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
@@ -42,6 +43,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.*;
 import net.minecraft.world.item.equipment.Equippable;
+import net.minecraft.world.level.GameType;
 
 import java.util.*;
 
@@ -49,20 +51,6 @@ public class ItemEditorCommand extends JustHelperCommand {
 
     private static final String TAG_NAMESPACE = "justcreativeplus:";
     private static final HashMap<String, String> tagsClipboard = new HashMap<>();
-    private static final ReferenceArgumentType<String> tagArgumentResolver = new ReferenceArgumentType<>(() -> {
-        var player = Minecraft.getInstance().player;
-        if (player == null) return Map.of();
-        var item = player.getItemBySlot(EquipmentSlot.MAINHAND);
-        if (item.isEmpty()) return Map.of();
-        var result = new HashMap<String, String>();
-        var tags = getBukkitTags(item);
-        for (String keyRaw : tags.keySet()) {
-            if (!keyRaw.startsWith(TAG_NAMESPACE)) continue;
-            var tag = keyRaw.substring(TAG_NAMESPACE.length());
-            result.put(tag, tag);
-        }
-        return result;
-    });
 
     public ItemEditorCommand() {
         super("item+");
@@ -83,8 +71,56 @@ public class ItemEditorCommand extends JustHelperCommand {
                 .then( equipmentBranch() )
                 .then( colorBranch() )
                 .then( stackBranch() )
+                .then( damageBranch() )
                 .then( templateBranch() )
-                .then( tooltipBranch() );
+                .then( tooltipBranch() )
+                .then( toTextBranch() );
+    }
+
+    private LiteralArgumentBuilder<ClientSuggestionProvider> toTextBranch() {
+        return new LineCommand("toText")
+                .run(context -> itemResolver(item -> {
+                    var result = ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, item).getOrThrow();
+                    return JustHelperCommand.feedback(
+                            "{0}<reset> в виде текста: <aqua><hover:show_text:'{1}'><click:copy_to_clipboard:'{1}'>[СКОПИРОВАТЬ]",
+                            TextUtils.toMiniMessage( item.getOrDefault(DataComponents.CUSTOM_NAME, item.getItemName()) ),
+                            result.toString()
+                    );
+                }))
+                .build();
+    }
+
+    private LiteralArgumentBuilder<ClientSuggestionProvider> damageBranch() {
+        var setNode = new LineCommand("set")
+                .arg("amount", IntegerArgumentType.integer(0))
+                .run(context -> itemResolver(item -> {
+                    item.set(DataComponents.DAMAGE, IntegerArgumentType.getInteger(context, "amount"));
+                    return JustHelperCommand.feedback(1,
+                            "<green>Установлена текущая прочность предмета: <white>{0}",
+                            IntegerArgumentType.getInteger(context, "amount")
+                    );
+                }))
+                .build();
+
+        var setMaxNode = new LineCommand("setMax")
+                .arg("amount", IntegerArgumentType.integer(0))
+                .run(context -> itemResolver(item -> {
+                    item.set(DataComponents.MAX_DAMAGE, IntegerArgumentType.getInteger(context, "amount"));
+                    return JustHelperCommand.feedback(1,
+                            "<green>Установлена максимальная прочность предмета: <white>{0}",
+                            IntegerArgumentType.getInteger(context, "amount")
+                    );
+                }))
+                .build();
+
+        return JustHelperCommands.literal("damage")
+                .executes(context -> itemResolver(item -> JustHelperCommand.feedback(
+                        "<yellow>Текущая прочность: <white>{0}<br><yellow>Максимальная прочность: <white>{1}",
+                        item.get(DataComponents.DAMAGE),
+                        item.get(DataComponents.MAX_DAMAGE)
+                )))
+                .then(setNode)
+                .then(setMaxNode);
     }
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> tooltipBranch() {
@@ -584,8 +620,19 @@ public class ItemEditorCommand extends JustHelperCommand {
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> tagBranch() {
 
-        var add = new LineCommand("add")
-                .arg("key", new ValidStringArgumentType())
+        var add = new LineCommand("set")
+                .arg("key", new ValidStringArgumentType(() -> {
+                    var item = getMainHandItem();
+                    if (item == null) return List.of();
+                    var result = new ArrayList<String>();
+                    var tags = getBukkitTags(item);
+                    for (String keyRaw : tags.keySet()) {
+                        if (!keyRaw.startsWith(TAG_NAMESPACE)) continue;
+                        var tag = keyRaw.substring(TAG_NAMESPACE.length());
+                        result.add(tag);
+                    }
+                    return result;
+                }))
                 .arg("value", StringArgumentType.greedyString())
                 .run(context -> itemResolver(item -> {
                     var key = StringArgumentType.getString(context, "key");
@@ -593,12 +640,23 @@ public class ItemEditorCommand extends JustHelperCommand {
                     var tags = getBukkitTags(item);
                     tags.put(TAG_NAMESPACE + key, StringTag.valueOf(value));
                     setBukkitTags(tags, item);
-                    return JustHelperCommand.feedback(1, "<green>Добавлен тег <white>'{0}'", key);
+                    return JustHelperCommand.feedback(1, "<green>Установлен тег <white>'{0}'", key);
                 }))
                 .build();
 
         var remove = new LineCommand("remove")
-                .arg("key", tagArgumentResolver)
+                .arg("key", new ReferenceArgumentType<>(() -> {
+                    var item = getMainHandItem();
+                    if (item == null) return Map.of();
+                    var result = new HashMap<String, String>();
+                    var tags = getBukkitTags(item);
+                    for (String keyRaw : tags.keySet()) {
+                        if (!keyRaw.startsWith(TAG_NAMESPACE)) continue;
+                        var tag = keyRaw.substring(TAG_NAMESPACE.length());
+                        result.put(tag, tag);
+                    }
+                    return result;
+                }))
                 .run(context -> itemResolver(item -> {
                     var key = ReferenceArgumentType.<String>getReference(context, "key");
                     var tags = getBukkitTags(item);
@@ -696,6 +754,8 @@ public class ItemEditorCommand extends JustHelperCommand {
             return JustHelperCommand.feedback("<red>Item+ >> Ошибка выполнения: " + t.getMessage());
         }
         if (result > 0) {
+            if (player.gameMode() != GameType.CREATIVE)
+                return JustHelperCommand.feedback("<yellow>Item+ >> Изменение предмета возможно только в креативе!");
             player.swing(InteractionHand.MAIN_HAND, false);
             player.connection.send(
                     new ServerboundSetCreativeModeSlotPacket(36 + player.getInventory().getSelectedSlot(), item)
@@ -719,6 +779,14 @@ public class ItemEditorCommand extends JustHelperCommand {
         var nbt = new CompoundTag();
         nbt.put("PublicBukkitValues", tags);
         item.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt));
+    }
+
+    private static ItemStack getMainHandItem() {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return null;
+        var item = player.getItemBySlot(EquipmentSlot.MAINHAND);
+        if (item.isEmpty()) return null;
+        return item;
     }
 
     public interface ItemStackProvider {
