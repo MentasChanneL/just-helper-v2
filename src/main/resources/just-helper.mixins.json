@@ -7,6 +7,7 @@
     "ClientLevelMixin",
     "ClientPacketListenerMixin",
     "DisplayMixin",
+    "GuiGraphicsMixin",
     "GUIMixin",
     "MinecraftMixin",
     "MultiLineEditBoxMixin",
@@ -16,5 +17,6 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "mixins": []
+  "mixins": [
+  ]
 }

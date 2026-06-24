@@ -48,7 +48,7 @@ public class DevRender {
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (updateCooldown <= 0) {
             infoUpdate();
-            updateCooldown = 20;
+            updateCooldown = 10;
         }
         updateCooldown--;
         if (Config.get().showPositionInCode.value) renderPosition(guiGraphics);

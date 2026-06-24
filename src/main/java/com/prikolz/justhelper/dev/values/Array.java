@@ -35,7 +35,7 @@ public class Array extends DevValue {
                 var valuesTag = new ListTag();
                 for (var entry : value.values) {
                     if (entry.registry == null) continue;
-                    valuesTag.add( DevValueRegistry.toNBT(entry) );
+                    valuesTag.add( entry.toNBT() );
                 }
                 nbt.put("values", valuesTag);
             }

@@ -12,6 +12,7 @@ import com.prikolz.justhelper.commands.arguments.GreedyArgumentType;
 import com.prikolz.justhelper.commands.arguments.ReferenceArgumentType;
 import com.prikolz.justhelper.commands.arguments.ValidStringArgumentType;
 import com.prikolz.justhelper.gui.widgets.MultiLineEditBoxWrapper;
+import com.prikolz.justhelper.util.JustHelperUtils;
 import com.prikolz.justhelper.util.JustMCUtils;
 import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.MojangUtils;
@@ -74,7 +75,8 @@ public class ItemEditorCommand extends JustHelperCommand {
                 .then( damageBranch() )
                 .then( templateBranch() )
                 .then( tooltipBranch() )
-                .then( toTextBranch() );
+                .then( toTextBranch() )
+                .then( modelBranch() );
     }
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> toTextBranch() {
@@ -121,6 +123,19 @@ public class ItemEditorCommand extends JustHelperCommand {
                 )))
                 .then(setNode)
                 .then(setMaxNode);
+    }
+
+    private LiteralArgumentBuilder<ClientSuggestionProvider> modelBranch() {
+        return JustHelperCommands.literal("model")
+                .executes(context -> itemResolver(item -> JustHelperCommand.feedback(
+                        "<yellow>Установленная модель предмета: <white>{0}",
+                        item.get(DataComponents.ITEM_MODEL)
+                )))
+                .then( JustHelperCommands.argument("id", IdentifierArgument.id()).executes(context -> itemResolver(item -> {
+                    var id = MojangUtils.getId(context, "id");
+                    item.set(DataComponents.ITEM_MODEL, id);
+                    return JustHelperCommand.feedback(1, "<green>Путь модели предмета изменен на: <white>{0}", id);
+                })) );
     }
 
     private LiteralArgumentBuilder<ClientSuggestionProvider> tooltipBranch() {
@@ -633,6 +648,13 @@ public class ItemEditorCommand extends JustHelperCommand {
                     }
                     return result;
                 }))
+                .run(context -> itemResolver(item -> {
+                    var key = StringArgumentType.getString(context, "key");
+                    var tags = getBukkitTags(item);
+                    tags.put(TAG_NAMESPACE + key, StringTag.valueOf(""));
+                    setBukkitTags(tags, item);
+                    return JustHelperCommand.feedback(1, "<green>Установлено пустое значение тегу <white>'{0}'", key);
+                }))
                 .arg("value", StringArgumentType.greedyString())
                 .run(context -> itemResolver(item -> {
                     var key = StringArgumentType.getString(context, "key");
@@ -640,7 +662,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                     var tags = getBukkitTags(item);
                     tags.put(TAG_NAMESPACE + key, StringTag.valueOf(value));
                     setBukkitTags(tags, item);
-                    return JustHelperCommand.feedback(1, "<green>Установлен тег <white>'{0}'", key);
+                    return JustHelperCommand.feedback(1, "<green>Установлен тег <white>'<u>{0}<reset><green>'", TextUtils.copyValue(key, value));
                 }))
                 .build();
 
@@ -742,7 +764,6 @@ public class ItemEditorCommand extends JustHelperCommand {
 
     private static int itemResolver(ItemStackProvider provider) {
         var player = Minecraft.getInstance().player;
-
         if (player == null) return 0;
         var item = player.getItemBySlot(EquipmentSlot.MAINHAND);
         if (item.isEmpty()) return JustHelperCommand.feedback("<red>Item+ >> Для редактирования предмета вы должны держать его в ведущей руке.");
@@ -757,9 +778,7 @@ public class ItemEditorCommand extends JustHelperCommand {
             if (player.gameMode() != GameType.CREATIVE)
                 return JustHelperCommand.feedback("<yellow>Item+ >> Изменение предмета возможно только в креативе!");
             player.swing(InteractionHand.MAIN_HAND, false);
-            player.connection.send(
-                    new ServerboundSetCreativeModeSlotPacket(36 + player.getInventory().getSelectedSlot(), item)
-            );
+            JustHelperUtils.setItem(player.getInventory().getSelectedSlot(), item);
         }
 
         return result;

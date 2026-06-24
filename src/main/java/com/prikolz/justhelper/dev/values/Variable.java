@@ -2,6 +2,9 @@ package com.prikolz.justhelper.dev.values;
 
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.util.Pair;
+import com.prikolz.justhelper.util.TextUtils;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -42,6 +45,17 @@ public class Variable extends DevValue {
     @Override
     public void handleItemStack(ItemStack item) {
         DevelopmentWorld.addToHistory(scope, variable);
+        setDecorationText(item, scope.id.toUpperCase().charAt(0) + "", scope.color);
+    }
+
+    @Override
+    public void itemDecoration(ItemStack item) {
+        item.set(DataComponents.CUSTOM_NAME, TextUtils.minimessage("<!italic><yellow>" + this.variable));
+        item.set(DataComponents.LORE, TextUtils.lore()
+                .line("<gray>Тип: " + scope.display)
+                .build()
+        );
+        setDecorationText(item, scope.id.toUpperCase().charAt(0) + "", scope.color);
     }
 
     @Override
@@ -58,10 +72,10 @@ public class Variable extends DevValue {
     }
 
     public enum Scope {
-        GAME("game"),
-        LOCAL("local"),
-        SAVE("save"),
-        LINE("line");
+        GAME("game", "<#ABC4D6>Игровая", 0xABC4D6),
+        LOCAL("local", "<green>Локальная", NamedTextColor.GREEN.value()),
+        SAVE("save", "<yellow>Сохраненная", NamedTextColor.YELLOW.value()),
+        LINE("line", "<aqua>Линейная", NamedTextColor.AQUA.value());
 
         public static Scope getByID(String id) {
             if (id == null) return null;
@@ -72,9 +86,13 @@ public class Variable extends DevValue {
         }
 
         public final String id;
+        public final String display;
+        public final int color;
 
-        Scope(String id) {
+        Scope(String id, String display, int color) {
             this.id = id;
+            this.display = display;
+            this.color = color;
         }
     }
 }

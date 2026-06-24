@@ -1,8 +1,10 @@
 package com.prikolz.justhelper;
 
+import com.prikolz.justhelper.commands.BackCommand;
 import com.prikolz.justhelper.commands.JustHelperCommand;
 import com.prikolz.justhelper.commands.arguments.SignsSearchingArgumentType;
 import com.prikolz.justhelper.dev.*;
+import com.prikolz.justhelper.dev.values.DevValue;
 import com.prikolz.justhelper.dev.values.DevValueRegistry;
 import com.prikolz.justhelper.dev.values.Variable;
 import net.minecraft.client.DeltaTracker;
@@ -72,7 +74,7 @@ public abstract class DevelopmentWorld {
 
     public static void handleItemStack(ItemStack item) {
         if (!isActive()) return;
-        var value = DevValueRegistry.fromItem(item);
+        var value = DevValue.fromItem(item);
         if (value == null) return;
 
         value.handleItemStack(item);
@@ -100,6 +102,7 @@ public abstract class DevelopmentWorld {
         var level = Minecraft.getInstance().level;
         if (player == null || level == null) return;
         var pos = new BlockCodePos(4, player.getBlockY(), player.getBlockZ());
+        BackCommand.prevPos = player.position();
         if (!Config.get().teleportAnchor.value) return;
         var signInfo = SignInfo.getSign(pos);
         String hover;

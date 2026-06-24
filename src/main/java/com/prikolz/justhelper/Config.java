@@ -5,7 +5,7 @@ import com.prikolz.justhelper.config.ChatParameters;
 import com.prikolz.justhelper.config.CodeBlockNames;
 import com.prikolz.justhelper.config.CommandParameters;
 import com.prikolz.justhelper.config.ValueFormats;
-import com.prikolz.justhelper.util.FileUtils;
+import com.prikolz.justhelper.util.JustHelperUtils;
 import net.minecraft.util.FileUtil;
 import net.minecraft.world.level.block.Blocks;
 
@@ -114,11 +114,18 @@ public class Config {
                 return result;
             }
     );
+    public Parameter<Boolean, JsonPrimitive> renderValueDecorations = new Parameter<>(
+            true,
+            "render_value_decorations",
+            parameters,
+            (value, logger) -> new JsonPrimitive(value),
+            (json, logger) -> json.getAsBoolean()
+    );
 
     public List<String> read() {
         JustHelperClient.LOGGER.info("Reading config...");
         var logger = new ConfigLogger();
-        File configFile = new File(FileUtils.getConfigFolder().getPath() + "/config.json");
+        File configFile = new File(JustHelperUtils.getConfigFolder().getPath() + "/config.json");
         if (!configFile.exists()) {
             logger.log("[W] Config file not found");
             printLogs(reset());
@@ -148,7 +155,7 @@ public class Config {
 
     public static String getJSON() {
         try {
-            return Files.readString( new File(FileUtils.getConfigFolder().getPath() + "/config.json").toPath() );
+            return Files.readString( new File(JustHelperUtils.getConfigFolder().getPath() + "/config.json").toPath() );
         } catch (Throwable t) {
             return "Error: " + t.getMessage();
         }
@@ -157,8 +164,8 @@ public class Config {
     public ConfigLogger reset() {
         var result = new ConfigLogger();
         try {
-            File configFile = new File(FileUtils.getConfigFolder().getPath() + "/config.json");
-            FileUtil.createDirectoriesSafe(FileUtils.getConfigFolder().toPath());
+            File configFile = new File(JustHelperUtils.getConfigFolder().getPath() + "/config.json");
+            FileUtil.createDirectoriesSafe(JustHelperUtils.getConfigFolder().toPath());
             JsonObject json = new JsonObject();
             for (var parameter : parameters) parameter.writeDefault(json, result);
             Files.writeString(configFile.toPath(), GSON.toJson(json));
@@ -171,8 +178,8 @@ public class Config {
 
     public static void saveConfig(String json) {
         try {
-            File configFile = new File(FileUtils.getConfigFolder().getPath() + "/config.json");
-            FileUtil.createDirectoriesSafe(FileUtils.getConfigFolder().toPath());
+            File configFile = new File(JustHelperUtils.getConfigFolder().getPath() + "/config.json");
+            FileUtil.createDirectoriesSafe(JustHelperUtils.getConfigFolder().toPath());
             Files.writeString(configFile.toPath(), json);
             JustHelperClient.LOGGER.info("Config saved");
         } catch (Throwable t) {
@@ -182,7 +189,7 @@ public class Config {
 
     public static void openConfigFolder() {
         try {
-            var way = FileUtils.getConfigFolder().getPath();
+            var way = JustHelperUtils.getConfigFolder().getPath();
             ProcessBuilder processBuilder = new ProcessBuilder("explorer.exe", way);
             processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();

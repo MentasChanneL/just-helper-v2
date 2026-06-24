@@ -13,8 +13,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.util.parsing.packrat.commands.CommandArgumentParser;
 import net.minecraft.util.parsing.packrat.commands.Grammar;
+import net.minecraft.world.item.component.ItemLore;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Objects;
@@ -27,13 +30,20 @@ public class TextUtils {
 
     public static Component minimessage(String minimessage, Object ... placeholders) {
         String message = handlePlaceholders(0, minimessage, placeholders);
-        var json = GsonComponentSerializer.gson().serialize( MiniMessage.miniMessage().deserialize(message) );
+        var result = kyoriToMojang( () -> MiniMessage.miniMessage().deserialize(message) );
+        return result == null ? Component.literal("[ERROR | CHECK LOGS]") : result;
+    }
+
+    public static Component kyoriToMojang(Resolver<net.kyori.adventure.text.Component> resolver) {
         try {
+            var kyori = resolver.resolve();
+            var json = GsonComponentSerializer.gson().serialize( kyori );
             return PARSER.parseForCommands( new StringReader( json) );
         } catch (Throwable t) {
-            JustHelperClient.LOGGER.error("Minimessage parse error: {}", t.getMessage());
+            JustHelperClient.LOGGER.error("Deserialize error: {}", t.getMessage());
+            JustHelperClient.LOGGER.printStackTrace(t);
+            return null;
         }
-        return Component.literal("[ERROR | CHECK LOGS]");
     }
 
     public static String toMiniMessage(Component component) {
@@ -99,18 +109,23 @@ public class TextUtils {
         return builder.toString();
     }
 
-    public static String encodeBase64(String string) {
-        return Base64.getEncoder().encodeToString(string.getBytes(StandardCharsets.UTF_8));
+    public static String encodeBase64(String string, Charset charset) {
+        return Base64.getEncoder().encodeToString( string.getBytes(charset) );
     }
 
-    public static String decodeBase64(String base64) {
+    public static String decodeBase64(String base64, Charset charset) {
         byte[] decodedBytes = Base64.getDecoder().decode(base64);
-        return new String(decodedBytes, StandardCharsets.UTF_8);
+        return new String(decodedBytes, charset);
     }
 
     public static String copyValue(Object value) {
+        return copyValue(value, value);
+    }
+
+    public static String copyValue(Object display, Object value) {
         var str = value == null ? "null" : value.toString();
-        return "<hover:show_text:'<tr:chat.copy> " + str + "'><click:copy_to_clipboard:'" + str + "'>" + str;
+        var key = display == null ? "null" : display.toString();
+        return "<hover:show_text:'<tr:chat.copy> " + str + "'><click:copy_to_clipboard:'" + str + "'>" + key;
     }
 
     public static <T> String joinToString(
@@ -139,7 +154,24 @@ public class TextUtils {
         return joinToString(list, separator, null, null, resolver);
     }
 
+    public static LoreBuilder lore() {
+        return new LoreBuilder();
+    }
+
     public interface StringResolver<T> {
         String resolve(T object);
+    }
+
+    public static class LoreBuilder {
+        public ArrayList<Component> lines = new ArrayList<>();
+
+        public LoreBuilder line(String mini, Object ... placeholders) {
+            lines.add( minimessage("<!italic><white>" + mini, placeholders) );
+            return this;
+        }
+
+        public ItemLore build() {
+            return new ItemLore(lines);
+        }
     }
 }

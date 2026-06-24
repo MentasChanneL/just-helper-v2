@@ -6,6 +6,7 @@ import com.prikolz.justhelper.CommandBuffer;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.commands.arguments.VariableHistoryArgumentType;
 import com.prikolz.justhelper.dev.values.Variable;
+import com.prikolz.justhelper.util.JustHelperUtils;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
 public class VarCommand extends JustHelperCommand {
@@ -39,7 +40,10 @@ public class VarCommand extends JustHelperCommand {
         if (!DevelopmentWorld.isActive()) return;
         for (String name : names.split(split)) {
             if (name.startsWith(" ")) name = name.substring(1);
-            CommandBuffer.add("var " + type.id + " " + name);
+            var variable = new Variable(type, name);
+            var item = variable.createItemStack();
+            variable.handleItemStack(item);
+            JustHelperUtils.addItem(item);
         }
     }
 }

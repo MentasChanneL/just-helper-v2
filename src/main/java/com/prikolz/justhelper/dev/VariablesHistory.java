@@ -1,13 +1,8 @@
 package com.prikolz.justhelper.dev;
 
-import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.dev.values.Variable;
-import com.prikolz.justhelper.util.FileUtils;
-import com.prikolz.justhelper.util.NBTUtils;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
+import com.prikolz.justhelper.util.JustHelperUtils;
 
 import java.io.*;
 import java.util.HashSet;
@@ -30,7 +25,7 @@ public class VariablesHistory {
     }
 
     private File getFile(String world, String name) {
-        return new File(FileUtils.getWorldFolder(world).getPath() + "/" + name);
+        return new File(JustHelperUtils.getWorldFolder(world).getPath() + "/" + name);
     }
 
     private Set<String> readFile(File file) {

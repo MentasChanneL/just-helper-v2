@@ -22,18 +22,19 @@ public class JustHelperCommands {
     public static void initialize() {
         register( new MainModCommand() );
         register( new FindCommand() );
+        register( new BackCommand() );
         register( new FoundListCommand() );
         register( new FloorCommand() );
         register( new DescribeCommand() );
         register( new ItemEditorCommand() );
-        register( new PosCommand("pos", true) );
-        register( new PosCommand("back", false) );
+        register( new PosCommand("point", true) );
+        register( new PosCommand("topoint", false) );
         register( new VarCommand(Variable.Scope.LOCAL, "vlc") );
         register( new VarCommand(Variable.Scope.GAME, "vg") );
         register( new VarCommand(Variable.Scope.SAVE, "vs") );
         register( new VarCommand(Variable.Scope.LINE, "vl") );
-        register( new GetDataTypeCommand("n", " ", "num") );
-        register( new GetDataTypeCommand("t", null, "txt") );
+        register( new ValueCommand("n", " ", ValueCommand.Type.NUMBER) );
+        register( new ValueCommand("t", null, ValueCommand.Type.TEXT) );
         register( new ZeroCommand() );
         register( new StupidCommand() );
         register( new Base64Command() );

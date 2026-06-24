@@ -1,7 +1,15 @@
 package com.prikolz.justhelper.dev.values;
 
 import com.prikolz.justhelper.util.Pair;
+import com.prikolz.justhelper.util.TextUtils;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
@@ -22,6 +30,16 @@ public class Text extends DevValue {
             }
     );
 
+    public static Component deserialize(ParsingType type, String text) {
+        var component = switch (type) {
+            case PLAIN -> Component.literal(text);
+            case JSON -> TextUtils.kyoriToMojang( () -> GsonComponentSerializer.gson().deserialize(text) );
+            case LEGACY -> TextUtils.kyoriToMojang( () -> LegacyComponentSerializer.legacy('&').deserialize(text) );
+            case MINI_MESSAGE -> TextUtils.minimessage(text);
+        };
+        return component == null ? Component.literal(text) : component;
+    }
+
     public String text;
     public ParsingType parsingType;
 
@@ -30,6 +48,23 @@ public class Text extends DevValue {
         if (parsing == null) throw new NullPointerException("Parse is null");
         this.parsingType = parsing;
         this.text = text;
+    }
+
+    @Override
+    public void handleItemStack(ItemStack item) {
+        setDecorationText(item, deserialize(parsingType, text).getString(), parsingType.color);
+    }
+
+    @Override
+    public void itemDecoration(ItemStack item) {
+        item.set(DataComponents.CUSTOM_NAME, deserialize(parsingType, text).copy().withStyle(Style.EMPTY.withItalic(false)));
+        item.set(DataComponents.LORE, TextUtils.lore()
+                .line("<#ABC4D6>Тип: " + parsingType.lang)
+                .line("<#ABC4D6>Исходный вид:")
+                .line(text)
+                .build()
+        );
+        handleItemStack(item);
     }
 
     @Override
@@ -46,15 +81,19 @@ public class Text extends DevValue {
     }
 
     public enum ParsingType {
-        LEGACY("legacy"),
-        PLAIN("plain"),
-        JSON("json"),
-        MINI_MESSAGE("minimessage");
+        LEGACY("legacy", "<yellow>Цветной", NamedTextColor.YELLOW.value()),
+        PLAIN("plain", "<white>Обычный", NamedTextColor.WHITE.value()),
+        JSON("json", "<#FFB657>JSON", 0xFFB657),
+        MINI_MESSAGE("minimessage", "<green>Стилизуемый", NamedTextColor.GREEN.value());
 
         public final String id;
+        public final String lang;
+        public final int color;
 
-        ParsingType(String id) {
+        ParsingType(String id, String lang, int color) {
             this.id = id;
+            this.lang = lang;
+            this.color = color;
         }
 
         public static ParsingType getByID(String id) {

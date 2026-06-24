@@ -70,7 +70,6 @@ public class DevValueRegistry<T extends DevValue> {
         if (resolver == null) return null;
         try {
             var result = (T) resolver.valueResolver.resolve(new TagReader(value));
-            result.registry = (DevValueRegistry<DevValue>) resolver;
             result.unusedFields = value;
             return result;
         } catch (Throwable t) {
@@ -78,21 +77,6 @@ public class DevValueRegistry<T extends DevValue> {
             JustHelperClient.LOGGER.printStackTrace(t, JustHelperClient.JustHelperLogger.LogType.WARN);
             return null;
         }
-    }
-
-    public static <T extends DevValue> T fromItem(ItemStack item) {
-        if (item == null || item.isEmpty()) return null;
-        var data = item.get(DataComponents.CUSTOM_DATA);
-        if (data == null) return null;
-        var nbt = data.copyTag();
-        return fromNBT(nbt, true);
-    }
-
-    public static CompoundTag toNBT(DevValue value) {
-        var result = new CompoundTag();
-        result.put("type", StringTag.valueOf(value.type));
-        value.registry.nbtResolver.resolve(value, result);
-        return result;
     }
 
     public static void register(DevValueRegistry<?> registry) {

@@ -7,7 +7,7 @@ import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.mixin.DisplayMixin;
 import com.prikolz.justhelper.mixin.TextDisplayMixin;
 import com.prikolz.justhelper.util.TextUtils;
-import com.prikolz.justhelper.util.FileUtils;
+import com.prikolz.justhelper.util.JustHelperUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -34,7 +34,7 @@ public class FloorDescribes {
     public final Map<Integer, String> plainDescribes = new HashMap<>();
 
     private static File getConfigFile(String worldUUID) {
-        return new File(FileUtils.getWorldFolder(worldUUID).getPath() + "/describes.json");
+        return new File(JustHelperUtils.getWorldFolder(worldUUID).getPath() + "/describes.json");
     }
 
     public FloorDescribes(String worldUUID) {
@@ -94,7 +94,7 @@ public class FloorDescribes {
         });
         String jsonStr = GSON.toJson(json);
         try {
-            Files.createDirectories(FileUtils.getWorldFolder(world).toPath());
+            Files.createDirectories(JustHelperUtils.getWorldFolder(world).toPath());
             Files.writeString(configFile.toPath(), jsonStr);
             spawnDescribe(floor, level);
         } catch (Throwable t) {
