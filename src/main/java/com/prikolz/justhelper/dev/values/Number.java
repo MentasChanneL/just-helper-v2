@@ -1,5 +1,6 @@
 package com.prikolz.justhelper.dev.values;
 
+import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.util.Pair;
 import com.prikolz.justhelper.util.TextUtils;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -28,6 +29,29 @@ public class Number extends DevValue {
             }
     );
 
+    public static String validNumber(String text) {
+        text = text.replace("\"", "");
+        if (text.isEmpty()) return "0";
+        if (text.startsWith("%")) return text;
+        StringBuilder builder = new StringBuilder();
+        boolean dot = false;
+        for (char c : text.toCharArray()) {
+            if (c >= '0' && c <= '9' || c == 'e' || c == 'E') builder.append(c);
+            else if (c == '-' && builder.isEmpty()) builder.append('-');
+            else if (c == '.' && !dot) {
+                dot = true;
+                builder.append('.');
+            }
+        }
+        var result = builder.toString();
+        if (result.startsWith(".")) result = "0" + result;
+        if (result.endsWith(".")) result = result.substring(0, result.length() - 1);
+        if (result.equals("-")) return "0";
+        if (result.startsWith("-.")) result = "-0." + result.substring(2);
+        if (result.endsWith(".0")) result = result.substring(0, result.length() - 2);
+        return result.isEmpty() ? "0" : result;
+    }
+
     public String value;
 
     public Number(String value) {
@@ -37,13 +61,15 @@ public class Number extends DevValue {
 
     @Override
     public void handleItemStack(ItemStack item) {
-        var str = value.replaceAll("[^-0-9.]", "");
-        setDecorationText(item, str, NamedTextColor.WHITE.value());
+        var str = validNumber(value);
+        int limit = 2;
+        if ( str.length() >= 3 && str.charAt(1) == '.' ) limit = 3;
+        setDecorationText(item, str, NamedTextColor.YELLOW.value(), limit);
     }
 
     @Override
     public void itemDecoration(ItemStack item) {
-        item.set(DataComponents.CUSTOM_NAME, TextUtils.minimessage("<!italic><red>" + value.replaceAll("[^-0-9.]", "")));
+        item.set(DataComponents.CUSTOM_NAME, TextUtils.minimessage("<!italic><red>" + validNumber(value)));
         handleItemStack(item);
     }
 

@@ -26,9 +26,9 @@ public abstract class DevValue {
 
     public static String DECORATION_TEXT_KEY = "justhelper_decoration_text";
 
-    public static void setDecorationText(ItemStack item, String text, int color) {
+    public static void setDecorationText(ItemStack item, String text, int color, int limit) {
         var customData = item.get(DataComponents.CUSTOM_DATA).copyTag();
-        if (text.length() > 2) text = text.substring(0, 2);
+        if (text.length() > limit) text = text.substring(0, limit);
         var compound = new CompoundTag();
         compound.put("text", StringTag.valueOf( text ));
         compound.put("color", IntTag.valueOf( color ));

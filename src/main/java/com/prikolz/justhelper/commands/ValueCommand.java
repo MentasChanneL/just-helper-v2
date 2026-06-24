@@ -30,7 +30,9 @@ public class ValueCommand extends JustHelperCommand {
                     for (String a : args) {
                         switch (type) {
                             case TEXT -> JustHelperUtils.addItem(new Text(Text.ParsingType.LEGACY, a).createItemStack());
-                            case NUMBER -> JustHelperUtils.addItem(new Number(a).createItemStack());
+                            case NUMBER -> {
+                                JustHelperUtils.addItem(new Number(Number.validNumber(a)).createItemStack());
+                            }
                         }
                     }
                     return 1;

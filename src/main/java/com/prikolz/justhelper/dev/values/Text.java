@@ -52,7 +52,7 @@ public class Text extends DevValue {
 
     @Override
     public void handleItemStack(ItemStack item) {
-        setDecorationText(item, deserialize(parsingType, text).getString(), parsingType.color);
+        setDecorationText(item, deserialize(parsingType, text).getString(), parsingType.color, 2);
     }
 
     @Override

@@ -14,10 +14,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
-import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -86,6 +83,14 @@ public class ClientPacketListenerMixin {
 
     @Inject(method = "handleContainerSetSlot", at = @At("TAIL"))
     public void onHandleContainerSetSlot(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
+        if (!DevelopmentWorld.isActive()) return;
         DevelopmentWorld.handleItemStack(packet.getItem());
     }
+
+    @Inject(method = "handleSetCursorItem", at = @At("TAIL"))
+    public void onHandleSetCursorItem(ClientboundSetCursorItemPacket packet, CallbackInfo ci) {
+        if (!DevelopmentWorld.isActive()) return;
+        DevelopmentWorld.handleItemStack(packet.contents());
+    }
+
 }

@@ -45,7 +45,7 @@ public class Variable extends DevValue {
     @Override
     public void handleItemStack(ItemStack item) {
         DevelopmentWorld.addToHistory(scope, variable);
-        setDecorationText(item, scope.id.toUpperCase().charAt(0) + "", scope.color);
+        setDecorationText(item, scope.id.toUpperCase(), scope.color, 1);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class Variable extends DevValue {
                 .line("<gray>Тип: " + scope.display)
                 .build()
         );
-        setDecorationText(item, scope.id.toUpperCase().charAt(0) + "", scope.color);
+        setDecorationText(item, scope.id.toUpperCase(), scope.color, 1);
     }
 
     @Override
