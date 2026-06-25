@@ -1,8 +1,8 @@
 package com.prikolz.justhelper.dev.values;
 
+import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.util.Pair;
 import com.prikolz.justhelper.util.TextUtils;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.minecraft.core.component.DataComponents;
@@ -52,7 +52,13 @@ public class Text extends DevValue {
 
     @Override
     public void handleItemStack(ItemStack item) {
-        setDecorationText(item, deserialize(parsingType, text).getString(), parsingType.color, 2);
+        var config = Config.get().valueDecorations.value.text.value;
+        setDecorationText(
+                item,
+                deserialize(parsingType, text).getString(),
+                config.getColor(parsingType),
+                config.characterLimit.value
+        );
     }
 
     @Override
@@ -81,19 +87,17 @@ public class Text extends DevValue {
     }
 
     public enum ParsingType {
-        LEGACY("legacy", "<yellow>Цветной", NamedTextColor.YELLOW.value()),
-        PLAIN("plain", "<white>Обычный", NamedTextColor.WHITE.value()),
-        JSON("json", "<#FFB657>JSON", 0xFFB657),
-        MINI_MESSAGE("minimessage", "<green>Стилизуемый", NamedTextColor.GREEN.value());
+        LEGACY("legacy", "<yellow>Цветной"),
+        PLAIN("plain", "<white>Обычный"),
+        JSON("json", "<#FFB657>JSON"),
+        MINI_MESSAGE("minimessage", "<green>Стилизуемый");
 
         public final String id;
         public final String lang;
-        public final int color;
 
-        ParsingType(String id, String lang, int color) {
+        ParsingType(String id, String lang) {
             this.id = id;
             this.lang = lang;
-            this.color = color;
         }
 
         public static ParsingType getByID(String id) {

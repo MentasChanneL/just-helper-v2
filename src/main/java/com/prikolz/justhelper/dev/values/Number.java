@@ -1,16 +1,12 @@
 package com.prikolz.justhelper.dev.values;
 
-import com.prikolz.justhelper.JustHelperClient;
+import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.util.Pair;
 import com.prikolz.justhelper.util.TextUtils;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CustomData;
 
 import java.util.List;
 
@@ -61,10 +57,11 @@ public class Number extends DevValue {
 
     @Override
     public void handleItemStack(ItemStack item) {
+        var config = Config.get().valueDecorations.value.number.value;
         var str = validNumber(value);
-        int limit = 2;
-        if ( str.length() >= 3 && str.charAt(1) == '.' ) limit = 3;
-        setDecorationText(item, str, NamedTextColor.YELLOW.value(), limit);
+        int limit = config.characterLimit.value;
+        if ( str.length() >= 3 && str.charAt(1) == '.' ) limit += 1;
+        setDecorationText(item, str, config.color.value, limit);
     }
 
     @Override

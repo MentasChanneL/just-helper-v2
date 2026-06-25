@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.prikolz.justhelper.commands.JustHelperCommands;
 import com.prikolz.justhelper.dev.values.DevValueRegistry;
+import com.prikolz.justhelper.util.TextUtils;
 import net.fabricmc.api.ClientModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public class JustHelperClient implements ClientModInitializer {
         }
 
         private void log(LogType type, String msg, Object ... placeholders) {
-            for (Object o : placeholders) msg = msg.replaceFirst("\\{}", o.toString());
+            for (Object o : placeholders) msg = TextUtils.replaceFirst(msg, "{}", o.toString());
             if (cache.size() > CACHE_LIMIT) cache.removeFirst();
             Date currentDate = new Date();
             SimpleDateFormat timeFormat = new SimpleDateFormat("[HH:mm:ss]");

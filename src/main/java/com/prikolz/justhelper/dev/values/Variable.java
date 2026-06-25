@@ -1,9 +1,9 @@
 package com.prikolz.justhelper.dev.values;
 
+import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.util.Pair;
 import com.prikolz.justhelper.util.TextUtils;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.world.item.ItemStack;
@@ -42,10 +42,16 @@ public class Variable extends DevValue {
         this.variable = variable;
     }
 
+    private void setDecorations(ItemStack item) {
+        var config = Config.get().valueDecorations.value.variable.value;
+        var name = config.useNames.value ? variable : scope.id.toUpperCase();
+        setDecorationText(item, name, config.getColor(scope), config.characterLimit.value);
+    }
+
     @Override
     public void handleItemStack(ItemStack item) {
         DevelopmentWorld.addToHistory(scope, variable);
-        setDecorationText(item, scope.id.toUpperCase(), scope.color, 1);
+        setDecorations(item);
     }
 
     @Override
@@ -55,7 +61,7 @@ public class Variable extends DevValue {
                 .line("<gray>Тип: " + scope.display)
                 .build()
         );
-        setDecorationText(item, scope.id.toUpperCase(), scope.color, 1);
+        setDecorations(item);
     }
 
     @Override
@@ -72,10 +78,10 @@ public class Variable extends DevValue {
     }
 
     public enum Scope {
-        GAME("game", "<#ABC4D6>Игровая", 0xABC4D6),
-        LOCAL("local", "<green>Локальная", NamedTextColor.GREEN.value()),
-        SAVE("save", "<yellow>Сохраненная", NamedTextColor.YELLOW.value()),
-        LINE("line", "<aqua>Линейная", NamedTextColor.AQUA.value());
+        GAME("game", "<#ABC4D6>Игровая"),
+        LOCAL("local", "<green>Локальная"),
+        SAVE("save", "<yellow>Сохраненная"),
+        LINE("line", "<aqua>Линейная");
 
         public static Scope getByID(String id) {
             if (id == null) return null;
@@ -87,12 +93,10 @@ public class Variable extends DevValue {
 
         public final String id;
         public final String display;
-        public final int color;
 
-        Scope(String id, String display, int color) {
+        Scope(String id, String display) {
             this.id = id;
             this.display = display;
-            this.color = color;
         }
     }
 }

@@ -4,6 +4,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.serialization.JsonOps;
 import com.prikolz.justhelper.JustHelperClient;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.nbt.NbtOps;
@@ -16,7 +17,6 @@ import net.minecraft.util.parsing.packrat.commands.Grammar;
 import net.minecraft.world.item.component.ItemLore;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -158,6 +158,34 @@ public class TextUtils {
         return new LoreBuilder();
     }
 
+    public static String replaceFirst(String text, String target, String replacement) {
+        int idx = text.indexOf(target);
+        if (idx == -1) return text;
+        return text.substring(0, idx) + replacement + text.substring(idx + target.length());
+    }
+
+    public static int parseHexColor(String hex) {
+        if (hex == null || hex.isEmpty()) return 0xFFFFFF;
+        String clean = hex.trim();
+        if (clean.startsWith("#")) {
+            clean = clean.substring(1);
+        }
+        if (clean.length() == 3) {
+            char r = clean.charAt(0);
+            char g = clean.charAt(1);
+            char b = clean.charAt(2);
+            clean = "" + r + r + g + g + b + b;
+        }
+        if (clean.length() == 6) {
+            try {
+                return Integer.parseInt(clean, 16);
+            } catch (NumberFormatException e) {
+                JustHelperClient.LOGGER.warn("Failed parse {} to int color", hex);
+            }
+        }
+        return 0xFFFFFF;
+    }
+
     public interface StringResolver<T> {
         String resolve(T object);
     }
@@ -172,6 +200,39 @@ public class TextUtils {
 
         public ItemLore build() {
             return new ItemLore(lines);
+        }
+    }
+    
+    public enum ENamedTextColor {
+        BLACK( NamedTextColor.BLACK.value() ),
+        DARK_BLUE( NamedTextColor.DARK_BLUE.value() ),
+        DARK_GREEN( NamedTextColor.DARK_GREEN.value() ),
+        DARK_AQUA( NamedTextColor.DARK_AQUA.value() ),
+        DARK_RED( NamedTextColor.DARK_RED.value() ),
+        DARK_PURPLE( NamedTextColor.DARK_PURPLE.value() ),
+        GOLD( NamedTextColor.GOLD.value() ),
+        GRAY( NamedTextColor.GRAY.value() ),
+        DARK_GRAY( NamedTextColor.DARK_GRAY.value() ),
+        BLUE( NamedTextColor.BLUE.value() ),
+        GREEN( NamedTextColor.GREEN.value() ),
+        AQUA( NamedTextColor.AQUA.value() ),
+        RED( NamedTextColor.RED.value() ),
+        LIGHT_PURPLE( NamedTextColor.LIGHT_PURPLE.value() ),
+        YELLOW( NamedTextColor.YELLOW.value() ),
+        WHITE( NamedTextColor.WHITE.value() );
+
+        public final int value;
+
+        ENamedTextColor(int value) {
+            this.value = value;
+        }
+
+        public static ENamedTextColor of(String name) {
+            try {
+                return valueOf(name.toUpperCase());
+            } catch (Throwable t) {
+                return null;
+            }
         }
     }
 }

@@ -1,11 +1,9 @@
 package com.prikolz.justhelper;
 
 import com.google.gson.*;
-import com.prikolz.justhelper.config.ChatParameters;
-import com.prikolz.justhelper.config.CodeBlockNames;
-import com.prikolz.justhelper.config.CommandParameters;
-import com.prikolz.justhelper.config.ValueFormats;
+import com.prikolz.justhelper.config.*;
 import com.prikolz.justhelper.util.JustHelperUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.util.FileUtil;
 import net.minecraft.world.level.block.Blocks;
 
@@ -114,12 +112,26 @@ public class Config {
                 return result;
             }
     );
-    public Parameter<Boolean, JsonPrimitive> renderValueDecorations = new Parameter<>(
-            true,
-            "render_value_decorations",
+    public Parameter<ValueDecorationParameters, JsonObject> valueDecorations = new Parameter<>(
+            new ValueDecorationParameters(),
+            "value_decorations",
             parameters,
-            (value, logger) -> new JsonPrimitive(value),
-            (json, logger) -> json.getAsBoolean()
+            (value, logger) -> {
+                var result = new JsonObject();
+                value.enabled.write(result, logger);
+                value.variable.write(result, logger);
+                value.text.write(result, logger);
+                value.number.write(result, logger);
+                return result;
+            },
+            (json, logger) -> {
+                var result = new ValueDecorationParameters();
+                result.enabled.read(json, logger);
+                result.variable.read(json, logger);
+                result.text.read(json, logger);
+                result.number.read(json, logger);
+                return result;
+            }
     );
 
     public List<String> read() {
@@ -303,6 +315,7 @@ public class Config {
             A resolve(T value, ConfigLogger logger);
         }
     }
+
     public static class ConfigLogger {
         public final List<String> logs = new ArrayList<>();
         public boolean configWasUpdated = false;
