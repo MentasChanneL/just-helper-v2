@@ -6,6 +6,7 @@ import com.prikolz.justhelper.util.Pair;
 import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
@@ -22,11 +23,13 @@ public class Number extends DevValue {
             nbt -> {
                 var valueTag = nbt.get("number");
                 if (valueTag == null) throw new NullPointerException("Number is null");
+                if (valueTag instanceof NumericTag n) return new Number(n.box().toString());
+                if (valueTag instanceof StringTag s) return new Number(s.value());
                 return new Number(valueTag.toString());
             },
             (value, nbt) -> {
                 Tag tag = value.bigValue != null
-                        ? StringTag.valueOf(value.bigValue.toPlainString())
+                        ? StringTag.valueOf(value.bigValue.toString())
                         : DoubleTag.valueOf(value.doubleValue);
                 nbt.put("number", tag);
             }
@@ -71,10 +74,11 @@ public class Number extends DevValue {
         var config = Config.get().valueDecorations.value.number.value;
         var str = getValue(false);
         int limit = config.characterLimit.value;
-        if ( str.length() >= 3 && str.charAt(1) == '.' ) limit += 1;
+        if ( str.charAt(0) == '-' ) limit++;
+        if ( str.length() >= 3 && str.charAt(1) == '.' ) limit++;
         if (!isValid) {
-            str = "⚠" + str;
-            limit += 1;
+            str = "⚠";
+            limit = 1;
         }
         setDecorationText(item, str, config.color.value, limit);
         TextUtils.lore()
