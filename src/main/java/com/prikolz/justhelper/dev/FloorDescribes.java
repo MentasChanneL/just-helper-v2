@@ -88,19 +88,8 @@ public class FloorDescribes {
         if (level == null) return;
         describes.put(floor, floor + " " + text);
         plainDescribes.put(floor, TextUtils.minimessage(floor + " " + text).getString());
-        File configFile = getConfigFile(world);
-        var json = new JsonObject();
-        describes.forEach((k, v) -> {
-            json.add(k.toString(), new JsonPrimitive(v));
-        });
-        String jsonStr = GSON.toJson(json);
-        try {
-            Files.createDirectories(JustHelperUtils.getWorldFolder(world).toPath());
-            Files.writeString(configFile.toPath(), jsonStr);
-            spawnDescribe(floor, level);
-        } catch (Throwable t) {
-            JustHelperClient.LOGGER.error("Failed to save describe: {}", t.getMessage());
-        }
+        updateFile();
+        spawnDescribe(floor, level);
     }
 
     public boolean removeDescribe(int floor) {
@@ -113,6 +102,22 @@ public class FloorDescribes {
         if (entity != null) {
             entity.remove(Entity.RemovalReason.UNLOADED_TO_CHUNK);
         }
+        updateFile();
         return true;
+    }
+
+    private void updateFile() {
+        File configFile = getConfigFile(world);
+        var json = new JsonObject();
+        describes.forEach((k, v) -> {
+            json.add(k.toString(), new JsonPrimitive(v));
+        });
+        String jsonStr = GSON.toJson(json);
+        try {
+            Files.createDirectories(JustHelperUtils.getWorldFolder(world).toPath());
+            Files.writeString(configFile.toPath(), jsonStr);
+        } catch (Throwable t) {
+            JustHelperClient.LOGGER.error("Failed to save describe: {}", t.getMessage());
+        }
     }
 }
