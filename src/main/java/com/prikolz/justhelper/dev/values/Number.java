@@ -22,10 +22,12 @@ public class Number extends DevValue {
             Number.type,
             nbt -> {
                 var valueTag = nbt.get("number");
-                if (valueTag == null) throw new NullPointerException("Number is null");
-                if (valueTag instanceof NumericTag n) return new Number(n.box().toString());
-                if (valueTag instanceof StringTag s) return new Number(s.value());
-                return new Number(valueTag.toString());
+                return switch (valueTag) {
+                    case null -> throw new NullPointerException("Number is null");
+                    case NumericTag n -> new Number(n.box().toString());
+                    case StringTag s -> new Number(s.value());
+                    default -> new Number(valueTag.toString());
+                };
             },
             (value, nbt) -> {
                 Tag tag = value.bigValue != null
@@ -39,6 +41,7 @@ public class Number extends DevValue {
     public BigDecimal bigValue;
     public double doubleValue;
     public boolean isValid;
+    public boolean isMath;
 
     public Number(String value) {
         super(Number.type, Items.SLIME_BALL, "Число({value})");
@@ -57,6 +60,13 @@ public class Number extends DevValue {
             this.bigValue = null;
             return;
         } catch (Throwable t) {
+            if(value.startsWith("%math")) {
+                this.isValid = true;
+                this.isMath = true;
+                this.bigValue = null;
+                this.doubleValue = 0.0;
+                return;
+            }
             JustHelperClient.LOGGER.warn("Failed parse {} as BigDecimal", value);
         }
         this.bigValue = null;
@@ -80,10 +90,14 @@ public class Number extends DevValue {
             str = "⚠";
             limit = 1;
         }
+        if (isMath) {
+            str = "∑";
+            limit = 1;
+        }
         setDecorationText(item, str, config.color.value, limit);
         TextUtils.lore()
                 .line(isValid ? " " : "<yellow>⚠ Ошибка парсинга \"" + stringValue + "\"")
-                .line("<gray>Тип: <white>" + (bigValue == null ? "Double" : "BigDecimal"))
+                .line("<gray>Тип: <white>" + (bigValue == null ? (isMath ? "Формула" : "Double") : "BigDecimal"))
                 .write(item);
     }
 
