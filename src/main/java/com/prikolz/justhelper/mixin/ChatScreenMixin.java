@@ -7,7 +7,6 @@ import com.prikolz.justhelper.util.JustHelperUtils;
 import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -46,7 +45,7 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
         if (!Config.get().chatParameters.value.enableMarkers.value) return;
         spacesCheckBox = new ChatCheckbox(
                 width - (JustHelperUtils.isClassLoaded("com.aizistral.nochatreports.common.NCRCore") ? 40 : 15),
-                height - 25,
+                height - 30,
                 TextUtils.minimessage("<font:just-helper:icons>1"),
                 allowDoubleSpaces,
                 (w, v) -> allowDoubleSpaces = v
