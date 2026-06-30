@@ -36,7 +36,7 @@ public class JustHelperCommands {
         register( new ValueCommand("n", " ", ValueCommand.Type.NUMBER) );
         register( new ValueCommand("t", null, ValueCommand.Type.TEXT) );
         register( new ValueCommand("tl", null, ValueCommand.Type.TEXT_LEGACY) );
-        register( new ValueCommand("tm", null, ValueCommand.Type.TEXT_MINI) );
+        register( new ValueCommand("ts", null, ValueCommand.Type.TEXT_MINI) );
         register( new ValueCommand("tj", null, ValueCommand.Type.TEXT_JSON) );
         register( new ZeroCommand() );
         register( new StupidCommand() );
