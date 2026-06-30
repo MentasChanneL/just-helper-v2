@@ -2,7 +2,7 @@ package com.prikolz.justhelper.commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.prikolz.justhelper.util.JustMCUtils;
+import com.prikolz.justhelper.util.JustHelperUtils;
 import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
@@ -21,7 +21,7 @@ public class GzipCommand extends JustHelperCommand {
                 .run(context -> {
                     var text = StringArgumentType.getString(context, "text");
                     try {
-                        var result = JustMCUtils.gzipCompress(text);
+                        var result = JustHelperUtils.gzipCompress(text);
                         return JustHelperCommand.feedback(
                                 "<green>Сжатый текст gzip:<white>\n{0}",
                                 TextUtils.copyValue(result)
@@ -37,7 +37,7 @@ public class GzipCommand extends JustHelperCommand {
                 .run(context -> {
                     var gzip = StringArgumentType.getString(context, "gzip");
                     try {
-                        var text = JustMCUtils.gzipDecompress(gzip);
+                        var text = JustHelperUtils.gzipDecompress(gzip);
                         return JustHelperCommand.feedback(
                                 "<green>Распакованный текст gzip:<white>\n{0}",
                                 TextUtils.copyValue(text)

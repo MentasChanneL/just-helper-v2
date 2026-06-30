@@ -3,11 +3,9 @@ package com.prikolz.justhelper.commands;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.prikolz.justhelper.JustHelperClient;
-import com.prikolz.justhelper.util.JustMCUtils;
+import com.prikolz.justhelper.util.JustHelperUtils;
 import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
-
-import java.nio.charset.StandardCharsets;
 
 public class ZlibCommand extends JustHelperCommand{
     public ZlibCommand() {
@@ -21,7 +19,7 @@ public class ZlibCommand extends JustHelperCommand{
                 .arg("string", StringArgumentType.greedyString())
                 .run(context -> {
                     var string = StringArgumentType.getString(context, "string");
-                    var compressed = JustMCUtils.zlibCompress(string);
+                    var compressed = JustHelperUtils.zlibCompress(string);
                     return JustHelperCommand.feedback("<green>Сжатый текст zlib:<white> {0}", TextUtils.copyValue(compressed));
                 });
 
@@ -30,7 +28,7 @@ public class ZlibCommand extends JustHelperCommand{
                 .run(context -> {
                     var string = StringArgumentType.getString(context, "zlib");
                     try {
-                        var decompressed = JustMCUtils.zlibDecompress(string);
+                        var decompressed = JustHelperUtils.zlibDecompress(string);
                         return JustHelperCommand.feedback("<green>Распакованный текст zlib:<white> {0}", TextUtils.copyValue(decompressed));
                     } catch (Throwable t) {
                         JustHelperClient.LOGGER.printStackTrace(t, JustHelperClient.JustHelperLogger.LogType.ERROR);

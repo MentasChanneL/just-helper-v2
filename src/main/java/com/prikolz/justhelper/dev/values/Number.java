@@ -1,13 +1,17 @@
 package com.prikolz.justhelper.dev.values;
 
 import com.prikolz.justhelper.Config;
+import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.util.Pair;
 import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class Number extends DevValue {
@@ -21,62 +25,77 @@ public class Number extends DevValue {
                 return new Number(valueTag.toString());
             },
             (value, nbt) -> {
-                nbt.put("number", StringTag.valueOf(value.value));
+                Tag tag = value.bigValue != null
+                        ? StringTag.valueOf(value.bigValue.toPlainString())
+                        : DoubleTag.valueOf(value.doubleValue);
+                nbt.put("number", tag);
             }
     );
 
-    public static String validNumber(String text) {
-        text = text.replace("\"", "");
-        if (text.isEmpty()) return "0";
-        if (text.startsWith("%")) return text;
-        StringBuilder builder = new StringBuilder();
-        boolean dot = false;
-        for (char c : text.toCharArray()) {
-            if (c >= '0' && c <= '9' || c == 'e' || c == 'E') builder.append(c);
-            else if (c == '-' && builder.isEmpty()) builder.append('-');
-            else if (c == '.' && !dot) {
-                dot = true;
-                builder.append('.');
-            }
-        }
-        var result = builder.toString();
-        if (result.startsWith(".")) result = "0" + result;
-        if (result.endsWith(".")) result = result.substring(0, result.length() - 1);
-        if (result.equals("-")) return "0";
-        if (result.startsWith("-.")) result = "-0." + result.substring(2);
-        if (result.endsWith(".0")) result = result.substring(0, result.length() - 2);
-        return result.isEmpty() ? "0" : result;
-    }
-
-    public String value;
+    public String stringValue;
+    public BigDecimal bigValue;
+    public double doubleValue;
+    public boolean isValid;
 
     public Number(String value) {
         super(Number.type, Items.SLIME_BALL, "Число({value})");
-        this.value = value;
+        this.stringValue = value;
+        try {
+            var big = new BigDecimal(value);
+            this.isValid = true;
+            if (big.compareTo(new BigDecimal(Double.MAX_VALUE)) > 0 ||
+                big.compareTo(new BigDecimal(-Double.MAX_VALUE)) < 0
+            ) {
+                this.doubleValue = 0.0;
+                this.bigValue = big;
+                return;
+            }
+            this.doubleValue = big.doubleValue();
+            this.bigValue = null;
+            return;
+        } catch (Throwable t) {
+            JustHelperClient.LOGGER.warn("Failed parse {} as BigDecimal", value);
+        }
+        this.bigValue = null;
+        this.doubleValue = 0.0;
+        this.isValid = false;
+    }
+
+    public String getValue(boolean plain) {
+        if (plain) return bigValue == null ? String.valueOf(doubleValue) : bigValue.toPlainString();
+        return bigValue == null ? String.valueOf(doubleValue) : bigValue.toString();
     }
 
     @Override
     public void handleItemStack(ItemStack item) {
         var config = Config.get().valueDecorations.value.number.value;
-        var str = validNumber(value);
+        var str = getValue(false);
         int limit = config.characterLimit.value;
         if ( str.length() >= 3 && str.charAt(1) == '.' ) limit += 1;
+        if (!isValid) {
+            str = "⚠" + str;
+            limit += 1;
+        }
         setDecorationText(item, str, config.color.value, limit);
+        TextUtils.lore()
+                .line(isValid ? " " : "<yellow>⚠ Ошибка парсинга \"" + stringValue + "\"")
+                .line("<gray>Тип: <white>" + (bigValue == null ? "Double" : "BigDecimal"))
+                .write(item);
     }
 
     @Override
     public void itemDecoration(ItemStack item) {
-        item.set(DataComponents.CUSTOM_NAME, TextUtils.minimessage("<!italic><red>" + validNumber(value)));
+        item.set(DataComponents.CUSTOM_NAME, TextUtils.minimessage("<!italic><red>" + getValue(false)));
         handleItemStack(item);
     }
 
     @Override
     public List<Pair<String, String>> getFormatPlaceholders() {
-        return List.of( Pair.of("value", this.value) );
+        return List.of( Pair.of("value", getValue(false)) );
     }
 
     @Override
     public String miniBuilder() {
-        return value;
+        return getValue(false);
     }
 }

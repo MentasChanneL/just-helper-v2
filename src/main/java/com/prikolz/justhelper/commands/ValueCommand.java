@@ -2,7 +2,6 @@ package com.prikolz.justhelper.commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.prikolz.justhelper.CommandBuffer;
 import com.prikolz.justhelper.dev.values.Number;
 import com.prikolz.justhelper.dev.values.Text;
 import com.prikolz.justhelper.util.JustHelperUtils;
@@ -28,12 +27,14 @@ public class ValueCommand extends JustHelperCommand {
                     var arg = context.getArgument("arg", String.class);
                     var args = split == null ? new String[]{arg} : arg.split(split);
                     for (String a : args) {
-                        switch (type) {
-                            case TEXT -> JustHelperUtils.addItem(new Text(Text.ParsingType.LEGACY, a).createItemStack());
-                            case NUMBER -> {
-                                JustHelperUtils.addItem(new Number(Number.validNumber(a)).createItemStack());
-                            }
-                        }
+                        var item = switch (type) {
+                            case TEXT -> new Text(Text.ParsingType.PLAIN, a).createItemStack();
+                            case TEXT_LEGACY -> new Text(Text.ParsingType.LEGACY, a).createItemStack();
+                            case TEXT_MINI -> new Text(Text.ParsingType.MINI_MESSAGE, a).createItemStack();
+                            case TEXT_JSON ->  new Text(Text.ParsingType.JSON, a).createItemStack();
+                            case NUMBER -> new Number(a).createItemStack();
+                        };
+                        JustHelperUtils.addItem(item);
                     }
                     return 1;
                 })
@@ -41,7 +42,8 @@ public class ValueCommand extends JustHelperCommand {
     }
 
     public enum Type {
-        TEXT("/txt"), NUMBER("/num");
+        TEXT("/txt"), TEXT_LEGACY("/txt legacy"), TEXT_MINI("/txt minimessage"), TEXT_JSON("/txt json"),
+        NUMBER("/num");
 
         public final String desc;
 

@@ -13,7 +13,6 @@ import com.prikolz.justhelper.commands.arguments.ReferenceArgumentType;
 import com.prikolz.justhelper.commands.arguments.ValidStringArgumentType;
 import com.prikolz.justhelper.gui.widgets.MultiLineEditBoxWrapper;
 import com.prikolz.justhelper.util.JustHelperUtils;
-import com.prikolz.justhelper.util.JustMCUtils;
 import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.MojangUtils;
 import net.minecraft.client.Minecraft;
@@ -33,7 +32,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
 import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
@@ -247,7 +245,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                     var line = tags.getString("justmc:template").orElse(null);
                     if (line == null) return JustHelperCommand.feedback("<yellow>Предмет не является шаблоном!");
                     try {
-                        line = JustMCUtils.zlibDecompress(line);
+                        line = JustHelperUtils.zlibDecompress(line);
                     } catch (Throwable t) {
                         JustHelperClient.LOGGER.printStackTrace(t);
                         return JustHelperCommand.feedback("<yellow>Не удалось распаковать код: " + t.getMessage());

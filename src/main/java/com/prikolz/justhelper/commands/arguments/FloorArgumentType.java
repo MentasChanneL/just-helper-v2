@@ -35,7 +35,7 @@ public class FloorArgumentType implements ArgumentType<Integer> {
         var describes = DevelopmentWorld.describes.plainDescribes;
         for (int floor : describes.keySet()) {
             var describe = describes.get(floor);
-            if (describe.contains(name)) return floor;
+            if (describe.toLowerCase().contains(name.toLowerCase())) return floor;
         }
         throw FLOOR_NOT_FOUND.create(name);
     }

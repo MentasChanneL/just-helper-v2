@@ -1,10 +1,9 @@
 package com.prikolz.justhelper.dev.values;
 
-import com.prikolz.justhelper.util.JustMCUtils;
+import com.prikolz.justhelper.util.JustHelperUtils;
 import com.prikolz.justhelper.util.Pair;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Items;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class Item extends DevValue {
                 var item = nbt.getString("item").orElse(null);
                 if (item == null) return new Item("null");
                 try {
-                    return new Item(JustMCUtils.gzipDecompress(item));
+                    return new Item(JustHelperUtils.gzipDecompress(item));
                 } catch (Throwable t) { throw new RuntimeException(t.getMessage()); }
             },
             (value, nbt) -> {

@@ -27,6 +27,7 @@ import static com.prikolz.justhelper.JustHelperClient.GSON;
 
 public class FloorDescribes {
 
+    // потом засуну в одну мапу
     public final String world;
     public final Map<Integer, String> describes = new HashMap<>();
     public final Map<Integer, Entity> entities = new HashMap<>();
@@ -100,5 +101,18 @@ public class FloorDescribes {
         } catch (Throwable t) {
             JustHelperClient.LOGGER.error("Failed to save describe: {}", t.getMessage());
         }
+    }
+
+    public boolean removeDescribe(int floor) {
+        if(!DevelopmentWorld.isActive()) return false;
+        if (!describes.containsKey(floor)) return false;
+        describes.remove(floor);
+        plainDescribes.remove(floor);
+        render.remove(floor);
+        var entity = entities.remove(floor);
+        if (entity != null) {
+            entity.remove(Entity.RemovalReason.UNLOADED_TO_CHUNK);
+        }
+        return true;
     }
 }

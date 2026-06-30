@@ -7,6 +7,7 @@ import com.prikolz.justhelper.JustHelperClient;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.SnbtGrammar;
 import net.minecraft.nbt.Tag;
@@ -14,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.util.parsing.packrat.commands.CommandArgumentParser;
 import net.minecraft.util.parsing.packrat.commands.Grammar;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 
 import java.nio.charset.Charset;
@@ -200,6 +202,11 @@ public class TextUtils {
 
         public ItemLore build() {
             return new ItemLore(lines);
+        }
+
+        public ItemStack write(ItemStack item) {
+            item.set(DataComponents.LORE, build());
+            return item;
         }
     }
     
