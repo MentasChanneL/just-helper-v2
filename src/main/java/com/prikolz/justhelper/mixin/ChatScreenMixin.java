@@ -3,9 +3,11 @@ package com.prikolz.justhelper.mixin;
 import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.commands.JustHelperCommands;
 import com.prikolz.justhelper.gui.widgets.ChatCheckbox;
+import com.prikolz.justhelper.util.JustHelperUtils;
 import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -31,6 +33,8 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
     private static boolean allowDoubleSpaces = false;
     @Unique
     private ChatCheckbox spacesCheckBox = null;
+    @Unique
+    private boolean chatPatchesIsLoaded = false;
 
     protected ChatScreenMixin(Component component) { super(component); }
 
@@ -41,7 +45,7 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
     private void init(CallbackInfo ci) {
         if (!Config.get().chatParameters.value.enableMarkers.value) return;
         spacesCheckBox = new ChatCheckbox(
-                width - 15,
+                width - (JustHelperUtils.isClassLoaded("com.aizistral.nochatreports.common.NCRCore") ? 40 : 15),
                 height - 25,
                 TextUtils.minimessage("<font:just-helper:icons>1"),
                 allowDoubleSpaces,
@@ -49,6 +53,7 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
         );
         spacesCheckBox.setTooltip( Tooltip.create(Component.literal("Включить/Выключить\nдвойные пробелы в чате")) );
         this.addRenderableWidget(spacesCheckBox);
+        chatPatchesIsLoaded = JustHelperUtils.isClassLoaded("obro1961.chatpatches.ChatPatches");
     }
 
     @Redirect(
@@ -67,7 +72,13 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
         }
         input.setMaxLength(limit);
         if (!Config.get().chatParameters.value.showLineLimit.value) return;
-        guiGraphics.drawString(Minecraft.getInstance().font, value.length() + "/" + limit, x1 + 2, y1 - 10, 0xffAAAAAA);
+        guiGraphics.drawString(
+                Minecraft.getInstance().font,
+                value.length() + "/" + limit,
+                chatPatchesIsLoaded ? (int) (width * 0.32) : x1 + 2,
+                y1 - 10,
+                0xffAAAAAA
+        );
     }
 
     @Redirect(
