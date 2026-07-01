@@ -12,9 +12,23 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.zip.*;
 
 public class JustHelperUtils {
+    private static Queue<Runnable> syncScheduler = new ConcurrentLinkedQueue<>();
+
+    public static void sync(Runnable run) {
+        syncScheduler.add(run);
+    }
+
+    public static void resolveRunQueue() {
+        while (!syncScheduler.isEmpty()) {
+            syncScheduler.poll().run();
+        }
+    }
+
     public static File getGameFolder() {
         return FabricLoader.getInstance().getGameDir().toFile();
     }
@@ -111,5 +125,11 @@ public class JustHelperUtils {
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    public static void send(String minimessage, Object ... placeholders) {
+        var player = Minecraft.getInstance().player;
+        if (player == null) return;
+        player.displayClientMessage(TextUtils.minimessage(minimessage, placeholders), false);
     }
 }

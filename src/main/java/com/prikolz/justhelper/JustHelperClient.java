@@ -6,12 +6,15 @@ import com.prikolz.justhelper.commands.JustHelperCommands;
 import com.prikolz.justhelper.dev.values.DevValueRegistry;
 import com.prikolz.justhelper.util.TextUtils;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.text.SimpleDateFormat;
@@ -20,6 +23,8 @@ import java.util.Date;
 public class JustHelperClient implements ClientModInitializer {
 
 	public static final String MOD_ID = "just-helper";
+    public static final DateTimeFormatter VERSION_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yy");
+    public static LocalDate versionDate = LocalDate.parse("01.01.20", VERSION_DATE_FORMAT);
 
 	public static final JustHelperLogger LOGGER = new JustHelperLogger(LoggerFactory.getLogger(MOD_ID));
 
@@ -32,7 +37,22 @@ public class JustHelperClient implements ClientModInitializer {
 		CONFIG = new Config();
 		CONFIG.read();
         DevValueRegistry.registerAll();
-		LOGGER.info("hello");
+        String versionName = "Unknown";
+        String dateStr = "Unknown";
+        try {
+            versionName = FabricLoader.getInstance().getModContainer(MOD_ID)
+                    .map(container -> container.getMetadata().getVersion().getFriendlyString())
+                    .orElseThrow();
+            var elements = versionName.split("\\.");
+            dateStr = TextUtils.joinToString(List.of(elements), ".", (el) -> {
+               if (el.length() == 1) return "0" + el;
+               return el;
+            });
+            versionDate = LocalDate.parse(dateStr, VERSION_DATE_FORMAT);
+        } catch (Exception e) {
+            LOGGER.error("Mod version parse \"{}\" error: {}", versionName, e.getMessage());
+        }
+		LOGGER.info("hello! Current mod version: {}", dateStr);
 	}
 
     public static class JustHelperLogger extends OutputStream {

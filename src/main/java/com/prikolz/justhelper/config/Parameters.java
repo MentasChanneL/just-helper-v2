@@ -22,6 +22,10 @@ public abstract class Parameters {
         return (json, logger) -> Math.min(max, Math.max(min, json.getAsInt()));
     }
 
+    public static Config.Parameter.ParameterResolver<Long, JsonPrimitive> longResolver(long min, long max) {
+        return (json, logger) -> Math.min(max, Math.max(min, json.getAsLong()));
+    }
+
     public static Config.Parameter<Integer, JsonPrimitive> intParameter(String name, int defaultValue, int min, int max, List<Config.Parameter<?, ?>> parameters) {
         return new Config.Parameter<>(
                 defaultValue,
@@ -32,8 +36,18 @@ public abstract class Parameters {
         );
     }
 
-    public static Config.Parameter<Boolean, JsonPrimitive> boolParameter(String name, boolean defaultValue, List<Config.Parameter<?, ?>> parameters) {
+    public static Config.Parameter<Long, JsonPrimitive> longParameter(String name, long defaultValue, long min, long max, List<Config.Parameter<?, ?>> parameters) {
         return new Config.Parameter<>(
+                defaultValue,
+                name,
+                parameters,
+                (value, logger) -> new JsonPrimitive(value),
+                longResolver(min, max)
+        );
+    }
+
+    public static BooleanParameter boolParameter(String name, boolean defaultValue, List<Config.Parameter<?, ?>> parameters) {
+        return new BooleanParameter(
                 defaultValue,
                 name,
                 parameters,
@@ -54,5 +68,11 @@ public abstract class Parameters {
                 },
                 colorResolver
         );
+    }
+
+    public static class BooleanParameter extends Config.Parameter<Boolean, JsonPrimitive> {
+        public BooleanParameter(Boolean defaultValue, String jsonKey, List<Config.Parameter<?, ?>> parameters, JsonResolver<Boolean, JsonPrimitive> jsonResolver, ParameterResolver<Boolean, JsonPrimitive> resolver) {
+            super(defaultValue, jsonKey, parameters, jsonResolver, resolver);
+        }
     }
 }

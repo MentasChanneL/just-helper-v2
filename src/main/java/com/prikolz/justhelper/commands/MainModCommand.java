@@ -1,6 +1,7 @@
 package com.prikolz.justhelper.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.prikolz.justhelper.UpdateChecker;
 import com.prikolz.justhelper.gui.ConfigScreen;
 import com.prikolz.justhelper.gui.LogsScreen;
 import net.minecraft.client.Minecraft;
@@ -23,6 +24,9 @@ public class MainModCommand extends JustHelperCommand {
                 )
                 .then(
                         JustHelperCommands.literal("logs").executes(context -> executeLogs())
+                )
+                .then(
+                        JustHelperCommands.literal("updates").executes(context -> executeUpdates())
                 )
                 .executes(context -> execute());
     }
@@ -57,6 +61,11 @@ public class MainModCommand extends JustHelperCommand {
         for (var command : JustHelperCommands.registerOrder) {
             JustHelperCommand.feedback("<hover:show_text:\"{0}\">{0}", pattern, command.name, command.description);
         }
+        return 1;
+    }
+
+    public int executeUpdates() {
+        UpdateChecker.checkUpdates();
         return 1;
     }
 }

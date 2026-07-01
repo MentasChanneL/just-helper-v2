@@ -188,6 +188,43 @@ public class TextUtils {
         return 0xFFFFFF;
     }
 
+    public static String markdownToMinimessage(String text) {
+        String result = "\n" + text;
+
+        // 1. Удалить теги <img...>
+        result = result.replaceAll("<img.*?>", "(Изображение)");
+
+        // 2. Заголовки: \n# Any text → \n<bold>Any text</bold>
+        result = result.replaceAll("\n#\\s+(.*)", "\n<bold>$1</bold>");
+
+        result = result.replace("\n- - - ", "\n<white>∙∙∙</white> ");
+        result = result.replace("\n- - ", "\n<white>∙∙</white> ");
+        result = result.replace("\n- ", "\n<white>∙</white> ");
+        result = result.replace("\n- - -", "\n<white>∙∙∙</white> ");
+        result = result.replace("\n- -", "\n<white>∙∙</white> ");
+        result = result.replace("\n-", "\n<white>∙</white> ");
+
+        // 4. Жирный: **text** → <bold>text</bold>
+        result = result.replaceAll("\\*\\*(.*?)\\*\\*", "<bold>$1</bold>");
+
+        // 5. Курсив: *text* → <italic>text</italic>
+        result = result.replaceAll("\\*(.*?)\\*", "<italic>$1</italic>");
+
+        // 6. Подчёркнутый: _text_ → <underlined>text</underlined>
+        result = result.replaceAll("_(.*?)_", "<underlined>$1</underlined>");
+
+        result = result.replaceAll("`(.*?)`", "<shadow:#005599FF>$1</shadow>");
+
+        // 7. Зачёркнутый: ~~text~~ → <strikethrough>text</strikethrough>
+        result = result.replaceAll("~~(.*?)~~", "<strikethrough>$1</strikethrough>");
+
+        while (result.contains("\n\n")) result = result.replace("\n\n", "\n");
+
+        if (result.startsWith("\n")) result = result.substring(1);
+
+        return result.replace("`", "").replace("\r", "");
+    }
+
     public interface StringResolver<T> {
         String resolve(T object);
     }

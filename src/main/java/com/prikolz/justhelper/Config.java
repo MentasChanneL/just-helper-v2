@@ -58,34 +58,21 @@ public class Config {
                 return result;
             }
     );
-    public Parameter<Boolean, JsonPrimitive> showPositionInCode = new Parameter<>(
-            true,
-            "show_position_in_code",
-            parameters,
-            (value, logger) -> new JsonPrimitive(value),
-            (json, logger) -> json.getAsBoolean()
-    );
-    public Parameter<Long, JsonPrimitive> commandBufferCD = new Parameter<>(
-            700L,
-            "command_sending_cooldown",
-            parameters,
-            (value, logger) -> new JsonPrimitive(value),
-            (json, logger) -> json.getAsLong()
-    );
-    public Parameter<Boolean, JsonPrimitive> teleportAnchor = new Parameter<>(
-            true,
-            "enable_teleport_anchor",
-            parameters,
-            (value, logger) -> new JsonPrimitive(value),
-            (json, logger) -> json.getAsBoolean()
-    );
-    public Parameter<Boolean, JsonPrimitive> findEach = new Parameter<>(
-            true,
-            "enable_each_find_list",
-            parameters,
-            (value, logger) -> new JsonPrimitive(value),
-            (child, logger) -> child.getAsBoolean()
-    );
+    public Parameters.BooleanParameter showPositionInCode =
+            Parameters.boolParameter("show_position_in_code", true, parameters);
+
+    public Parameter<Long, JsonPrimitive> commandBufferCD =
+            Parameters.longParameter("command_sending_cooldown", 700L, 0L, 10000L, parameters);
+
+    public Parameters.BooleanParameter teleportAnchor =
+            Parameters.boolParameter("enable_teleport_anchor", true, parameters);
+
+    public Parameters.BooleanParameter findEach =
+            Parameters.boolParameter("enable_each_find_list", true, parameters);
+
+    public Parameters.BooleanParameter updateChecker =
+            Parameters.boolParameter("enable_update_checker", true, parameters);
+
     public Parameter<ValueFormats, JsonObject> valueFormats = new Parameter<>(
             defaultValueFormats(),
             "value_string_formats",

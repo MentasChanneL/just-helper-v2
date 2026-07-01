@@ -9,6 +9,7 @@
     "DisplayMixin",
     "GuiGraphicsMixin",
     "GUIMixin",
+    "JoinMultiplayerScreenMixin",
     "MinecraftMixin",
     "MultiLineEditBoxMixin",
     "SpriteContentsMixin",

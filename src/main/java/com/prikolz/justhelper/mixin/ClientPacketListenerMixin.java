@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.DevelopmentWorld;
 import com.prikolz.justhelper.JustHelperClient;
+import com.prikolz.justhelper.UpdateChecker;
 import com.prikolz.justhelper.commands.FindCommand;
 import com.prikolz.justhelper.commands.JustHelperCommand;
 import com.prikolz.justhelper.commands.JustHelperCommands;
