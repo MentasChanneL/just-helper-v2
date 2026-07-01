@@ -33,11 +33,11 @@ public class JustHelperCommands {
         register( new VarCommand(Variable.Scope.GAME, "vg") );
         register( new VarCommand(Variable.Scope.SAVE, "vs") );
         register( new VarCommand(Variable.Scope.LINE, "vl") );
-        register( new ValueCommand("n", " ", ValueCommand.Type.NUMBER) );
-        register( new ValueCommand("t", null, ValueCommand.Type.TEXT) );
-        register( new ValueCommand("tl", null, ValueCommand.Type.TEXT_LEGACY) );
-        register( new ValueCommand("ts", null, ValueCommand.Type.TEXT_MINI) );
-        register( new ValueCommand("tj", null, ValueCommand.Type.TEXT_JSON) );
+        register( new ValueCommand("n", " ", ValueCommand.Type.NUMBER, true) );
+        register( new ValueCommand("t", null, ValueCommand.Type.TEXT, false) );
+        register( new ValueCommand("tl", null, ValueCommand.Type.TEXT_LEGACY, false) );
+        register( new ValueCommand("ts", null, ValueCommand.Type.TEXT_MINI, false) );
+        register( new ValueCommand("tj", null, ValueCommand.Type.TEXT_JSON, false) );
         register( new ZeroCommand() );
         register( new StupidCommand() );
         register( new Base64Command() );
