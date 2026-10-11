@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.entity.SignTextSlot;
 
 public class SignInfo {
     public final BlockPos pos;
@@ -36,7 +37,7 @@ public class SignInfo {
         String[] lines = new String[4];
 
         var i = 0;
-        for (Component line : sign.getFrontText().getMessages(false)) {
+        for (Component line : sign.getText(SignTextSlot.FRONT).getMessages(false)) {
             lines[i] = line.getString();
             i++;
         }

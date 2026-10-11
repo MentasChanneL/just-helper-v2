@@ -778,7 +778,7 @@ public class ItemEditorCommand extends JustHelperCommand {
         if (result > 0) {
             if (player.gameMode() != GameType.CREATIVE)
                 return JustHelperCommand.feedback("<yellow>Item+ >> Изменение предмета возможно только в креативе!");
-            player.swing(InteractionHand.MAIN_HAND, false);
+            player.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, false);
             JustHelperUtils.setItem(player.getInventory().getSelectedSlot(), item);
         }
 
