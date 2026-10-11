@@ -14,7 +14,7 @@ public class FoundListCommand extends JustHelperCommand {
         return main.then(
                 Commands.argument("page", IntegerArgumentType.integer(0))
                         .executes(context -> {
-                            FindCommand.execute(FindCommand.lastFound, IntegerArgumentType.getInteger(context, "page"));
+                            AdvancedFindCommand.execute(AdvancedFindCommand.lastFound, IntegerArgumentType.getInteger(context, "page"));
                             return 1;
                         })
         );

@@ -1,13 +1,13 @@
 package com.prikolz.justhelper.mixin;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.prikolz.justhelper.codespace.CodeSpace;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.UpdateChecker;
-import com.prikolz.justhelper.commands.FindCommand;
-import com.prikolz.justhelper.commands.JustHelperCommand;
-import com.prikolz.justhelper.commands.Commands;
 import com.prikolz.justhelper.codespace.BlockCodePos;
+import com.prikolz.justhelper.codespace.CodeSpace;
+import com.prikolz.justhelper.commands.AdvancedFindCommand;
+import com.prikolz.justhelper.commands.Commands;
+import com.prikolz.justhelper.commands.JustHelperCommand;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -60,7 +60,7 @@ public class ClientPacketListenerMixin {
                         (int) Double.parseDouble(args[2]),
                         (int) Double.parseDouble(args[3])
                 );
-                FindCommand.findEach(pos);
+                AdvancedFindCommand.findEach(pos);
             } catch (Throwable t) {
                 JustHelperClient.LOGGER.warn("Fail find each: {}", t.getMessage());
             }

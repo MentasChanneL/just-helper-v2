@@ -53,6 +53,7 @@ public class MainModCommand extends JustHelperCommand {
         JustHelperCommand.feedback( helpEntry("help", "Помощь по моду/Все команды.") );
         JustHelperCommand.feedback( helpEntry("config", "Редактирование/Просмотр конфига.") );
         JustHelperCommand.feedback( helpEntry("logs", "Логи(Журнал о работе) мода.") );
+        JustHelperCommand.feedback("<gray>Версия мода: <green>{0}", JustHelperClient.versionDate);
         return 1;
     }
 
