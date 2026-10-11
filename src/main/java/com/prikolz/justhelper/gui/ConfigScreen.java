@@ -9,7 +9,7 @@ import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -48,7 +48,7 @@ public class ConfigScreen extends Screen {
         saveButton = Button.builder(Component.translatable("gui.done"), (btn) -> {
             Config.saveConfig(this.editBox.box.getValue());
             Config.get().readFile();
-            Minecraft.getInstance().setScreen(null);
+            Minecraft.getInstance().gui.setScreen(null);
             JustHelperCommand.feedback("<green>JustHelper >> Конфиг обновлен");
         }).size(100, 20).pos(width / 2 + 7, height - 25).build();
 
@@ -60,20 +60,20 @@ public class ConfigScreen extends Screen {
         this.editBox = new JSONHolder(editBox, saveButton);
 
         closeButton = Button.builder(Component.translatable("gui.cancel"), (btn) -> {
-            minecraft.setScreen(null);
+            minecraft.gui.setScreen(null);
         }).size(100, 20).pos(width / 2 - 107, height - 25).build();
 
         var resetButton = Button.builder(Component.translatable("controls.reset"), (btn) -> {
-            Minecraft.getInstance().setScreen(new ConfirmScreen(
+            Minecraft.getInstance().gui.setScreen(new ConfirmScreen(
                     "Сбросить конфиг?",
                     "Конфиг JustHelper будет сброшен до значений по умолчанию.",
                     () -> {
                         Config.printLogs( Config.get().reset() );
                         Config.get().readFile();
                         JustHelperCommand.feedback("<green>JustHelper >> Конфиг обновлен");
-                        Minecraft.getInstance().setScreen(null);
+                        Minecraft.getInstance().gui.setScreen(null);
                     },
-                    () -> Minecraft.getInstance().setScreen(this)
+                    () -> Minecraft.getInstance().gui.setScreen(this)
             ));
         }).pos(width - 70, height - 40).width(50).build();
 
@@ -92,7 +92,7 @@ public class ConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(null);
+        Minecraft.getInstance().gui.setScreen(null);
     }
 
     @Override
@@ -142,8 +142,8 @@ public class ConfigScreen extends Screen {
         }
 
         @Override
-        protected void renderWidget(GuiGraphics guiGraphics, int i, int j, float f) {
-            box.render(guiGraphics, i, j, f);
+        protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
+            box.extractRenderState(guiGraphics, i, j, f);
             if (error.error) {
                 var lineCount = ((MultiLineEditBoxMixin) box).getTextField().getLineCount();
                 var pos = ((double) error.line / lineCount) * (box.maxScrollAmount() + box.getHeight() - 4);
@@ -151,7 +151,7 @@ public class ConfigScreen extends Screen {
                 pos = (pos * 0.99 - 5 - box.scrollAmount());
                 if (pos > box.getHeight()) return;
                 int markerX = box.getX() - 12;
-                guiGraphics.drawString(font, "⚠", markerX,(int) (pos) + box.getY(), 0xffFFAA00);
+                guiGraphics.text(font, "⚠", markerX,(int) (pos) + box.getY(), 0xffFFAA00);
             }
         }
 

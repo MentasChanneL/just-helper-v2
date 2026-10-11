@@ -6,7 +6,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -65,7 +65,7 @@ public class CodeSpaceRender {
         }
     }
 
-    public void renderGUI(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public void renderGUI(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
         if (updateCooldown <= 0) {
             infoUpdate();
             updateCooldown = 5f;
@@ -73,19 +73,19 @@ public class CodeSpaceRender {
         if (Config.get().codeSpaceRender.value.showPosition.value) renderPosition(guiGraphics);
     }
 
-    private void renderPosition(GuiGraphics guiGraphics) {
+    private void renderPosition(GuiGraphicsExtractor guiGraphics) {
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
 
         int textWidth = font.width(floorText);
         int x = screenWidth - textWidth - 10;
-        guiGraphics.drawString(font, floorText, x, 5, 0xFFFFFFFF);
+        guiGraphics.text(font, floorText, x, 5, 0xFFFFFFFF);
 
         textWidth = font.width(lineText);
         x = screenWidth - textWidth - 10;
-        guiGraphics.drawString(font, lineText, x, 20, 0xFFFFFFFF);
+        guiGraphics.text(font, lineText, x, 20, 0xFFFFFFFF);
 
         textWidth = font.width(blockText);
         x = screenWidth - textWidth - 10;
-        guiGraphics.drawString(font, blockText, x, 35, 0xFFFFFFFF);
+        guiGraphics.text(font, blockText, x, 35, 0xFFFFFFFF);
     }
 }

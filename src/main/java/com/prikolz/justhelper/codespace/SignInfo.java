@@ -49,14 +49,16 @@ public class SignInfo {
         var level = Minecraft.getInstance().level;
         if (level == null) return "";
         var blockState = Minecraft.getInstance().level.getBlockState(codePos.blockPos);
-        var render = Minecraft.getInstance().getBlockRenderer();
         try {
-            var sprite = render.getBlockModel(blockState).particleIcon().contents();
+            var model = Minecraft.getInstance()
+                    .getModelManager()
+                    .getBlockStateModelSet().get(blockState);
+            var sprite = model.particleMaterial().sprite();
             var name = Config.get().codeBlockNames.value.getMiniName(blockState.getBlock());
             if (addHover)
-                return "<hover:show_text:\"" + name + "\"><sprite:\"minecraft:blocks\":\"" + sprite.name().getPath() + "\"></hover>";
+                return "<hover:show_text:\"" + name + "\"><sprite:\"minecraft:blocks\":\"" + sprite.contents().name().getPath() + "\"></hover>";
             else
-                return "<sprite:\"minecraft:blocks\":\"" + sprite.name().getPath() + "\">";
+                return "<sprite:\"minecraft:blocks\":\"" + sprite.contents().name().getPath() + "\">";
         } catch (Throwable ignore) {}
         return "";
     }

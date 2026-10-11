@@ -13,10 +13,13 @@ import com.prikolz.justhelper.commands.arguments.ReferenceArgumentType;
 import com.prikolz.justhelper.commands.arguments.ValidStringArgumentType;
 import com.prikolz.justhelper.gui.widgets.MultiLineEditBoxWrapper;
 import com.prikolz.justhelper.util.JustHelperUtils;
-import com.prikolz.justhelper.util.TextUtils;
 import com.prikolz.justhelper.util.MojangUtils;
+import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ItemDisplayWidget;
+import net.minecraft.client.gui.components.MultiLineEditBox;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -63,7 +66,7 @@ public class ItemEditorCommand extends JustHelperCommand {
                 .then( profileBranch() )
                 .then( Commands.literal("display").executes(context -> itemResolver(item -> {
                     Minecraft.getInstance().schedule(() ->
-                            Minecraft.getInstance().setScreen( new ItemDisplayEditorScreen(item) )
+                            Minecraft.getInstance().gui.setScreen( new ItemDisplayEditorScreen(item) )
                     );
                     return 0;
                 })))
@@ -861,12 +864,12 @@ public class ItemEditorCommand extends JustHelperCommand {
 
             var ok = Button.builder(Component.translatable("gui.done"), button -> itemResolver(item -> {
                 updatePreview();
-                Minecraft.getInstance().setScreen(null);
+                Minecraft.getInstance().gui.setScreen(null);
                 return 1;
             })).pos(width / 2 + 5, loreEditBox.getHeight() + loreEditBox.getY() + 10).width(100).build();
 
             var cancel = Button.builder(Component.translatable("gui.cancel"), button -> {
-                Minecraft.getInstance().setScreen(null);
+                Minecraft.getInstance().gui.setScreen(null);
             }).pos(width / 2 - 105, loreEditBox.getHeight() + loreEditBox.getY() + 10).width(100).build();
 
             var itemWidget = new ItemDisplayWidget(

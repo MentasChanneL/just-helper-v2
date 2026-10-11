@@ -3,7 +3,7 @@ package com.prikolz.justhelper.gui;
 import com.prikolz.justhelper.JustHelperClient;
 import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineEditBox;
@@ -25,7 +25,7 @@ public class LogsScreen extends Screen {
                 .setX(width / 4).setY(30)
                 .build(minecraft.font, width - (width / 4) * 2, height / 2, Component.literal("Logs"));
         var stupidButton = Button.builder(Component.literal("Понятно"), (btn) -> {
-            Minecraft.getInstance().setScreen(null);
+            Minecraft.getInstance().gui.setScreen(null);
         }).pos(width / 2 - 50, height / 2 + 30).width(100).build();
         box.setValue(JustHelperClient.LOGGER.unionCache());
 
@@ -44,8 +44,8 @@ public class LogsScreen extends Screen {
         }
 
         @Override
-        protected void renderWidget(GuiGraphics guiGraphics, int i, int j, float f) {
-            box.renderWidget(guiGraphics, i, j, f);
+        protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
+            box.extractWidgetRenderState(guiGraphics, i, j, f);
         }
 
         @Override

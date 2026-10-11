@@ -52,10 +52,12 @@ public abstract class DevValue {
 
     public final String getMiniVersion() {
         if (material instanceof BlockItem blockItem) {
-            var render = Minecraft.getInstance().getBlockRenderer();
+            var model = Minecraft.getInstance()
+                    .getModelManager()
+                    .getBlockStateModelSet().get(blockItem.getBlock().defaultBlockState());
             try {
-                var sprite = render.getBlockModel(blockItem.getBlock().defaultBlockState()).particleIcon().contents();
-                return "<sprite:\"minecraft:blocks\":\"" + sprite.name().getPath() + "\"> " + miniBuilder();
+                var sprite = model.particleMaterial().sprite();
+                return "<sprite:\"minecraft:blocks\":\"" + sprite.contents().name().getPath() + "\"> " + miniBuilder();
             } catch (Throwable ignore) {}
         }
         var path = BuiltInRegistries.ITEM.getKey(material).getPath();

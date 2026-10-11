@@ -119,6 +119,6 @@ public class JustHelperUtils {
     public static void send(String minimessage, Object ... placeholders) {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
-        player.displayClientMessage(TextUtils.minimessage(minimessage, placeholders), false);
+        player.sendSystemMessage(TextUtils.minimessage(minimessage, placeholders));
     }
 }

@@ -49,7 +49,7 @@ public abstract class JustHelperCommand {
     public static int feedback(Component message) {
         var player = Minecraft.getInstance().player;
         if (player == null) return 0;
-        player.displayClientMessage(message, false);
+        player.sendSystemMessage(message);
         return 0;
     }
 }

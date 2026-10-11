@@ -25,7 +25,7 @@ public class Commands {
 
     public static void initialize() {
         register( new MainModCommand() );
-        register( new FindCommand() );
+        register( new AdvancedFindCommand() );
         register( new BackCommand() );
         register( new BuildPlayCommand() );
         register( new FoundListCommand() );

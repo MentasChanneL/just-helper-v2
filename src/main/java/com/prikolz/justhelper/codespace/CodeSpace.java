@@ -5,27 +5,26 @@ import com.google.gson.JsonPrimitive;
 import com.prikolz.justhelper.CommandBuffer;
 import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.JustHelperClient;
-import com.prikolz.justhelper.commands.JustHelperCommand;
-import com.prikolz.justhelper.commands.arguments.searching.FoundSignInfo;
 import com.prikolz.justhelper.codespace.values.DevValue;
 import com.prikolz.justhelper.codespace.values.Variable;
+import com.prikolz.justhelper.commands.JustHelperCommand;
+import com.prikolz.justhelper.commands.arguments.searching.FoundSignInfo;
 import com.prikolz.justhelper.mixin.DisplayMixin;
 import com.prikolz.justhelper.mixin.TextDisplayMixin;
 import com.prikolz.justhelper.util.JustHelperUtils;
 import com.prikolz.justhelper.util.TextUtils;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Brightness;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.TeamColor;
 import org.joml.Vector3f;
 
 import java.io.File;
@@ -33,6 +32,7 @@ import java.io.FileReader;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.prikolz.justhelper.JustHelperClient.GSON;
@@ -88,7 +88,7 @@ public abstract class CodeSpace {
         var scoreboard = level.getScoreboard();
         if (team != null) scoreboard.removePlayerTeam(team);
         team = scoreboard.addPlayerTeam("justhelper.aqua");
-        team.setColor(ChatFormatting.AQUA);
+        team.setColor(Optional.of(TeamColor.AQUA));
         if (worldName == null) return;
         render = new CodeSpaceRender();
         JustHelperClient.LOGGER.info("Joined to develop world {}", worldUUID);
@@ -148,11 +148,11 @@ public abstract class CodeSpace {
         if (anchor == null) return;
         var config = Config.get().teleportAnchor.value;
         if (!config.marker.value || !config.enabled.value) return;
-        var marker = new Display.TextDisplay(EntityType.TEXT_DISPLAY, level);
+        var marker = new Display.TextDisplay(EntityTypes.TEXT_DISPLAY, level);
         var data = marker.getEntityData();
         data.set(
                 DisplayMixin.DATA_BRIGHTNESS_ID(),
-                Brightness.pack(15, 15),
+                0xFF,
                 true
         );
         data.set(

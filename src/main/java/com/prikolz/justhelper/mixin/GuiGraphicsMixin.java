@@ -4,7 +4,7 @@ import com.prikolz.justhelper.Config;
 import com.prikolz.justhelper.codespace.values.DevValue;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -15,15 +15,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GuiGraphics.class)
+@Mixin(GuiGraphicsExtractor.class)
 public abstract class GuiGraphicsMixin {
     @Shadow
-    public abstract void drawString(Font font, @Nullable Component text, int i, int j, int k, boolean bl);
+    public abstract void text(Font font, @Nullable Component text, int i, int j, int k, boolean bl);
 
     @Shadow
     public abstract void fill(int i, int j, int k, int l, int m);
 
-    @Inject(method = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At("TAIL"))
+    @Inject(method = "itemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At("TAIL"))
     public void renderItemDecorations(Font font, ItemStack itemStack, int i, int j, @Nullable String string, CallbackInfo ci) {
         if (itemStack.isEmpty() || !Config.get().valueDecorations.value.enabled.value) return;
         var customData = itemStack.get(DataComponents.CUSTOM_DATA);
@@ -33,6 +33,6 @@ public abstract class GuiGraphicsMixin {
         var text = data.getStringOr("text", "null");
         var color = data.getIntOr("color", NamedTextColor.WHITE.value());
         fill(i - 4, j - 2, i - 3 + font.width(text), j + font.lineHeight, 0x88000000);
-        drawString(font, Component.literal(text).withColor(color), i - 3, j - 1, -1, true);
+        text(font, Component.literal(text).withColor(color), i - 3, j - 1, -1, true);
     }
 }

@@ -2,7 +2,7 @@ package com.prikolz.justhelper.gui.widgets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -31,9 +31,9 @@ public class ChatCheckbox extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int i, int j, float f) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, resource, this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
-        guiGraphics.drawString(font, this.getMessage(), this.getX() - 3 - font.width(this.getMessage()), this.getY(), 0xffFFFFFF);
+        guiGraphics.text(font, this.getMessage(), this.getX() - 3 - font.width(this.getMessage()), this.getY(), 0xffFFFFFF);
     }
 
     @Override

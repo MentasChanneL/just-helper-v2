@@ -2,11 +2,11 @@ package com.prikolz.justhelper.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.prikolz.justhelper.Config;
+import com.prikolz.justhelper.codespace.BlockCodePos;
 import com.prikolz.justhelper.codespace.CodeSpace;
 import com.prikolz.justhelper.commands.arguments.searching.FoundSignInfo;
 import com.prikolz.justhelper.commands.arguments.searching.InfoPack;
 import com.prikolz.justhelper.commands.arguments.searching.SignsSearchingArgumentType;
-import com.prikolz.justhelper.codespace.BlockCodePos;
 import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Component;
 import java.util.HashMap;
 import java.util.List;
 
-public class FindCommand extends JustHelperCommand {
+public class AdvancedFindCommand extends JustHelperCommand {
 
     public static HashMap<String, String> miniChars = miniChars();
 
@@ -32,38 +32,38 @@ public class FindCommand extends JustHelperCommand {
     public static InfoPack lastFound = new InfoPack(List.of());
     public static String lastPrompt = ":3";
 
-    public FindCommand() {
-        super("find");
+    public AdvancedFindCommand() {
+        super("afind");
         this.description = """
                 [Параметры поиска] <gray>- Поиск блоков кода по содержанию табличек.\
                 Отображает все совпадения в чате.
-                Пример использования: <white>/find событие<gray>
+                Пример использования: <white>/afind событие<gray>
                 Используйте в начале <white>=[</white>, чтобы включить расширенный поиск.
-                Например: <white>/find =[floor=5]функция</white> - команда \
+                Например: <white>/afind =[floor=5]функция</white> - команда \
                 будет искать все функции расположенные на 5 этаже. \
                 Чтобы инвертировать параметр добавьте <white>!</white> перед операндом.
-                Например: <white>/find =[text1!="событие", floor!\\<10]</white> - команда будет искать все \
+                Например: <white>/afind =[text1!="событие", floor!\\<10]</white> - команда будет искать все \
                 блоки кода, которые НЕ имеют текст "событие" на первой строчке и находятся НЕ ниже 10 этажа.
                 <white>Параметры поиска:<gray>
                 - floor, line, distance - Числовые фильтры для поиска. \
                 Поддерживают операнды: =, <, >. Принимают одно или несколько чисел. floor - условие на проверку этажа, \
                 line - условие на проверку строчки кода, distance - условие на проверку расстояния до блока кода.
                 Например:
-                  <white>/find =[floor=[10, 11, 5]]</white> - условие, этаж должен быть 10, 11 или 5.
-                  <white>/find =[line>10]</white> - условие, строчка должна быть больше 10
-                  <white>/find =[distance<40.5]</white> - условие, расстояние до блока должно быть меньше 40.5
+                  <white>/afind =[floor=[10, 11, 5]]</white> - условие, этаж должен быть 10, 11 или 5.
+                  <white>/afind =[line>10]</white> - условие, строчка должна быть больше 10
+                  <white>/afind =[distance<40.5]</white> - условие, расстояние до блока должно быть меньше 40.5
                 - text1, text2, text3, text4 - Текстовые фильтры для поиска. \
                 Поддерживают операнды: =, <, >. Проверяет текст на указанной линии таблички. = - полное соответствие, \
                 < - указанный текст содержится на линии таблички, > - текст линии таблички содержится в указанном тексте.
                 Например:
-                  <white>/find =[text1=событие игрока]</white> - ищет события игрока.
-                  <white>/find =[text1<"событие"]</white> - ищет любое событие.
-                  <white>/find =[text1>событие игрока функция процесс]</white> - ищет любое событие игрока, функцию или процесс.
-                  <white>/find =[text1<событие, text1!<"игрока"]</white> - ищет любое событие, кроме событий игрока.
+                  <white>/afind =[text1=событие игрока]</white> - ищет события игрока.
+                  <white>/afind =[text1<"событие"]</white> - ищет любое событие.
+                  <white>/afind =[text1>событие игрока функция процесс]</white> - ищет любое событие игрока, функцию или процесс.
+                  <white>/afind =[text1<событие, text1!<"игрока"]</white> - ищет любое событие, кроме событий игрока.
                 - nearby - Сортировка по расстоянию. По умолчанию уже включена, поэтому не обязательно указывать, \
                 но можно инвертировать, тогда в начале будут самые дальние блоки кода.
                 Например:
-                  <white>/find =[text1="функция", nearby!]</white> - ищет сначала самые дальние функции.
+                  <white>/afind =[text1="функция", nearby!]</white> - ищет сначала самые дальние функции.
                 """;
     }
 
@@ -92,7 +92,7 @@ public class FindCommand extends JustHelperCommand {
             JustHelperCommand.feedback(
                     "\n<hover:show_text:'Параметры поиска:<yellow>\n{0}'><click:suggest_command:'{1}'><dark_gray> ♯ Ничего не найдено ♯",
                     SignsSearchingArgumentType.lastInput,
-                    "/find " + SignsSearchingArgumentType.lastInput,
+                    "/afind " + SignsSearchingArgumentType.lastInput,
                     found.pack().size()
             );
             return;
@@ -101,7 +101,7 @@ public class FindCommand extends JustHelperCommand {
         JustHelperCommand.feedback(
                 "\n<hover:show_text:'Параметры поиска:<yellow>\n{0}'><click:suggest_command:'{1}'><yellow> ♯<white> Найдено {2} совпадений:\n",
                 SignsSearchingArgumentType.lastInput,
-                "/find " + SignsSearchingArgumentType.lastInput,
+                "/afind " + SignsSearchingArgumentType.lastInput,
                 found.pack().size()
         );
 
