@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class AdvancedFindCommand extends JustHelperCommand {
-
     public static HashMap<String, String> miniChars = miniChars();
 
     public static final int PAGE_SIZE = 12;

@@ -35,8 +35,13 @@ public class SearchingSettingsReader {
         return index < line.length;
     }
 
-    public void skipSpaces() {
-        while (canRead() && peek() == ' ') read();
+    public int skipSpaces() {
+        int count = 0;
+        while (canRead() && peek() == ' ') {
+            read();
+            count++;
+        }
+        return count;
     }
 
     public String readString(RemainingSuggestions suggestions) {
@@ -48,7 +53,9 @@ public class SearchingSettingsReader {
         boolean escape = false;
         StringBuilder builder = new StringBuilder();
         char first = read();
-        if (first == '"') captured = true;
+        if (first == '"') {
+            captured = true;
+        }
         else builder.append(first);
         while (canRead()) {
             char c = read();
@@ -62,7 +69,9 @@ public class SearchingSettingsReader {
                 continue;
             }
             if (captured) {
-                if (c == '"') return builder.toString();
+                if (c == '"') {
+                    return builder.toString();
+                }
             } else if (c == ',' || c == ']') {
                 back();
                 return builder.toString();
@@ -88,7 +97,6 @@ public class SearchingSettingsReader {
             return result;
         }
         while (true) {
-            skipSpaces();
             var el = readString(suggestions);
             if (!canRead()) {
                 if (!result.isEmpty()) suggestions.add(",");
@@ -97,12 +105,15 @@ public class SearchingSettingsReader {
             }
             result.add(el);
             char c = read();
-            if (c == ']') return result;
+            if (c == ']') {
+                return result;
+            }
             if (c != ',') {
                 suggestions.add(",");
                 suggestions.add("]");
                 throw new IllegalStateException("Список не закончен, ожидалось ',' или ']'. Получен: " + first);
             }
+            skipSpaces();
         }
     }
 }

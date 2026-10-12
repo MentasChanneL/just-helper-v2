@@ -36,9 +36,13 @@ public class SignsSearchingArgumentType implements ArgumentType<InfoPack> {
         if (line.isBlank()) {
             suggestionBuilder.add("=[");
             return emptyCondition(list);
-        } else if (line.equals("=")) suggestionBuilder.add("[");
+        } else if (line.equals("=")) {
+            suggestionBuilder.cursor++;
+            suggestionBuilder.add("[");
+        }
         boolean isAdvancedSearch = line.startsWith("=[");
         if (isAdvancedSearch) try {
+            suggestionBuilder.cursor += 2;
             return advancedSearch(list, line);
         } catch (Exception e) {
             throw ERROR.create(e.getMessage());
@@ -50,19 +54,23 @@ public class SignsSearchingArgumentType implements ArgumentType<InfoPack> {
         var reader = new SearchingSettingsReader(line.substring(2));
         var modules = new ArrayList<SearchModule>();
         StringBuilder label = new StringBuilder();
-        reader.skipSpaces();
+        suggestionBuilder.cursor += reader.skipSpaces();
         char c = '\0';
         while (reader.canRead()) {
             c = reader.read();
             if (c == '=' || c == ']' || c == '!' || c == '<' || c == '>' || c == ',') {
                 boolean inverted = c == '!';
-                if (inverted) c = reader.read();
+                if (inverted) {
+                    suggestionBuilder.cursor += 1;
+                    c = reader.read();
+                }
                 var module = searchModules.get(label.toString());
                 if (module == null) {
                     if (label.isEmpty() && c == ']') break;
                     if (c != ']' && c != ',') suggestModules(label.toString());
                     throw new IllegalStateException("Неизвестный параметр поиска '" + label + "'");
                 }
+                suggestionBuilder.cursor += label.length();
                 label = new StringBuilder();
                 module = module.create();
                 module.inverted = inverted;
@@ -72,7 +80,7 @@ public class SignsSearchingArgumentType implements ArgumentType<InfoPack> {
                 }
                 modules.add(module);
                 if (c == ',') {
-                    reader.skipSpaces();
+                    suggestionBuilder.cursor += reader.skipSpaces() + 1;
                     continue;
                 }
                 if (c == ']') break;
@@ -80,12 +88,15 @@ public class SignsSearchingArgumentType implements ArgumentType<InfoPack> {
                     throw new IllegalStateException("Ожидалось ',' или ']'. Получил: " + c);
                 if (!module.operands.contains(c))
                     throw new IllegalStateException("Неизвестный операнд: " + c);
+                suggestionBuilder.cursor++;
                 module.operand = c;
+                var index = reader.index;
                 try {
                     module.read(reader, suggestionBuilder);
                 } catch (Exception e) {
                     throw new IllegalStateException("Ошибка параметра " + module.determinant + ": " + e.getMessage());
                 }
+                suggestionBuilder.cursor += reader.index - index;
                 if (!reader.canRead()) {
                     suggestionBuilder.add("]");
                     suggestionBuilder.add(",");
@@ -93,7 +104,7 @@ public class SignsSearchingArgumentType implements ArgumentType<InfoPack> {
                 }
                 c = reader.read();
                 if (c == ',') {
-                    reader.skipSpaces();
+                    suggestionBuilder.cursor += reader.skipSpaces() + 1;
                     continue;
                 }
                 if (c == ']') break;
@@ -106,12 +117,13 @@ public class SignsSearchingArgumentType implements ArgumentType<InfoPack> {
             suggestModules(label.toString());
             throw new IllegalArgumentException(UNCOMPLETED_SETTINGS);
         } else {
+            suggestionBuilder.cursor += 1;
             if (!label.isEmpty()) {
                 if (!suggestModules(label.toString()))
                     throw new IllegalStateException("Неизвестный параметр поиска '" + label + "'");
             }
         }
-        reader.skipSpaces();
+        suggestionBuilder.cursor += reader.skipSpaces();
         standardSearch(list, reader.tail());
         for (var module : modules) module.applyOn(list);
         return new InfoPack(list);

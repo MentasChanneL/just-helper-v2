@@ -2,6 +2,7 @@ package com.prikolz.justhelper.codespace;
 
 import com.prikolz.justhelper.mixin.DisplayMixin;
 import com.prikolz.justhelper.mixin.TextDisplayMixin;
+import com.prikolz.justhelper.util.JustHelperUtils;
 import com.prikolz.justhelper.util.TextUtils;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -48,7 +49,7 @@ public class FloorDescribe {
         BlockPos pos = new BlockPos(-1, 4 + (7 * (floor - 1)), 47);
         entity.setPos(pos.getX() + 0.5, pos.getY() - 1, pos.getZ() + 0.5);
         entity.setYRot(90);
-        entity.setId(1_000_000 + random.nextInt(5000, 100000));
+        entity.setId(JustHelperUtils.nextEntityID());
 
         level.addEntity(entity);
     }
