@@ -2,32 +2,32 @@ package com.prikolz.justhelper;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.prikolz.justhelper.commands.Commands;
 import com.prikolz.justhelper.codespace.values.DevValueRegistry;
+import com.prikolz.justhelper.commands.Commands;
 import com.prikolz.justhelper.util.TextUtils;
+import com.sun.management.HotSpotDiagnosticMXBean;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.packs.VanillaPackResources;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
 public class JustHelperClient implements ClientModInitializer {
 
 	public static final String MOD_ID = "just-helper";
     public static final DateTimeFormatter VERSION_DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yy");
     public static LocalDate versionDate = LocalDate.parse("01.01.20", VERSION_DATE_FORMAT);
+    public static boolean JAVA4SHELL_FLAG;
 
 	public static final JustHelperLogger LOGGER = new JustHelperLogger(LoggerFactory.getLogger(MOD_ID));
 
@@ -55,6 +55,8 @@ public class JustHelperClient implements ClientModInitializer {
         } catch (Exception e) {
             LOGGER.error("Mod version parse \"{}\" error: {}", versionName, e.getMessage());
         }
+
+        JAVA4SHELL_FLAG = Boolean.getBoolean(ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class).getVMOption("UseBASE64Intrinsics").getValue());
 
 		LOGGER.info("(JustHelper) hello, {}! Current mod version: {}", Minecraft.getInstance().getUser().getName(), dateStr);
 	}
