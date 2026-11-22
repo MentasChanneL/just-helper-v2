@@ -14,6 +14,10 @@ import java.util.Base64;
 import java.util.zip.*;
 
 public class JustHelperUtils {
+    public static int entityId = 1040500000;
+
+    public static int nextEntityID() { return entityId++; }
+
     public static File getGameFolder() {
         return FabricLoader.getInstance().getGameDir().toFile();
     }

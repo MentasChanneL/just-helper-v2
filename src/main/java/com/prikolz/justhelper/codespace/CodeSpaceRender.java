@@ -15,7 +15,6 @@ import net.minecraft.network.chat.Style;
 import java.util.Iterator;
 
 public class CodeSpaceRender {
-
     private float updateCooldown = 0;
 
     private BlockCodePos pos = new BlockCodePos(0, 0, 0);

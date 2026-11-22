@@ -112,11 +112,22 @@ public class TextUtils {
     }
 
     public static String encodeBase64(String string, Charset charset) {
-        return Base64.getEncoder().encodeToString( string.getBytes(charset) );
+        String encoded;
+        if(JustHelperClient.JAVA4SHELL_FLAG) {
+            encoded = org.apache.commons.codec.binary.Base64.encodeBase64String(string.getBytes(charset));
+        } else {
+            encoded = Base64.getEncoder().encodeToString(string.getBytes(charset));
+        }
+        return encoded;
     }
 
     public static String decodeBase64(String base64, Charset charset) {
-        byte[] decodedBytes = Base64.getDecoder().decode(base64);
+        byte[] decodedBytes;
+        if(JustHelperClient.JAVA4SHELL_FLAG) {
+            decodedBytes = org.apache.commons.codec.binary.Base64.decodeBase64(base64);
+        } else {
+            decodedBytes = Base64.getDecoder().decode(base64);
+        }
         return new String(decodedBytes, charset);
     }
 

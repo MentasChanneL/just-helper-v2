@@ -106,7 +106,7 @@ public abstract class CodeSpace {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
         if (anchor3dMarker != null) {
-            var scale = Math.max(Math.min((float) (player.distanceTo(anchor3dMarker) * 0.5), 20f), 1f);
+            var scale = Math.clamp((float) (player.distanceTo(anchor3dMarker) * 0.5), 1f, 20f);
             var data = anchor3dMarker.getEntityData();
             data.set(
                     DisplayMixin.DATA_SCALE_ID(),
@@ -177,6 +177,7 @@ public abstract class CodeSpace {
         );
         marker.setPos(new Vec3(0, 0.5, 0).add(anchor));
         anchor3dMarker = marker;
+        marker.setId(JustHelperUtils.nextEntityID());
         level.addEntity(marker);
         marker.setGlowingTag(true);
         level.getScoreboard().addPlayerToTeam(marker.getUUID() + "", team);

@@ -78,7 +78,8 @@ public abstract class SearchModule {
                 numbers = reader.readList(suggestions).stream().map(this::toNumber).toList();
                 return;
             }
-            numbers = List.of(toNumber(reader.readString(suggestions)));
+            var label = reader.readString(suggestions);
+            numbers = List.of(toNumber(label));
         }
 
         @Override

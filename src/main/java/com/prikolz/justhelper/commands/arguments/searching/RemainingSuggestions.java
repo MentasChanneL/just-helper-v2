@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class RemainingSuggestions {
+    public int cursor = 0;
     private final List<String> elements = new ArrayList<>();
 
     public void add(String suggest) {
@@ -26,6 +27,8 @@ public class RemainingSuggestions {
         if (remaining.isEmpty()) {
             return new ArrayList<>(elements);
         }
+        var baked = remaining.substring(0, cursor);
+        remaining = remaining.substring(cursor);
         for (String suggest : elements) {
             int common = 0;
             int limit = Math.min(remaining.length(), suggest.length());
@@ -36,8 +39,10 @@ public class RemainingSuggestions {
                     break;
                 }
             }
-            // Склеиваем: remaining + (suggest без общей части)
-            result.add(remaining + suggest.substring(common));
+            if (common == 0)
+                result.add(baked + suggest);
+            else // Склеиваем: remaining + (suggest без общей части)
+                result.add(baked + remaining + suggest.substring(common));
         }
         return result;
     }

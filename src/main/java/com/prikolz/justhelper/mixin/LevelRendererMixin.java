@@ -23,7 +23,11 @@ public class LevelRendererMixin {
             method = "prepareChunkRenders",
             at = @At("HEAD")
     )
-    private void filterVisibleSections(Matrix4fc modelViewMatrix, CallbackInfoReturnable<ChunkSectionsToRender> cir) {
+    //? if >=26.3 {
+    private void filterVisibleSections(Matrix4fc modelViewMatrix, boolean respectTranslucentOrder, CallbackInfoReturnable<ChunkSectionsToRender> cir) {
+    //?} else {
+    /*private void filterVisibleSections(Matrix4fc modelViewMatrix, CallbackInfoReturnable<ChunkSectionsToRender> cir) {*/
+    //?}
         var render = CodeSpace.render();
         if (render == null) return;
         render.levelRender(visibleSections);
