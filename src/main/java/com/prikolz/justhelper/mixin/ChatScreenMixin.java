@@ -59,7 +59,11 @@ public abstract class ChatScreenMixin<T extends ChatScreen> extends Screen {
 
     @Inject(
             method = "extractRenderState",
+            //? if >= 26.3 {
             at = @At("HEAD")
+            //?} else {
+            /*at = @At("TAIL")*/
+            //?}
     )
     private void render(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         int limit = 256;

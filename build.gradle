@@ -9,7 +9,7 @@ version = new SimpleDateFormat("dd.MM.yy").format(new Date())
 group = project.maven_group
 
 base {
-	archivesName = project.archives_base_name
+	archivesName = "just-helper-${stonecutter.current.version}"
 }
 
 repositories {
@@ -57,9 +57,15 @@ dependencies {
 
 processResources {
 	inputs.property "version", project.version
+	inputs.property "minecraft_version", project.minecraft_version
+	inputs.property "loader_version", project.loader_version
 
 	filesMatching("fabric.mod.json") {
-		expand "version": inputs.properties.version
+		expand(
+				"version": project.version,
+				"minecraft_version": project.minecraft_version,
+				"loader_version": project.loader_version
+		)
 	}
 }
 
@@ -100,5 +106,35 @@ publishing {
 		// Notice: This block does NOT have the same function as the block in the top level.
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
+	}
+}
+
+tasks.register('buildAllVersions') {
+	group = 'build'
+	description = 'Собирает JustHelper под 26.2 и 26.3 и перекладывает результат в build/libs.'
+
+	dependsOn(
+			':26.2:build',
+			':26.3:build'
+	)
+
+	doLast {
+		def outputDir = rootProject.file('build/libs')
+		outputDir.mkdirs()
+
+		['26.2', '26.3'].each { version ->
+			def libsDir = project(":${version}").layout.buildDirectory.dir('libs').get().asFile
+
+			fileTree(libsDir).matching {
+				include '*.jar'
+				exclude '*-sources.jar'
+				exclude '*-dev.jar'
+			}.each { jar ->
+				copy {
+					from jar
+					into outputDir
+				}
+			}
+		}
 	}
 }
